@@ -1,0 +1,1 @@
+# ArkanProjects Themes\n\nDrop .blueprint theme files here.\nThemes are served at: https://arkanprojects.vercel.app/themes/<filename>.blueprint\n\nTo add a new theme:\n1. Download or build the .blueprint file\n2. Place it in this directory\n3. Add the theme name to the installer's _theme_url_from_name() and _theme_upstream_from_name() functions\n

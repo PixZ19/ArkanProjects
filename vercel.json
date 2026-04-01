@@ -1,0 +1,135 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "**/*.sh",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "next.config.ts",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/installer/(.*)",
+      "dest": "/public/installer/$1",
+      "headers": {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Content-Disposition": "inline; filename=\"$1\"",
+        "Cache-Control": "public, max-age=3600"
+      }
+    },
+    {
+      "src": "/themes/(.*)",
+      "dest": "/public/themes/$1",
+      "headers": {
+        "Content-Type": "application/octet-stream",
+        "Cache-Control": "public, max-age=86400"
+      }
+    },
+    {
+      "src": "/addons/(.*)",
+      "dest": "/public/addons/$1",
+      "headers": {
+        "Content-Type": "application/octet-stream",
+        "Cache-Control": "public, max-age=86400"
+      }
+    },
+    {
+      "src": "/blueprints/(.*)",
+      "dest": "/public/blueprints/$1",
+      "headers": {
+        "Content-Type": "application/octet-stream",
+        "Cache-Control": "public, max-age=86400"
+      }
+    },
+    {
+      "src": "/addons/scripts/(.*)",
+      "dest": "/public/addons/scripts/$1",
+      "headers": {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Cache-Control": "public, max-age=3600"
+      }
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/installer/(.*)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Content-Disposition",
+          "value": "inline"
+        }
+      ]
+    },
+    {
+      "source": "/themes/(.*)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/octet-stream"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        }
+      ]
+    },
+    {
+      "source": "/addons/(.*)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/octet-stream"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        }
+      ]
+    },
+    {
+      "source": "/blueprints/(.*)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/octet-stream"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        }
+      ]
+    },
+    {
+      "source": "/addons/scripts/(.*)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
+    }
+  ]
+}
