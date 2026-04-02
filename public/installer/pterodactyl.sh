@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -eo pipefail
 
 # website metadata — jangan rename
 readonly TOOL_NAME="Pterodactyl Installer"
@@ -32,14 +32,18 @@ trap '_on_exit' EXIT
 
 _on_exit() {
   local rc=$?
-  if [[ $rc -ne 0 && ${#_ROLLBACK_CMDS[@]} -gt 0 ]]; then
-    _warn "Installation failed (exit $rc). Rolling back..."
-    local i
-    for (( i=${#_ROLLBACK_CMDS[@]}-1; i>=0; i-- )); do
-      _log "rollback: ${_ROLLBACK_CMDS[$i]}"
-      eval "${_ROLLBACK_CMDS[$i]}" 2>/dev/null || true
-    done
-    _err "Rollback complete. Check $LOG_FILE for details."
+  if [[ $rc -ne 0 ]]; then
+    if [[ ${#_ROLLBACK_CMDS[@]} -gt 0 ]]; then
+      _warn "Installation failed (exit $rc). Rolling back..."
+      local i
+      for (( i=${#_ROLLBACK_CMDS[@]}-1; i>=0; i-- )); do
+        _log "rollback: ${_ROLLBACK_CMDS[$i]}"
+        eval "${_ROLLBACK_CMDS[$i]}" 2>/dev/null || true
+      done
+      _err "Rollback complete. Check $LOG_FILE for details."
+    else
+      echo -e "${C_RED}Script exited with error (code $rc).${C_NC}" >&2
+    fi
   fi
 }
 
@@ -170,7 +174,7 @@ _detect_os() {
   esac
 
   case "$OS" in
-    ubuntu)   [[ "$OS_VER_MAJOR" == "22" || "$OS_VER_MAJOR" == "24" ]] && SUPPORTED=true ;;
+    ubuntu)   [[ "$OS_VER_MAJOR" =~ ^(20|22|24)$ ]] && SUPPORTED=true ;;
     debian)   [[ "$OS_VER_MAJOR" =~ ^(10|11|12|13)$ ]] && SUPPORTED=true ;;
     rocky|almalinux) [[ "$OS_VER_MAJOR" =~ ^(8|9)$ ]] && SUPPORTED=true ;;
   esac
@@ -1543,7 +1547,7 @@ _main_menu() {
 
 _welcome() {
   local panel_ver
-  panel_ver=$(curl -sL "https://api.github.com/repos/pterodactyl/panel/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+  panel_ver=$(curl -sL --max-time 5 "https://api.github.com/repos/pterodactyl/panel/releases/latest" 2>/dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/') || true
   [[ -z "$panel_ver" ]] && panel_ver="(could not fetch)"
 
   _brake 60
