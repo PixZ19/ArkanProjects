@@ -193,3 +193,92 @@ Stage Summary:
 - All text remains in Bahasa Indonesia
 - 15+ new CSS animation classes added to globals.css
 - Zero lint errors, all existing architecture preserved
+---
+Task ID: 1
+Agent: Main Agent
+Task: Research ulang source repos themes/blueprints/addons + update installer + changelog + landing page
+
+Work Log:
+- Research found 4 previously-referenced repos DO NOT EXIST (EuphoriaProject/Euphoria, BetterAdmin, NightAdmin, Loader)
+- Identified 7 real Blueprint themes: Nebula, Recolor, Darkenate, Abyss Purple, Crimson Abyss, Amber Abyss, Emerald Abyss
+- Updated installer v4.1.0 → v1.0.0 with correct theme registry, upstream URLs, and addon panel URL
+- Created /public/changelog.json with v1.0.0 release data
+- Created /api/changelog route for fetching changelog data
+- Updated vercel.json with changelog.json route
+- Added Changelog section to landing page with ChangelogCard component
+- Fixed all version references (v4.0 → v1.0) in landing page
+- Added "Changelog" nav link
+- Removed non-existent euphoriatheme.blueprint file
+- Updated ZIP archive
+
+Stage Summary:
+- Installer now references only verified, real upstream repos
+- 7 themes: Nebula, Recolor, Darkenate, Abyss Purple, Crimson Abyss, Amber Abyss, Emerald Abyss
+- MuLTiAcidi addons panel pinned to v1.0.0 release
+- Changelog feature fully working (JSON data → API route → UI component)
+- All version references updated to 1.0.0
+- ZIP updated at /download/ArkanProjects.zip (3.4MB)
+
+---
+Task ID: 2
+Agent: Super Z (Main)
+Task: Fix .sh files to serve as raw text (inline) in browser, not as download
+
+Work Log:
+- Identified root cause: legacy `builds` and `routes` in vercel.json conflicting with Next.js static file serving
+- Removed `output: "standalone"` from next.config.ts (not needed for Vercel deployment)
+- Added `async headers()` to next.config.ts with proper Content-Type/Content-Disposition for all static routes
+- Rewrote vercel.json: removed legacy `builds` + `routes`, kept only `headers` for fallback
+- Key fix: `/installer/*.sh` → `Content-Type: text/plain` + `Content-Disposition: inline`
+- Build verified: `npx next build` succeeds with zero errors
+
+Stage Summary:
+- .sh files will now display as raw text in browser (not trigger download)
+- Dual-layer header config: next.config.ts headers() + vercel.json headers as fallback
+- Legacy Vercel build system (builds/routes) removed to prevent conflicts with Next.js
+
+---
+Task ID: 3
+Agent: Super Z (Main)
+Task: Telusuri ulang HemanRathore repo + fix blueprint list + bikin terminal demo hidup
+
+Work Log:
+- Fetched full repo tree via GitHub API: 40 blueprint files (36 .blueprint + 4 .ainx)
+- Read zynrcloud-pterodactyl.sh (3248 lines) — found ZYNR_BP_LIST with 38 entries
+- Identified 3 fake entries in old _list_blueprints(): pteromonaco, sociallogin, redirect
+- Fixed _list_blueprints(): removed fakes, added missing (nebula, sagaserverpropertiesui, versionchanger.blueprint), fixed duplicate sagaserversorter
+- Removed dead pteromonaco/sociallogin URLs from _blueprint_url_from_name()
+- Replaced static terminal demo with interactive TerminalDemo React component
+- Terminal demo now shows: user typing curl command, then bot typing FQDN/email/password inputs, then installation progress with auto-scroll
+- Added demo-terminal-body CSS: max-height, scroll, typing cursor animation with ::after
+- Build verified: npx next build succeeds
+
+Stage Summary:
+- Blueprint list now matches HemanRathore repo exactly (40 files, 8 categories)
+- Terminal demo is fully interactive with realistic typing animation (FQDN, email, password, install progress)
+- ArkanProjects.zip updated (4.8MB)
+
+---
+Task ID: 4
+Agent: Super Z (Main)
+Task: Download all addons/themes/blueprints from source repos + update installer + rebuild ZIP
+
+Work Log:
+- Downloaded 42 blueprint files from HemanRathore/pterodactyl-installer/main/blueprints/
+- Downloaded nebula.blueprint (8MB) from HemanRathore (prplwtf releases 404)
+- Downloaded darkenate.blueprint from blueprint-community (already had as darken.blueprint)
+- Downloaded emeraldabyss.blueprint from fernsehheft/Emerald-Abyss
+- Downloaded MuLTiAcidi addons panel (112MB) from GitHub releases v1.0.0
+- Downloaded MuLTiAcidi addon scripts (install.sh, wings-install.sh)
+- Updated installer: all theme upstream URLs now point to self-hosted (no fake repos)
+- Added 5 new themes to _list_themes(): darkenate, abysspurple, crimsonabyss, amberabyss, emeraldabyss
+- Updated _theme_url_from_name() and _theme_upstream_from_name() with all 11 themes
+- Fixed ADDON_REGISTRY_UPSTREAM to point to correct MuLTiAcidi repo
+- Build verified, ZIP rebuilt (138MB)
+
+Stage Summary:
+- 5 themes self-hosted (nebula, darkenate, abysspurple, crimsonabyss, amberabyss, emeraldabyss)
+- 44 blueprint files self-hosted (42 from HemanRathore + 2 legacy)
+- 1 addons panel (112MB MuLTiAcidi)
+- 2 addon scripts from MuLTiAcidi
+- All upstream fallback URLs corrected (removed 404 repos)

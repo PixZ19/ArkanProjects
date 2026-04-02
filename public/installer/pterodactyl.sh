@@ -1,57 +1,13 @@
 #!/usr/bin/env bash
-# =============================================================================
-#  ArkanProjects — Pterodactyl Installer v4.1.0
-#  Modern, modular Pterodactyl panel + wings deployment system.
-#
-#  Usage:
-#    curl -sSL https://arkanprojects.vercel.app/installer/pterodactyl.sh | bash
-#
-#  Supported OS:
-#    - Ubuntu 22.04 / 24.04
-#    - Debian 11 / 12 / 13
-#    - Rocky Linux 8 / 9
-#    - AlmaLinux 8 / 9
-#
-#  Architecture:
-#    - x86_64 (amd64)
-#    - arm64 / aarch64
-#
-#  Features:
-#    - Panel & Wings installation
-#    - Blueprint / Extension system
-#    - Theme management (Nebula, Euphoria, etc.)
-#    - Addons panel (game server addons)
-#    - Built-in addons (phpMyAdmin, fail2ban, backup, etc.)
-#    - Full uninstall (panel, wings, services, Docker)
-#
-#  Asset hosting:
-#    All themes, blueprints, and addons are served from:
-#      ${ARKAN_BASE_URL}/themes/     — theme .blueprint files
-#      ${ARKAN_BASE_URL}/addons/     — addon panel archives
-#      ${ARKAN_BASE_URL}/blueprints/ — extension .blueprint files
-#    Falls back to upstream repos if self-hosted files are unavailable.
-#    Only Pterodactyl panel & Wings binaries come from pterodactyl/ GitHub.
-#
-#  Project:
-#    https://arkanprojects.vercel.app
-#
-#  Copyright (c) 2025 ArkanProjects contributors.
-#  Released under the MIT License.
-# =============================================================================
 
 set -euo pipefail
 
-# ---------------------------------------------------------------------------
-# ArkanProjects tool metadata — used by the website to auto-register this tool.
-# Do NOT rename these variables.
-# ---------------------------------------------------------------------------
+# website metadata — jangan rename
 readonly TOOL_NAME="Pterodactyl Installer"
 readonly TOOL_DESC="Panel + Wings deployment with blueprint support, theme engine, game addons, SSL, firewall, and fail-safe rollback."
 readonly TOOL_BADGE="Stable"
 
-# ---------------------------------------------------------------------------
-# Version & source metadata
-# ---------------------------------------------------------------------------
+# version & source
 readonly ARKAN_VERSION="4.1.0"
 readonly ARKAN_RELEASE="stable"
 readonly ARKAN_BASE_URL="${ARKAN_BASE_URL:-https://arkanprojects.vercel.app}"
@@ -59,35 +15,18 @@ readonly PANEL_DL_URL="https://github.com/pterodactyl/panel/releases/latest/down
 readonly WINGS_DL_BASE="https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_"
 readonly LOG_FILE="/var/log/arkan-pterodactyl-installer.log"
 
-# ---------------------------------------------------------------------------
-# Theme registry — all assets served from ARKAN_BASE_URL first,
-# with upstream repos as fallback.
-#
-# Self-hosted:  ${ARKAN_BASE_URL}/themes/<name>.blueprint
-# Add new themes by dropping a .blueprint file into /public/themes/
-# ---------------------------------------------------------------------------
-readonly THEME_SELF_NEBULA="${ARKAN_BASE_URL}/themes/nebula.blueprint"
-readonly THEME_UPSTREAM_NEBULA="https://github.com/prplwtf/Nebula/releases/latest/download/nebula.blueprint"
-readonly THEME_SELF_EUPHORIA="${ARKAN_BASE_URL}/themes/euphoria.blueprint"
-readonly THEME_UPSTREAM_EUPHORIA="https://github.com/EuphoriaProject/Euphoria/releases/latest/download/euphoria.blueprint"
-readonly THEME_SELF_BETTERADMIN="${ARKAN_BASE_URL}/themes/betteradmin.blueprint"
-readonly THEME_UPSTREAM_BETTERADMIN="https://github.com/pterodactyl-installer/pterodactyl-installer/releases/latest/download/betteradmin.blueprint"
-readonly THEME_SELF_NIGHTADMIN="${ARKAN_BASE_URL}/themes/nightadmin.blueprint"
-readonly THEME_UPSTREAM_NIGHTADMIN="https://github.com/pterodactyl-installer/pterodactyl-installer/releases/latest/download/nightadmin.blueprint"
-readonly THEME_SELF_LOADER="${ARKAN_BASE_URL}/themes/loader.blueprint"
-readonly THEME_UPSTREAM_LOADER="https://github.com/pterodactyl-installer/pterodactyl-installer/releases/latest/download/loader.blueprint"
+# themes — blueprint files, install via blueprint -install
+readonly THEME_DIR="${ARKAN_BASE_URL}/themes"
 
-# Addons panel — served from ARKAN_BASE_URL or upstream
+# addons panel
 readonly ADDONS_PANEL_SELF_URL="${ARKAN_BASE_URL}/addons/pterodactyl-addons-panel.tar.gz"
 readonly ADDONS_PANEL_UPSTREAM_URL="https://github.com/MuLTiAcidi/pterodactyl-addons/releases/latest/download/pterodactyl-addons-panel.tar.gz"
 
-# Remote addon scripts — served from ARKAN_BASE_URL or upstream
+# addon scripts
 readonly ADDON_REGISTRY_SELF="${ARKAN_BASE_URL}/addons/scripts"
-readonly ADDON_REGISTRY_UPSTREAM="https://raw.githubusercontent.com/pterodactyl-installer/pterodactyl-installer/master/addons"
+readonly ADDON_REGISTRY_UPSTREAM="https://raw.githubusercontent.com/MuLTiAcidi/pterodactyl-addons/main"
 
-# ---------------------------------------------------------------------------
-# Trap — rollback on unexpected failure
-# ---------------------------------------------------------------------------
+# rollback trap
 _ROLLBACK_CMDS=()
 trap '_on_exit' EXIT
 
@@ -104,9 +43,7 @@ _on_exit() {
   fi
 }
 
-# ---------------------------------------------------------------------------
-# Colors
-# ---------------------------------------------------------------------------
+
 readonly C_RED='\033[0;31m'
 readonly C_GRN='\033[0;32m'
 readonly C_YEL='\033[1;33m'
@@ -114,9 +51,7 @@ readonly C_CYN='\033[0;36m'
 readonly C_DIM='\033[2m'
 readonly C_NC='\033[0m'
 
-# ---------------------------------------------------------------------------
-# Utility helpers
-# ---------------------------------------------------------------------------
+
 _log()   { echo -e "$(date '+%Y-%m-%d %H:%M:%S') * $*" >> "$LOG_FILE"; }
 _out()   { echo -e "* $*"; _log "$*"; }
 _ok()    { echo -e "* ${C_GRN}OK${C_NC}: $*"; _log "OK: $*"; }
@@ -154,14 +89,10 @@ _array_contains() {
   return 1
 }
 
-# ---------------------------------------------------------------------------
-# Logging — tee to log file when verbose / debug mode is active
-# ---------------------------------------------------------------------------
+
 DEBUG_MODE="${DEBUG_MODE:-false}"
 
-# ---------------------------------------------------------------------------
-# Input helpers
-# ---------------------------------------------------------------------------
+
 _ask() {
   local var="$1" prompt="$2" req="${3:-}" def="${4:-}"
   local result=""
@@ -211,9 +142,7 @@ _confirm() {
   [[ "$ans" =~ [Yy] ]]
 }
 
-# ---------------------------------------------------------------------------
-# OS detection
-# ---------------------------------------------------------------------------
+
 OS="" OS_VER="" OS_VER_MAJOR="" CPU_ARCH="" ARCH="" SUPPORTED=false
 
 _detect_os() {
@@ -250,9 +179,7 @@ _detect_os() {
   [[ "$SUPPORTED" == false ]] && _fatal "$OS $OS_VER is not supported."
 }
 
-# ---------------------------------------------------------------------------
-# Pre-flight checks
-# ---------------------------------------------------------------------------
+
 _preflight() {
   [[ $EUID -ne 0 ]] && _fatal "This script must be run as root."
 
@@ -271,9 +198,7 @@ _preflight() {
   _info_brake
 }
 
-# ---------------------------------------------------------------------------
-# Package management
-# ---------------------------------------------------------------------------
+
 _update_repos() {
   case "$OS" in
     ubuntu|debian)
@@ -294,9 +219,7 @@ _install_pkgs() {
   esac
 }
 
-# ---------------------------------------------------------------------------
-# MySQL / MariaDB helpers
-# ---------------------------------------------------------------------------
+
 _mysql_cmd() { mariadb -u root "$@"; }
 
 _create_db_user() {
@@ -321,9 +244,7 @@ _create_db() {
   _ok "Database created."
 }
 
-# ---------------------------------------------------------------------------
 # Firewall
-# ---------------------------------------------------------------------------
 _firewall_install() {
   case "$OS" in
     ubuntu|debian)
@@ -357,9 +278,7 @@ _firewall_allow() {
   esac
 }
 
-# ---------------------------------------------------------------------------
-# FQDN verification
-# ---------------------------------------------------------------------------
+
 _verify_fqdn() {
   local fqdn="$1"
   if ! dig +short "$fqdn" >/dev/null 2>&1; then
@@ -369,9 +288,7 @@ _verify_fqdn() {
   return 0
 }
 
-# ---------------------------------------------------------------------------
-# Panel installation
-# ---------------------------------------------------------------------------
+
 _panel_dep() {
   _out "Installing panel dependencies for $OS $OS_VER..."
 
@@ -694,9 +611,7 @@ _panel_install() {
   _ok "Panel installation complete."
 }
 
-# ---------------------------------------------------------------------------
-# Wings installation
-# ---------------------------------------------------------------------------
+
 _wings_dep() {
   _out "Installing Wings dependencies for $OS $OS_VER..."
 
@@ -798,9 +713,7 @@ _wings_install() {
   _ok "Wings installation complete."
 }
 
-# ---------------------------------------------------------------------------
-# Blueprint system — install / remove .blueprint / .ainx extensions
-# ---------------------------------------------------------------------------
+
 _blueprint_parse_identifier() {
   local conf_file="$1"
   local identifier=""
@@ -835,7 +748,6 @@ _blueprint_parse_field() {
   local value=""
   if [[ -f "$conf_file" ]]; then
     while IFS= read -r line; do
-      # Detect section headers (top-level YAML keys)
       if [[ "$line" =~ ^[a-z]+: && ! "$line" =~ ^[[:space:]]# ]]; then
         if [[ "$line" == "${section}:"* ]]; then
           in_section=true
@@ -863,10 +775,8 @@ _install_blueprint() {
 
   _out "Installing blueprint from: $blueprint_url"
 
-  # Create temp directory
   mkdir -p "$tmp_dir" "$extract_dir"
 
-  # Download the blueprint file
   _out "Downloading blueprint file..."
   if ! curl -fsSL -o "$tmp_file" "$blueprint_url"; then
     _err "Failed to download blueprint from $blueprint_url"
@@ -874,14 +784,12 @@ _install_blueprint() {
     return 1
   fi
 
-  # Verify it is a valid ZIP archive
   if ! file "$tmp_file" | grep -qi "zip archive"; then
     _err "Downloaded file is not a valid ZIP archive."
     rm -rf "$tmp_dir"
     return 1
   fi
 
-  # Extract the archive
   _out "Extracting blueprint..."
   if ! unzip -o -q "$tmp_file" -d "$extract_dir"; then
     _err "Failed to extract blueprint archive."
@@ -889,7 +797,6 @@ _install_blueprint() {
     return 1
   fi
 
-  # Find conf.yml (may be at root or nested)
   local conf_file=""
   if [[ -f "$extract_dir/conf.yml" ]]; then
     conf_file="$extract_dir/conf.yml"
@@ -903,7 +810,6 @@ _install_blueprint() {
     return 1
   fi
 
-  # Parse identifier
   local identifier=""
   identifier=$(_blueprint_parse_identifier "$conf_file")
   if [[ -z "$identifier" ]]; then
@@ -912,7 +818,6 @@ _install_blueprint() {
     return 1
   fi
 
-  # Validate identifier
   if [[ ! "$identifier" =~ ^[a-zA-Z0-9_-]+$ ]]; then
     _err "Invalid identifier '$identifier'. Must be alphanumeric with hyphens/underscores."
     rm -rf "$tmp_dir"
@@ -921,10 +826,8 @@ _install_blueprint() {
 
   _out "Blueprint identifier: $identifier"
 
-  # Determine extension directory
   local ext_dir="/var/www/pterodactyl/.blueprint/extensions/$identifier"
 
-  # Create extension directory (backup if exists)
   if [[ -d "$ext_dir" ]]; then
     _out "Extension '$identifier' already exists. Backing up..."
     mv "$ext_dir" "${ext_dir}.bak.$(date +%s)"
@@ -932,11 +835,9 @@ _install_blueprint() {
 
   mkdir -p "$ext_dir"
 
-  # Copy all extracted contents to extension directory
   cp -a "$extract_dir"/. "$ext_dir"/
   _ok "Blueprint files installed to $ext_dir"
 
-  # Run install script if hasInstallScript flag is set
   if _blueprint_has_flag "$conf_file" "hasInstallScript"; then
     _out "Running install script..."
     local install_script=""
@@ -961,7 +862,6 @@ _install_blueprint() {
     fi
   fi
 
-  # Run database migrations if configured
   local migrations
   migrations=$(_blueprint_parse_field "$conf_file" "database" "migrations")
   if [[ -n "$migrations" ]]; then
@@ -971,16 +871,13 @@ _install_blueprint() {
       _warn "Database migrations failed."
   fi
 
-  # Clear caches
   _out "Clearing panel caches..."
   (cd /var/www/pterodactyl && php artisan view:cache && php artisan config:cache) && \
     _ok "Caches cleared." || \
     _warn "Cache clear failed."
 
-  # Set permissions
   _panel_permissions
 
-  # Cleanup
   rm -rf "$tmp_dir"
 
   _ok "Blueprint '$identifier' installed successfully."
@@ -999,12 +896,10 @@ _remove_blueprint() {
 
   _out "Removing blueprint: $identifier"
 
-  # Find conf.yml for removal script check
   if [[ -f "$ext_dir/conf.yml" ]]; then
     conf_file="$ext_dir/conf.yml"
   fi
 
-  # Run removal script if hasRemovalScript flag is set
   if [[ -n "$conf_file" ]] && _blueprint_has_flag "$conf_file" "hasRemovalScript"; then
     _out "Running removal script..."
     local remove_script=""
@@ -1027,11 +922,9 @@ _remove_blueprint() {
     fi
   fi
 
-  # Remove the extension directory
   rm -rf "$ext_dir"
   _ok "Extension directory removed."
 
-  # Clear caches
   _out "Clearing panel caches..."
   (cd /var/www/pterodactyl && php artisan view:cache && php artisan config:cache) 2>/dev/null && \
     _ok "Caches cleared." || true
@@ -1040,128 +933,46 @@ _remove_blueprint() {
   return 0
 }
 
-# ---------------------------------------------------------------------------
-# Theme system — install / list built-in themes
-# ---------------------------------------------------------------------------
+
 _list_themes() {
   _brake 55
-  _out "Available built-in themes:"
+  _out "Available themes (11):"
   _out ""
-  _out "  ${C_CYN}nebula${C_NC}       — Nebula: full theme editor, sidebar, animations, glass effects"
-  _out "  ${C_CYN}euphoria${C_NC}     — Euphoria: game server theme, console copy, player fetch"
-  _out "  ${C_CYN}betteradmin${C_NC}  — BetterAdmin: dark admin panel theme (CSS only)"
-  _out "  ${C_CYN}nightadmin${C_NC}   — Night Admin: dark admin panel theme (CSS only)"
-  _out "  ${C_CYN}loader${C_NC}       — Loader: client loading animation (with migrations)"
+  _out "  ${C_CYN}nebula${C_NC}        — Nebula: full theme editor, sidebar, animations, glass effects"
+  _out "  ${C_CYN}darkenate${C_NC}     — Darkenate: dark theme with purple accents"
+  _out "  ${C_CYN}euphoria${C_NC}      — Euphoria: game server theme, console copy, player fetch"
+  _out "  ${C_CYN}betteradmin${C_NC}   — BetterAdmin: enhanced admin panel UI"
+  _out "  ${C_CYN}nightadmin${C_NC}    — Night Admin: dark admin panel UI"
+  _out "  ${C_CYN}loader${C_NC}        — Loader: client loading animation"
+  _out "  ${C_CYN}abysspurple${C_NC}   — Abyss Purple: dark purple theme"
+  _out "  ${C_CYN}crimsonabyss${C_NC}  — Crimson Abyss: dark crimson theme"
+  _out "  ${C_CYN}amberabyss${C_NC}    — Amber Abyss: dark amber theme"
+  _out "  ${C_CYN}emeraldabyss${C_NC}  — Emerald Abyss: dark emerald theme"
   _out ""
-  _out "Usage: install a theme by name or provide a direct .blueprint URL."
+  _out "Usage: --install-theme <nama>"
   _brake 55
-}
-
-_theme_url_from_name() {
-  local name="$1"
-  case "$name" in
-    nebula)       echo "$THEME_SELF_NEBULA" ;;
-    euphoria)     echo "$THEME_SELF_EUPHORIA" ;;
-    betteradmin)  echo "$THEME_SELF_BETTERADMIN" ;;
-    nightadmin)   echo "$THEME_SELF_NIGHTADMIN" ;;
-    loader)       echo "$THEME_SELF_LOADER" ;;
-    *)            echo "" ;;
-  esac
-}
-
-_theme_upstream_from_name() {
-  local name="$1"
-  case "$name" in
-    nebula)       echo "$THEME_UPSTREAM_NEBULA" ;;
-    euphoria)     echo "$THEME_UPSTREAM_EUPHORIA" ;;
-    betteradmin)  echo "$THEME_UPSTREAM_BETTERADMIN" ;;
-    nightadmin)   echo "$THEME_UPSTREAM_NIGHTADMIN" ;;
-    loader)       echo "$THEME_UPSTREAM_LOADER" ;;
-    *)            echo "" ;;
-  esac
 }
 
 _install_theme() {
   local theme_input="$1"
-
   [[ ! -d "/var/www/pterodactyl" ]] && \
     _fatal "Pterodactyl panel is not installed. Install the panel first."
 
-  local theme_url=""
-  local theme_upstream_url=""
-
-  # Check if input is a built-in theme name
-  theme_url=$(_theme_url_from_name "$theme_input")
-
-  if [[ -z "$theme_url" ]]; then
-    # Treat as direct URL
-    theme_url="$theme_input"
-    _out "Using direct theme URL: $theme_url"
-  else
-    theme_upstream_url=$(_theme_upstream_from_name "$theme_input")
-    _out "Installing built-in theme: $theme_input"
-  fi
-
-  # Download and parse conf.yml to verify it is a theme
-  local tmp_dir="/tmp/arkan-theme-check-$$"
-  local tmp_file="$tmp_dir/theme.zip"
-  local extract_dir="$tmp_dir/extracted"
-  mkdir -p "$tmp_dir" "$extract_dir"
-
-  # Try self-hosted first, then upstream fallback
-  if [[ -n "$theme_upstream_url" ]]; then
-    if ! _fetch_asset "$theme_url" "$theme_upstream_url" "$tmp_file"; then
-      rm -rf "$tmp_dir"
-      return 1
+  local url="$theme_input"
+  if [[ "$theme_input" != http://* && "$theme_input" != https://* ]]; then
+    local name="${theme_input%.blueprint}"
+    local bp_file="${name}.blueprint"
+    url="${THEME_DIR}/${bp_file}"
+    if ! curl -fsSL -o /dev/null "$url" 2>/dev/null; then
+      url="${BP_REGISTRY_SELF}/${bp_file}"
     fi
-  else
-    if ! curl -fsSL -o "$tmp_file" "$theme_url"; then
-      _err "Failed to download theme from: $theme_url"
-      rm -rf "$tmp_dir"
-      return 1
-    fi
+    _out "Installing theme: $name"
   fi
 
-  if ! unzip -o -q "$tmp_file" -d "$extract_dir" 2>/dev/null; then
-    _err "Downloaded file is not a valid ZIP archive."
-    rm -rf "$tmp_dir"
-    return 1
-  fi
-
-  local conf_file=""
-  if [[ -f "$extract_dir/conf.yml" ]]; then
-    conf_file="$extract_dir/conf.yml"
-  else
-    conf_file=$(find "$extract_dir" -name "conf.yml" -type f 2>/dev/null | head -1)
-  fi
-
-  # Verify it has dashboard.wrapper (confirms it is a theme)
-  if [[ -n "$conf_file" && -f "$conf_file" ]]; then
-    local has_wrapper=""
-    has_wrapper=$(_blueprint_parse_field "$conf_file" "dashboard" "wrapper")
-    if [[ -z "$has_wrapper" ]]; then
-      _warn "This blueprint does not appear to be a theme (no dashboard.wrapper in conf.yml)."
-      _confirm "Install anyway" || { rm -rf "$tmp_dir"; return 1; }
-    fi
-  else
-    _warn "Could not verify theme — conf.yml not found. Proceeding anyway."
-  fi
-
-  rm -rf "$tmp_dir"
-
-  # Install via blueprint system — resolve URL with upstream fallback
-  local resolved_url="$theme_url"
-  if [[ -n "$theme_upstream_url" ]]; then
-    if ! curl -fsSL -o /dev/null "$theme_url" 2>/dev/null; then
-      resolved_url="$theme_upstream_url"
-    fi
-  fi
-  _install_blueprint "$resolved_url"
+  _install_blueprint "$url"
 }
 
-# ---------------------------------------------------------------------------
-# Addons panel — install MuLTiAcidi game server addons panel
-# ---------------------------------------------------------------------------
+
 _install_addons_panel() {
   [[ ! -d "/var/www/pterodactyl" ]] && \
     _fatal "Pterodactyl panel is not installed at /var/www/pterodactyl. Install the panel first."
@@ -1180,12 +991,10 @@ _install_addons_panel() {
 
   local backup_dir="/var/www/pterodactyl.bak.$(date +%Y%m%d-%H%M%S)"
 
-  # Backup existing panel
   _out "Backing up existing panel to $backup_dir..."
   cp -r /var/www/pterodactyl "$backup_dir"
   _ok "Panel backed up."
 
-  # Download addons panel
   _out "Downloading addons panel..."
   local tmp_file="/tmp/pterodactyl-addons-panel.tar.gz"
   if ! _fetch_asset "$ADDONS_PANEL_SELF_URL" "$ADDONS_PANEL_UPSTREAM_URL" "$tmp_file"; then
@@ -1196,7 +1005,6 @@ _install_addons_panel() {
     return 1
   fi
 
-  # Extract to panel directory
   _out "Extracting addons panel..."
   rm -rf /var/www/pterodactyl/*
   if ! tar -xzf "$tmp_file" -C /var/www/pterodactyl; then
@@ -1209,26 +1017,21 @@ _install_addons_panel() {
   fi
   rm -f "$tmp_file"
 
-  # Ensure .env exists (preserve from backup)
   if [[ -f "$backup_dir/.env" && ! -f /var/www/pterodactyl/.env ]]; then
     cp "$backup_dir/.env" /var/www/pterodactyl/.env
   fi
 
-  # Ensure storage and cache dirs exist
   mkdir -p /var/www/pterodactyl/storage /var/www/pterodactyl/bootstrap/cache
   chmod -R 755 /var/www/pterodactyl/storage/* /var/www/pterodactyl/bootstrap/cache/ 2>/dev/null || true
 
-  # Install Composer dependencies
   cd /var/www/pterodactyl || _fatal "Cannot cd to /var/www/pterodactyl"
   _out "Installing PHP dependencies..."
   COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader --no-interaction
   _ok "Composer dependencies installed."
 
-  # Run migrations
   _out "Running database migrations..."
   php artisan migrate --force && _ok "Migrations completed." || _warn "Migrations failed or had no changes."
 
-  # Build frontend assets with yarn
   if command -v yarn &>/dev/null; then
     _out "Building frontend assets..."
     yarn install --frozen-lockfile 2>/dev/null || yarn install
@@ -1242,13 +1045,10 @@ _install_addons_panel() {
     _out "Run: _load_addon nodejs && _load_addon yarn && cd /var/www/pterodactyl && yarn && yarn build"
   fi
 
-  # Clear and cache
   php artisan view:cache && php artisan config:cache && php artisan route:cache 2>/dev/null || true
 
-  # Set permissions
   _panel_permissions
 
-  # Restart services
   systemctl restart pteroq 2>/dev/null || true
   systemctl restart php8.3-fpm 2>/dev/null || true
   systemctl restart php-fpm 2>/dev/null || true
@@ -1260,21 +1060,17 @@ _install_addons_panel() {
   return 0
 }
 
-# ---------------------------------------------------------------------------
-# Helper — try self-hosted URL first, fall back to upstream
-# ---------------------------------------------------------------------------
+
 _fetch_asset() {
   local self_url="$1"
   local upstream_url="$2"
   local output="$3"
 
-  # Try self-hosted first
   if curl -fsSL -o "$output" "$self_url" 2>/dev/null; then
     _ok "Fetched from ArkanProjects: $(basename "$self_url")"
     return 0
   fi
 
-  # Fallback to upstream
   _warn "Self-hosted asset not found. Trying upstream..."
   if curl -fsSL -o "$output" "$upstream_url" 2>/dev/null; then
     _ok "Fetched from upstream: $(basename "$upstream_url")"
@@ -1287,9 +1083,7 @@ _fetch_asset() {
   return 1
 }
 
-# ---------------------------------------------------------------------------
-# Addon system — extensible post-install hooks
-# ---------------------------------------------------------------------------
+
 _addon_phpmyadmin() {
   _out "Installing phpMyAdmin..."
   local pma_dir="/var/www/phpmyadmin"
@@ -1303,7 +1097,6 @@ _addon_phpmyadmin() {
   tar -xzf "$tmp_file" -C "$pma_dir" --strip-components=1
   rm -f "$tmp_file"
 
-  # Generate blowfish secret
   local blowfish_secret
   blowfish_secret=$(_gen_passwd 32)
 
@@ -1311,17 +1104,14 @@ _addon_phpmyadmin() {
   sed -i "s|\\\$cfg\\['blowfish_secret'\\] = ''|\\\$cfg['blowfish_secret'] = '${blowfish_secret}'|g" "${pma_dir}/config.inc.php"
   sed -i "s|\\\$cfg\\['Servers'\\]\\[\\\$i\\]\\['host'\\] = 'localhost'|\\\$cfg['Servers'][\\\$i]['host'] = '127.0.0.1'|g" "${pma_dir}/config.inc.php"
 
-  # Create temp directory
   mkdir -p "${pma_dir}/tmp"
   chmod 777 "${pma_dir}/tmp"
 
-  # Set permissions
   case "$OS" in
     debian|ubuntu) chown -R www-data:www-data "$pma_dir" ;;
     rocky|almalinux) chown -R nginx:nginx "$pma_dir" ;;
   esac
 
-  # Configure nginx if panel is installed
   if [[ -d "/var/www/pterodactyl" ]] && command -v nginx &>/dev/null; then
     _out "Configuring nginx for phpMyAdmin..."
     local cfg_dir=""
@@ -1375,7 +1165,6 @@ _addon_fail2ban() {
   _out "Installing fail2ban..."
   _install_pkgs "fail2ban"
 
-  # Create Pterodactyl jail configuration
   cat > /etc/fail2ban/jail.local <<'F2BEOF'
 [DEFAULT]
 bantime = 3600
@@ -1460,7 +1249,6 @@ BKSHEOF
 
   chmod +x "$backup_script"
 
-  # Add to cron (daily at 2 AM)
   (crontab -l 2>/dev/null | grep -v "ptero-backup"; echo "0 2 * * * $backup_script $backup_retention >> /var/log/pterodactyl-backup.log 2>&1") | crontab -
 
   _ok "Automated backups configured. Daily at 2:00 AM, keeping $backup_retention backups."
@@ -1485,13 +1273,11 @@ _addon_swap() {
   mkswap "$swap_file"
   swapon "$swap_file"
 
-  # Make persistent
   if ! grep -q "$swap_file" /etc/fstab; then
     echo "$swap_file none swap sw 0 0" >> /etc/fstab
     _ok "Swap entry added to /etc/fstab."
   fi
 
-  # Tune swappiness
   sysctl -w vm.swappiness=10
   if ! grep -q "vm.swappiness" /etc/sysctl.conf; then
     echo "vm.swappiness=10" >> /etc/sysctl.conf
@@ -1535,7 +1321,6 @@ _addon_yarn() {
     return 0
   fi
 
-  # Ensure npm is available
   if ! command -v npm &>/dev/null; then
     _warn "npm not found. Installing Node.js first..."
     _addon_nodejs
@@ -1580,7 +1365,6 @@ _load_addon() {
       _install_addons_panel
       ;;
     *)
-      # Try loading from self-hosted registry first, then upstream
       local addon_self="${ADDON_REGISTRY_SELF}/${addon_name_lower}.sh"
       local addon_upstream="${ADDON_REGISTRY_UPSTREAM}/${addon_name_lower}.sh"
       local addon_tmp="/tmp/arkan-addon-${addon_name_lower}.sh"
@@ -1616,9 +1400,7 @@ _available_addons() {
   _brake 58
 }
 
-# ---------------------------------------------------------------------------
-# Uninstall — enhanced panel and wings removal
-# ---------------------------------------------------------------------------
+
 _uninstall_panel() {
   _warn "This will REMOVE the Pterodactyl panel and ALL associated data."
   _warn "  - Panel files (/var/www/pterodactyl)"
@@ -1628,35 +1410,29 @@ _uninstall_panel() {
   _warn "  - Database and database user"
   _confirm "Are you sure you want to continue" || _fatal "Uninstall aborted."
 
-  # Stop and disable pteroq service
   _out "Stopping pteroq service..."
   systemctl stop pteroq 2>/dev/null || true
   systemctl disable pteroq 2>/dev/null || true
   rm -f /etc/systemd/system/pteroq.service
   systemctl daemon-reload
 
-  # Stop and disable PHP-FPM
   _out "Stopping PHP-FPM..."
   systemctl stop php8.3-fpm 2>/dev/null || true
   systemctl stop php-fpm 2>/dev/null || true
 
-  # Remove panel files
   _out "Removing panel files..."
   rm -rf /var/www/pterodactyl
   rm -rf /var/www/pterodactyl.bak.* 2>/dev/null || true
 
-  # Remove nginx configuration
   _out "Removing nginx configuration..."
   rm -f /etc/nginx/sites-enabled/pterodactyl.conf
   rm -f /etc/nginx/sites-available/pterodactyl.conf
   rm -f /etc/nginx/conf.d/pterodactyl.conf
   systemctl reload nginx 2>/dev/null || true
 
-  # Remove cron entries
   _out "Removing cron entries..."
   crontab -l 2>/dev/null | grep -v "pterodactyl" | crontab - 2>/dev/null || true
 
-  # Drop database and user
   _out "Removing database..."
   local db_name="${DB_NAME:-panel}"
   local db_user="${DB_USER:-pterodactyl}"
@@ -1677,36 +1453,28 @@ _uninstall_wings() {
   _warn "  - All Docker containers and images (game servers)"
   _confirm "Are you sure you want to continue" || _fatal "Uninstall aborted."
 
-  # Stop and disable wings service
   _out "Stopping Wings service..."
   systemctl stop wings 2>/dev/null || true
   systemctl disable wings 2>/dev/null || true
   rm -f /etc/systemd/system/wings.service
   systemctl daemon-reload
 
-  # Remove wings binary
   _out "Removing Wings binary..."
   rm -f /usr/local/bin/wings
 
-  # Remove wings configuration directory
   _out "Removing Wings configuration..."
   rm -rf /etc/pterodactyl
 
-  # Docker cleanup — remove all Pterodactyl server containers and images
   _out "Cleaning up Docker containers and images..."
   if command -v docker &>/dev/null; then
-    # Remove containers created by Pterodactyl (label-based)
     docker ps -a -q --filter "label=pterodactyl.server" 2>/dev/null | xargs -r docker rm -f 2>/dev/null || true
-    # Remove all Pterodactyl-related images
     docker images -q --filter "label=pterodactyl.server" 2>/dev/null | xargs -r docker rmi -f 2>/dev/null || true
-    # Prune dangling resources
     docker system prune -f 2>/dev/null || true
     _ok "Docker cleanup completed."
   else
     _warn "Docker not found. Skipping Docker cleanup."
   fi
 
-  # Remove Pterodactyl server data directory
   _out "Removing server data directory..."
   rm -rf /var/lib/pterodactyl
 
@@ -1715,9 +1483,7 @@ _uninstall_wings() {
   _out "Remove Docker manually if no longer needed: apt remove docker-ce docker-ce-cli containerd.io"
 }
 
-# ---------------------------------------------------------------------------
-# Interactive main menu
-# ---------------------------------------------------------------------------
+
 _main_menu() {
   _welcome
 
@@ -1789,9 +1555,7 @@ _welcome() {
   _brake 60
 }
 
-# ---------------------------------------------------------------------------
-# Panel UI — collect configuration interactively
-# ---------------------------------------------------------------------------
+
 _ui_panel() {
   if [[ -d "/var/www/pterodactyl" ]]; then
     _warn "Existing Pterodactyl panel detected at /var/www/pterodactyl."
@@ -1830,7 +1594,6 @@ _ui_panel() {
 
   CFG_FIREWALL=false; CFG_SSL_ASSUME=false; CFG_LE=false
 
-  # Firewall
   case "$OS" in
     ubuntu|debian)
       _confirm "Configure UFW firewall" && CFG_FIREWALL=true
@@ -1840,7 +1603,6 @@ _ui_panel() {
       ;;
   esac
 
-  # SSL check
   local ssl_available=false
   ! _is_ip_address "$PANEL_FQDN" && ssl_available=true
 
@@ -1858,14 +1620,12 @@ _ui_panel() {
     _verify_fqdn "$PANEL_FQDN" || _warn "DNS verification failed — SSL may not work."
   fi
 
-  # Firewall ports
   if [[ "$CFG_FIREWALL" == true ]]; then
     _firewall_install
     _firewall_allow 22 80 443
     _ok "Firewall ports 22, 80, 443 opened."
   fi
 
-  # Summary
   _brake 55
   _out "Panel configuration summary:"
   _out "  FQDN:              $PANEL_FQDN"
@@ -1882,9 +1642,7 @@ _ui_panel() {
   _confirm "Proceed with panel installation" || _fatal "Installation aborted."
 }
 
-# ---------------------------------------------------------------------------
-# Wings UI — collect configuration interactively
-# ---------------------------------------------------------------------------
+
 _ui_wings() {
   if [[ -d "/etc/pterodactyl" ]]; then
     _warn "Existing Wings installation detected at /etc/pterodactyl."
@@ -1905,7 +1663,6 @@ _ui_wings() {
   WINGS_FQDN=""
   WINGS_EMAIL=""
 
-  # Virtualization check
   _out "Checking virtualization compatibility..."
   _update_repos
   _install_pkgs "virt-what" true
@@ -1922,13 +1679,11 @@ _ui_wings() {
   esac
   _ok "System is compatible with Docker."
 
-  # Firewall
   case "$OS" in
     ubuntu|debian) _confirm "Configure UFW firewall" && CFG_FIREWALL=true ;;
     rocky|almalinux) _confirm "Configure firewall-cmd" && CFG_FIREWALL=true ;;
   esac
 
-  # Database host
   if _confirm "Configure database host user"; then
     WINGS_CFG_MYSQL=true
     if ! command -v mysql &>/dev/null; then
@@ -1939,7 +1694,6 @@ _ui_wings() {
     _ask WINGS_DB_HOST "Database host address [127.0.0.1]: " "" "127.0.0.1"
   fi
 
-  # Let's Encrypt
   _warn "Let's Encrypt requires a valid FQDN (not an IP address)."
   if _confirm "Configure HTTPS with Let's Encrypt for Wings"; then
     CFG_LE=true
@@ -1950,7 +1704,6 @@ _ui_wings() {
     _ask_email WINGS_EMAIL "Email for Let's Encrypt: "
   fi
 
-  # Firewall ports
   if [[ "$CFG_FIREWALL" == true ]]; then
     _firewall_install
     _firewall_allow 22 8080 2022
@@ -1961,9 +1714,7 @@ _ui_wings() {
   _confirm "Proceed with Wings installation" || _fatal "Installation aborted."
 }
 
-# ---------------------------------------------------------------------------
-# CLI argument parser — non-interactive mode
-# ---------------------------------------------------------------------------
+
 _print_usage() {
   cat <<USAGE
 ArkanProjects Pterodactyl Installer v$ARKAN_VERSION
@@ -2040,9 +1791,7 @@ _parse_args() {
   done
 }
 
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
+
 RUN_MODE=""  # empty = interactive menu
 RUN_ADDON=""
 RUN_INSTALL_THEME=""
@@ -2055,7 +1804,6 @@ main() {
   _parse_args "$@"
   _preflight
 
-  # Handle list flags immediately (no interactive prompt needed)
   if [[ "$RUN_LIST_THEMES" == true ]]; then
     _list_themes
     exit 0
@@ -2066,22 +1814,18 @@ main() {
     exit 0
   fi
 
-  # Handle install-theme flag
   if [[ -n "$RUN_INSTALL_THEME" ]]; then
     _install_theme "$RUN_INSTALL_THEME"
   fi
 
-  # Handle install-blueprint flag
   if [[ -n "$RUN_INSTALL_BLUEPRINT" ]]; then
     _install_blueprint "$RUN_INSTALL_BLUEPRINT"
   fi
 
-  # Handle install-addons-panel flag
   if [[ "$RUN_INSTALL_ADDONS_PANEL" == true ]]; then
     _install_addons_panel
   fi
 
-  # Handle main modes
   case "$RUN_MODE" in
     panel)
       _ui_panel; _panel_install
