@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import {
   Terminal,
   Zap,
@@ -16,6 +16,9 @@ import {
   Code2,
   Layers,
   Users,
+  History,
+  Menu,
+  X,
 } from "lucide-react";
 import { CopyToolButton } from "@/components/copy-button";
 
@@ -27,13 +30,28 @@ interface Tool {
   badge: string;
 }
 
+interface ChangelogEntry {
+  version: string;
+  date: string;
+  type: string;
+  title: string;
+  description: string;
+  changes: string[];
+}
+
 export default function Home() {
   const [tools, setTools] = useState<Tool[]>([]);
+  const [changelog, setChangelog] = useState<ChangelogEntry[]>([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     fetch("/api/tools")
       .then((r) => r.json())
       .then(setTools)
+      .catch(() => {});
+    fetch("/api/changelog")
+      .then((r) => r.json())
+      .then(setChangelog)
       .catch(() => {});
   }, []);
 
@@ -48,7 +66,8 @@ export default function Home() {
           <a href="#" className="text-lg font-bold tracking-tight text-foreground">
             Arkan<span className="text-primary">Projects</span>
           </a>
-          <div className="flex items-center gap-6">
+          {/* Desktop nav */}
+          <div className="hidden md:flex items-center gap-6">
             <a
               href="#tools"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -68,6 +87,12 @@ export default function Home() {
               Demo
             </a>
             <a
+              href="#changelog"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Changelog
+            </a>
+            <a
               href="#about"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
@@ -83,8 +108,68 @@ export default function Home() {
               <Github className="w-5 h-5" />
             </a>
           </div>
+          {/* Mobile hamburger */}
+          <button
+            className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Buka menu"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
         </nav>
       </header>
+
+      {/* ── Mobile Sidebar ── */}
+      {sidebarOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm"
+            onClick={() => setSidebarOpen(false)}
+          />
+          {/* Sidebar panel */}
+          <div className="fixed top-0 right-0 z-[70] h-full w-72 bg-[#0a0a1a]/95 backdrop-blur-2xl border-l border-border/40 shadow-2xl shadow-black/40 mobile-sidebar-open">
+            <div className="flex flex-col h-full">
+              {/* Sidebar header */}
+              <div className="flex items-center justify-between px-6 h-16 border-b border-border/30">
+                <span className="text-lg font-bold tracking-tight text-foreground">
+                  Arkan<span className="text-primary">Projects</span>
+                </span>
+                <button
+                  className="flex items-center justify-center w-9 h-9 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+                  onClick={() => setSidebarOpen(false)}
+                  aria-label="Tutup menu"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              {/* Sidebar links */}
+              <div className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+                <SidebarLink href="#tools" label="Tools" onClick={() => setSidebarOpen(false)} />
+                <SidebarLink href="#features" label="Fitur" onClick={() => setSidebarOpen(false)} />
+                <SidebarLink href="#demo" label="Demo" onClick={() => setSidebarOpen(false)} />
+                <SidebarLink href="#changelog" label="Changelog" onClick={() => setSidebarOpen(false)} />
+                <SidebarLink href="#about" label="Tentang" onClick={() => setSidebarOpen(false)} />
+                <div className="my-3 border-t border-border/20" />
+                <a
+                  href="https://github.com/ArkanProjects"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/30 transition-all"
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  <Github className="w-4 h-4" />
+                  GitHub
+                </a>
+              </div>
+              {/* Sidebar footer */}
+              <div className="px-6 py-4 border-t border-border/30">
+                <p className="text-[11px] text-muted-foreground/50">v1.0.0</p>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* ── Konten Utama ── */}
       <main className="flex-1">
@@ -109,7 +194,7 @@ export default function Home() {
                 <Package className="w-3.5 h-3.5" />
                 Ekosistem DevOps
                 <span className="px-2 py-0.5 rounded-full bg-primary/10 text-[10px] font-bold uppercase tracking-wider">
-                  v4.0
+                  v1.0
                 </span>
               </div>
             </div>
@@ -313,42 +398,42 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="terminal-window max-w-3xl mx-auto animate-fade-in-up animate-delay-1">
-              <div className="terminal-bar">
-                <div className="terminal-dot terminal-dot-red" />
-                <div className="terminal-dot terminal-dot-yellow" />
-                <div className="terminal-dot terminal-dot-green" />
-                <div className="terminal-title">arkan@server — bash</div>
-                <div className="w-[46px]" />
+            <TerminalDemo />
+          </div>
+        </section>
+
+        <div className="glow-line max-w-4xl mx-auto" />
+
+        {/* ══════════ CHANGELOG ══════════ */}
+        <section id="changelog" className="py-24 px-6">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-14 animate-fade-in-up">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/15 bg-primary/5 text-[11px] font-medium text-primary mb-4">
+                <History className="w-3 h-3" />
+                Changelog
               </div>
-              <div className="terminal-body">
-                <div className="terminal-line">
-                  <span className="text-emerald-400 font-semibold">$</span> bash &lt;(curl -s https://arkanprojects.vercel.app/installer/pterodactyl.sh)
-                </div>
-                <div className="terminal-line">
-                  <span className="text-primary/60">* </span>ArkanProjects — Pterodactyl Installer <span className="text-violet-400">v4.0.0</span>
-                </div>
-                <div className="terminal-line">
-                  <span className="text-primary/60">* </span>OS: Ubuntu 24.04 | Arch: x86_64 <span className="text-muted-foreground/50">(amd64)</span>
-                </div>
-                <div className="terminal-line">
-                  <span className="text-primary/60">* </span>Menginstal panel dependencies...
-                </div>
-                <div className="terminal-line">
-                  <span className="text-emerald-400">✔ OK:</span> Panel dependencies installed
-                </div>
-                <div className="terminal-line">
-                  <span className="text-emerald-400">✔ OK:</span> Composer dependencies installed
-                </div>
-                <div className="terminal-line">
-                  <span className="text-emerald-400">✔ OK:</span> Panel installation complete
-                </div>
-                <div className="terminal-line">
-                  <span className="text-emerald-400">✔ OK:</span> Wings installation complete
-                </div>
-                <span className="terminal-cursor" />
-              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+                Riwayat Perubahan
+              </h2>
+              <p className="mt-4 text-muted-foreground max-w-xl mx-auto">
+                Catatan rilis untuk setiap versi ArkanProjects.
+              </p>
             </div>
+
+            {changelog.length > 0 ? (
+              <div className="space-y-6">
+                {changelog.map((entry, i) => (
+                  <ChangelogCard key={entry.version} entry={entry} index={i} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 border border-primary/15 mb-4">
+                  <History className="w-5 h-5 text-primary/50" />
+                </div>
+                <p className="text-muted-foreground">Memuat changelog...</p>
+              </div>
+            )}
           </div>
         </section>
 
@@ -531,6 +616,236 @@ export default function Home() {
   );
 }
 
+/* ── Interactive Terminal Demo ── */
+type TLine =
+  | { type: "cmd"; text: string }
+  | { type: "out"; text: string }
+  | { type: "ok"; text: string }
+  | { type: "ask"; label: string; answer: string }
+  | { type: "warn"; text: string }
+  | { type: "blank" }
+  | { type: "cursor" };
+
+const DEMO_SCRIPT: TLine[] = [
+  { type: "cmd", text: "bash <(curl -s https://arkanprojects.vercel.app/installer/pterodactyl.sh)" },
+  { type: "blank" },
+  { type: "out", text: "ArkanProjects — Pterodactyl Installer v1.0.0" },
+  { type: "out", text: "OS: Ubuntu 24.04 | Arch: x86_64 (amd64)" },
+  { type: "blank" },
+  { type: "ask", label: "Masukkan FQDN panel", answer: "panel.arkandev.id" },
+  { type: "ask", label: "Email admin", answer: "admin@arkandev.id" },
+  { type: "ask", label: "Database password", answer: "••••••••••" },
+  { type: "blank" },
+  { type: "out", text: "Menginstal panel dependencies..." },
+  { type: "ok", text: "Panel dependencies installed" },
+  { type: "out", text: "Mengunduh Pterodactyl Panel v1.0.0..." },
+  { type: "ok", text: "Panel downloaded" },
+  { type: "out", text: "Menginstal Composer dependencies..." },
+  { type: "ok", text: "Composer dependencies installed" },
+  { type: "out", text: "Mengonfigurasi panel..." },
+  { type: "ok", text: "Panel configured" },
+  { type: "blank" },
+  { type: "out", text: "Menginstal Wings daemon..." },
+  { type: "ok", text: "Wings installation complete" },
+  { type: "out", text: "Konfigurasi SSL dengan Let's Encrypt..." },
+  { type: "ok", text: "SSL certificate issued for panel.arkandev.id" },
+  { type: "blank" },
+  { type: "out", text: "Konfigurasi firewall..." },
+  { type: "ok", text: "Firewall rules applied (80, 443, 8080, 2022)" },
+  { type: "blank" },
+  { type: "warn", text: "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" },
+  { type: "ok", text: "Pterodactyl Panel & Wings berhasil diinstal!" },
+  { type: "out", text: "Panel:  https://panel.arkandev.id" },
+  { type: "warn", text: "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" },
+  { type: "cursor" },
+];
+
+function TerminalDemo() {
+  const [lines, setLines] = useState<{ html: string; delay: number }[]>([]);
+  const [visible, setVisible] = useState(0);
+  const [started, setStarted] = useState(false);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const typingSpeed = useCallback((text: string) => {
+    return Math.max(20, Math.min(45, 600 / text.length));
+  }, []);
+
+  // Intersection Observer — start demo when visible
+  useEffect(() => {
+    const el = wrapperRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !started) {
+          setStarted(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [started]);
+
+  useEffect(() => {
+    if (!started) return;
+
+    let delayAcc = 400;
+    const built: { html: string; delay: number }[] = [];
+
+    for (const line of DEMO_SCRIPT) {
+      if (line.type === "blank") {
+        built.push({ html: "", delay: delayAcc });
+        delayAcc += 80;
+      } else if (line.type === "cmd") {
+        const speed = typingSpeed(line.text);
+        const total = speed * line.text.length;
+        built.push({
+          html: `<span class="text-emerald-400 font-semibold select-none">$ </span><span class="cmd-text" data-text="${line.text.replace(/"/g, "&quot;")}"></span>`,
+          delay: delayAcc,
+        });
+        delayAcc += total + 200;
+      } else if (line.type === "ask") {
+        const speed = typingSpeed(line.answer);
+        const total = speed * line.answer.length;
+        built.push({
+          html: `<span class="text-violet-400 select-none">[?] </span><span class="text-muted-foreground">${line.label}: </span><span class="ask-text" data-text="${line.answer.replace(/"/g, "&quot;")}"></span>`,
+          delay: delayAcc,
+        });
+        delayAcc += 600 + total + 150;
+      } else if (line.type === "out") {
+        built.push({
+          html: `<span class="text-primary/60 select-none">  ● </span><span class="text-slate-300">${line.text}</span>`,
+          delay: delayAcc,
+        });
+        delayAcc += 250 + Math.random() * 200;
+      } else if (line.type === "ok") {
+        built.push({
+          html: `<span class="text-emerald-400 select-none">  ✔ </span><span class="text-emerald-300/90">${line.text}</span>`,
+          delay: delayAcc,
+        });
+        delayAcc += 200 + Math.random() * 150;
+      } else if (line.type === "warn") {
+        built.push({
+          html: `<span class="text-violet-400/70">${line.text}</span>`,
+          delay: delayAcc,
+        });
+        delayAcc += 200;
+      } else if (line.type === "cursor") {
+        built.push({
+          html: `<span class="demo-cursor"></span>`,
+          delay: delayAcc,
+        });
+        delayAcc += 100;
+      }
+    }
+
+    setLines(built);
+
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    for (let i = 0; i < built.length; i++) {
+      timers.push(
+        setTimeout(() => {
+          setVisible((v) => v + 1);
+        }, built[i].delay)
+      );
+    }
+
+    return () => timers.forEach(clearTimeout);
+  }, [started, typingSpeed]);
+
+  // Auto-scroll
+  useEffect(() => {
+    if (bodyRef.current) {
+      bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
+    }
+  }, [visible]);
+
+  // Trigger typing animation when new lines appear
+  useEffect(() => {
+    if (!bodyRef.current) return;
+    const newLine = bodyRef.current.children[visible - 1] as HTMLElement | undefined;
+    if (!newLine) return;
+
+    const cmdEl = newLine.querySelector(".cmd-text") as HTMLElement | null;
+    const askEl = newLine.querySelector(".ask-text") as HTMLElement | null;
+
+    if (cmdEl) {
+      const text = cmdEl.dataset.text || "";
+      let i = 0;
+      const speed = typingSpeed(text);
+      const interval = setInterval(() => {
+        if (i <= text.length) {
+          cmdEl.textContent = text.slice(0, i);
+          i++;
+          bodyRef.current && (bodyRef.current.scrollTop = bodyRef.current.scrollHeight);
+        } else {
+          clearInterval(interval);
+          cmdEl.classList.add("done");
+        }
+      }, speed);
+    } else if (askEl) {
+      const text = askEl.dataset.text || "";
+      let i = 0;
+      const speed = typingSpeed(text);
+      const interval = setInterval(() => {
+        if (i <= text.length) {
+          askEl.textContent = text.slice(0, i);
+          i++;
+          bodyRef.current && (bodyRef.current.scrollTop = bodyRef.current.scrollHeight);
+        } else {
+          clearInterval(interval);
+          askEl.classList.add("done");
+        }
+      }, speed);
+    }
+  }, [visible, typingSpeed]);
+
+  return (
+    <div ref={wrapperRef} className="terminal-window max-w-3xl mx-auto animate-fade-in-up animate-delay-1">
+      <div className="terminal-bar">
+        <div className="terminal-dot terminal-dot-red" />
+        <div className="terminal-dot terminal-dot-yellow" />
+        <div className="terminal-dot terminal-dot-green" />
+        <div className="terminal-title">root@server — bash</div>
+        <div className="w-[46px]" />
+      </div>
+      <div ref={bodyRef} className="terminal-body demo-terminal-body">
+        {lines.slice(0, visible).map((line, i) => (
+          <div
+            key={i}
+            className="terminal-line"
+            style={{ animationDelay: "0s" }}
+            dangerouslySetInnerHTML={{ __html: line.html }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── Sidebar Link (Mobile) ── */
+function SidebarLink({
+  href,
+  label,
+  onClick,
+}: {
+  href: string;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <a
+      href={href}
+      className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/30 transition-all"
+      onClick={onClick}
+    >
+      {label}
+    </a>
+  );
+}
+
 /* ── Tool Card ── */
 function ToolCard({
   tool,
@@ -607,6 +922,62 @@ function FeatureCard({
       <p className="text-sm text-muted-foreground leading-relaxed">
         {description}
       </p>
+    </div>
+  );
+}
+
+/* ── Changelog Card ── */
+function ChangelogCard({
+  entry,
+  index,
+}: {
+  entry: ChangelogEntry;
+  index: number;
+}) {
+  const typeLabel =
+    entry.type === "major"
+      ? "Major"
+      : entry.type === "minor"
+        ? "Minor"
+        : "Patch";
+  const typeColor =
+    entry.type === "major"
+      ? "bg-red-500/10 text-red-400 border-red-500/20"
+      : entry.type === "minor"
+        ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+        : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+
+  return (
+    <div
+      className={`glass rounded-2xl p-6 sm:p-8 animate-fade-in-up animate-delay-${(index % 4) + 1}`}
+    >
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <History className="w-4 h-4 text-primary" />
+          </div>
+          <h3 className="text-lg font-semibold text-foreground">{entry.title}</h3>
+          <span
+            className={`text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full border ${typeColor}`}
+          >
+            {typeLabel}
+          </span>
+        </div>
+        <span className="text-xs text-muted-foreground font-mono">{entry.date}</span>
+      </div>
+
+      <p className="text-sm text-muted-foreground leading-relaxed mb-5">
+        {entry.description}
+      </p>
+
+      <div className="space-y-2">
+        {entry.changes.map((change, i) => (
+          <div key={i} className="flex items-start gap-2 text-sm">
+            <span className="text-emerald-400 mt-0.5 shrink-0">+</span>
+            <span className="text-muted-foreground">{change}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

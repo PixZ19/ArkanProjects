@@ -1,0 +1,25 @@
+[
+  {
+    "version": "1.0.0",
+    "date": "2025-04-02",
+    "type": "major",
+    "title": "Rilis Pertama — v1.0.0",
+    "description": "Rilis pertama ArkanProjects dengan installer Pterodactyl lengkap dan website landing page.",
+    "changes": [
+      "Panel + Wings deployment otomatis",
+      "Blueprint / Extension system (.blueprint & .ainx)",
+      "7 tema built-in: Nebula, Recolor, Darkenate, Abyss Purple, Crimson, Amber, Emerald",
+      "MuLTiAcidi addons panel (Minecraft, Rust, CS2, FiveM, ARK, GMod, Valheim, 7DTD)",
+      "Addon sistem: phpMyAdmin, fail2ban, backup otomatis, swap, Node.js, Yarn",
+      "SSL Let's Encrypt dengan fallback otomatis",
+      "Firewall (UFW + firewalld) dengan konfigurasi port otomatis",
+      "Full uninstall: panel, wings, Docker cleanup",
+      "Rollback otomatis jika instalasi gagal",
+      "Dukungan 6 distro: Ubuntu 22/24, Debian 10-13, Rocky 8/9, AlmaLinux 8/9",
+      "Arsitektur x86_64 dan arm64",
+      "Website landing page dengan auto-detect tools dari /installer/",
+      "Changelog sistem (file .json)",
+      "Mode interaktif dan CLI non-interaktif"
+    ]
+  }
+]
