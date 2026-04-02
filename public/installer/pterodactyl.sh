@@ -51,23 +51,54 @@ readonly C_YEL='\033[1;33m'
 readonly C_CYN='\033[0;36m'
 readonly C_DIM='\033[2m'
 readonly C_NC='\033[0m'
+readonly C_BOLD='\033[1m'
+readonly C_MAGENTA='\033[0;35m'
+readonly C_WHITE='\033[1;37m'
+readonly C_BLUE='\033[0;34m'
 
 
 _log()   { echo -e "$(date '+%Y-%m-%d %H:%M:%S') * $*" >> "$LOG_FILE"; }
 _out()   { echo -e "* $*"; _log "$*"; }
-_ok()    { echo -e "* ${C_GRN}OK${C_NC}: $*"; _log "OK: $*"; }
-_warn()  { echo -e "* ${C_YEL}WARN${C_NC}: $*" >&2; _log "WARN: $*"; }
-_err()   { echo -e "* ${C_RED}ERROR${C_NC}: $*" >&2; _log "ERROR: $*"; }
+_ok()    { echo -e "  ${C_GRN}[✔]${C_NC} $*"; _log "OK: $*"; }
+_warn()  { echo -e "  ${C_YEL}[!]${C_NC} $*" >&2; _log "WARN: $*"; }
+_err()   { echo -e "  ${C_RED}[✘]${C_NC} $*" >&2; _log "ERROR: $*"; }
 _fatal() { _err "$*"; exit 1; }
+_info()  { echo -e "  ${C_CYN}[•]${C_NC} $*"; _log "INFO: $*"; }
 _brake() { local n=${1:-60}; printf '#%.0s' $(seq 1 "$n"); echo; }
+_sep()   { echo -e "  ${C_DIM}─────────────────────────────────────────────────────────${C_NC}"; }
 
-_info_brake() {
-  _brake 60
-  _out "$ARKAN_VERSION — Pterodactyl Installer"
-  _out ""
-  _out "ArkanProjects  |  https://arkanprojects.vercel.app"
-  _out "OS: $OS $OS_VER  |  Arch: $CPU_ARCH ($ARCH)"
-  _brake 60
+_print_banner() {
+  echo -e "${C_CYN}${C_BOLD}"
+  echo "  ████████╗██╗  ██╗███████╗ ██████╗██╗  ██╗██╗███╗   ██╗███████╗"
+  echo "  ╚══██╔══╝██║  ██║██╔════╝██╔════╝██║  ██║██║████╗  ██║██╔════╝"
+  echo "  █████╗  ███████║█████╗  ██║     ███████║██║██╔██╗ ██║█████╗"
+  echo "  ██╔══╝  ██╔══██║██╔══╝  ██║     ██╔══██║██║██║╚██╗██║██╔══╝"
+  echo "  ██║     ██║  ██║██║     ╚██████╗██║  ██║██║██║ ╚████║███████╗"
+  echo "  ╚═╝     ╚═╝  ╚═╝╚═╝      ╚═════╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝╚══════╝"
+  echo -e "${C_NC}"
+}
+
+_detect_versions() {
+  PANEL_LATEST_VER=""
+  WINGS_LATEST_VER=""
+  PANEL_LATEST_VER=$(curl -sL --max-time 5 "https://api.github.com/repos/pterodactyl/panel/releases/latest" 2>/dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/') || true
+  WINGS_LATEST_VER=$(curl -sL --max-time 5 "https://api.github.com/repos/pterodactyl/wings/releases/latest" 2>/dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/') || true
+  [[ -z "$PANEL_LATEST_VER" ]] && PANEL_LATEST_VER="auto"
+  [[ -z "$WINGS_LATEST_VER" ]] && WINGS_LATEST_VER="auto"
+}
+
+_print_info_panel() {
+  echo -e "  ${C_CYN}╔═══════════════════════════════════════════════════════════╗${C_NC}"
+  echo -e "  ${C_CYN}║${C_NC} ${C_BOLD}⚡ ARKANPROJECTS — PTERODACTYL MASTER COMMAND${C_NC}            ${C_CYN}║${C_NC}"
+  echo -e "  ${C_CYN}║${C_NC} ${C_DIM}░▒▓█  Pterodactyl Server Management Tool  █▓▒░${C_NC}            ${C_CYN}║${C_NC}"
+  echo -e "  ${C_CYN}╠═══════════════════════════════════════════════════════════╣${C_NC}"
+  echo -e "  ${C_CYN}║${C_NC} ${C_WHITE}Version${C_NC}    ${C_DIM}│${C_NC}  ${C_GRN}v${ARKAN_VERSION}${C_NC}                                         ${C_CYN}║${C_NC}"
+  echo -e "  ${C_CYN}║${C_NC} ${C_WHITE}Panel${C_NC}       ${C_DIM}│${C_NC}  ${C_CYN}${PANEL_LATEST_VER}${C_NC}                                      ${C_CYN}║${C_NC}"
+  echo -e "  ${C_CYN}║${C_NC} ${C_WHITE}Wings${C_NC}       ${C_DIM}│${C_NC}  ${C_CYN}${WINGS_LATEST_VER}${C_NC}                                      ${C_CYN}║${C_NC}"
+  echo -e "  ${C_CYN}║${C_NC} ${C_WHITE}OS${C_NC}          ${C_DIM}│${C_NC}  ${C_WHITE}${OS} ${OS_VER}${C_NC} ${C_DIM}(${CPU_ARCH})${C_NC}                              ${C_CYN}║${C_NC}"
+  echo -e "  ${C_CYN}╠═══════════════════════════════════════════════════════════╣${C_NC}"
+  echo -e "  ${C_CYN}║${C_NC} ${C_DIM}https://arkanprojects.vercel.app${C_NC}                       ${C_CYN}║${C_NC}"
+  echo -e "  ${C_CYN}╚═══════════════════════════════════════════════════════════╝${C_NC}"
 }
 
 _link() { echo -e "\e]8;;${1}\a${1}\e]8;;\a"; }
@@ -196,7 +227,7 @@ _preflight() {
   fi
 
   _detect_os
-  _info_brake
+  _detect_versions
 }
 
 
@@ -936,22 +967,64 @@ _remove_blueprint() {
 
 
 _list_themes() {
-  _brake 55
-  _out "Available themes (11):"
-  _out ""
-  _out "  ${C_CYN}nebula${C_NC}        — Nebula: full theme editor, sidebar, animations, glass effects"
-  _out "  ${C_CYN}darkenate${C_NC}     — Darkenate: dark theme with purple accents"
-  _out "  ${C_CYN}euphoria${C_NC}      — Euphoria: game server theme, console copy, player fetch"
-  _out "  ${C_CYN}betteradmin${C_NC}   — BetterAdmin: enhanced admin panel UI"
-  _out "  ${C_CYN}nightadmin${C_NC}    — Night Admin: dark admin panel UI"
-  _out "  ${C_CYN}loader${C_NC}        — Loader: client loading animation"
-  _out "  ${C_CYN}abysspurple${C_NC}   — Abyss Purple: dark purple theme"
-  _out "  ${C_CYN}crimsonabyss${C_NC}  — Crimson Abyss: dark crimson theme"
-  _out "  ${C_CYN}amberabyss${C_NC}    — Amber Abyss: dark amber theme"
-  _out "  ${C_CYN}emeraldabyss${C_NC}  — Emerald Abyss: dark emerald theme"
-  _out ""
-  _out "Usage: --install-theme <nama>"
-  _brake 55
+  echo ""
+  _sep
+  echo -e "  ${C_BOLD}Available Themes & Extensions${C_NC}"
+  _sep
+  echo ""
+  echo -e "  ${C_MAGENTA}${C_BOLD}── THEMES ──────────────────────────────────────${C_NC}"
+  echo -e "  ${C_GRN}[01]${C_NC} Nebula              — Full theme editor, sidebar, animations"
+  echo -e "  ${C_GRN}[02]${C_NC} Darkenate           — Dark theme with purple accents"
+  echo -e "  ${C_GRN}[03]${C_NC} Euphoria            — Game server theme, console copy"
+  echo -e "  ${C_GRN}[04]${C_NC} Loader              — Client loading animation"
+  echo -e "  ${C_GRN}[05]${C_NC} NightAdmin          — Dark admin panel UI"
+  echo -e "  ${C_GRN}[06]${C_NC} Snowflakes          — Seasonal UI snowfall effect"
+  echo ""
+  echo -e "  ${C_MAGENTA}${C_BOLD}── ADMIN EXTENSIONS ──────────────────────────────${C_NC}"
+  echo -e "  ${C_GRN}[07]${C_NC} BetterAdmin         — Enhanced admin panel UI"
+  echo -e "  ${C_GRN}[08]${C_NC} BlueTables          — Styled data tables"
+  echo -e "  ${C_GRN}[09]${C_NC} ServerBackgrounds    — Custom server background images"
+  echo -e "  ${C_GRN}[10]${C_NC} SimpleFavicons      — Custom favicon uploader"
+  echo -e "  ${C_GRN}[11]${C_NC} ResourceManager     — Server resource management"
+  echo ""
+  echo -e "  ${C_MAGENTA}${C_BOLD}── ANNOUNCEMENTS ────────────────────────────────${C_NC}"
+  echo -e "  ${C_GRN}[12]${C_NC} BlueAnnouncements   — Custom announcement banners"
+  echo -e "  ${C_GRN}[13]${C_NC} LyrdyAnnouncements   — Advanced announcement system"
+  echo ""
+  echo -e "  ${C_MAGENTA}${C_BOLD}── MINECRAFT TOOLS ───────────────────────────────${C_NC}"
+  echo -e "  ${C_GRN}[14]${C_NC} MCLogs              — Upload logs to mclo.gs"
+  echo -e "  ${C_GRN}[15]${C_NC} MCMods              — Minecraft mods manager"
+  echo -e "  ${C_GRN}[16]${C_NC} MCPlugins           — Minecraft plugins manager"
+  echo -e "  ${C_GRN}[17]${C_NC} MCTools             — All-in-one MC toolbox"
+  echo -e "  ${C_GRN}[18]${C_NC} MCIconChanger       — Change server icon"
+  echo -e "  ${C_GRN}[19]${C_NC} MCPlayerManager     — Manage MC players"
+  echo -e "  ${C_GRN}[20]${C_NC} MCPluginManager     — Manage MC plugins"
+  echo -e "  ${C_GRN}[21]${C_NC} PlayerListing       — Online player display"
+  echo -e "  ${C_GRN}[22]${C_NC} VotifierTester      — Test Votifier plugin"
+  echo ""
+  echo -e "  ${C_MAGENTA}${C_BOLD}── SAGA EXTENSIONS ───────────────────────────────${C_NC}"
+  echo -e "  ${C_GRN}[23]${C_NC} SagaAutoSuspension  — Auto-suspend inactive servers"
+  echo -e "  ${C_GRN}[24]${C_NC} SagaMCModpack       — MC modpack installer"
+  echo -e "  ${C_GRN}[25]${C_NC} SagaMCPlayerManager — MC player management"
+  echo -e "  ${C_GRN}[26]${C_NC} SagaMCPluginInst    — MC plugin installer"
+  echo -e "  ${C_GRN}[27]${C_NC} SagaRustPlugin      — Rust plugin installer"
+  echo -e "  ${C_GRN}[28]${C_NC} SagaServerProps     — Server properties UI"
+  echo -e "  ${C_GRN}[29]${C_NC} SagaServerSorter    — Server sort and filter"
+  echo ""
+  echo -e "  ${C_MAGENTA}${C_BOLD}── SERVER MANAGEMENT ─────────────────────────────${C_NC}"
+  echo -e "  ${C_GRN}[30]${C_NC} DBEdit              — Database editor for panel"
+  echo -e "  ${C_GRN}[31]${C_NC} ConsoleLogs         — View PHP/Laravel logs"
+  echo -e "  ${C_GRN}[32]${C_NC} LaravelLogs         — Laravel log viewer"
+  echo -e "  ${C_GRN}[33]${C_NC} HuxRegister         — Custom registration page"
+  echo -e "  ${C_GRN}[34]${C_NC} ServerImporter      — Import server from JSON"
+  echo -e "  ${C_GRN}[35]${C_NC} ServerSplitter      — Split resources between nodes"
+  echo -e "  ${C_GRN}[36]${C_NC} StartupChanger      — Change server startup"
+  echo -e "  ${C_GRN}[37]${C_NC} SubdomainManager    — Manage subdomains"
+  echo -e "  ${C_GRN}[38]${C_NC} Subdomains          — Server subdomain linking"
+  echo -e "  ${C_GRN}[39]${C_NC} VersionChanger      — Change Pterodactyl version"
+  echo ""
+  echo -e "  ${C_DIM}Usage: install theme/blueprint via menu option 4 or 7${C_NC}"
+  _sep
 }
 
 _install_theme() {
@@ -1543,17 +1616,123 @@ _main_menu() {
 }
 
 _welcome() {
-  local panel_ver
-  panel_ver=$(curl -sL --max-time 5 "https://api.github.com/repos/pterodactyl/panel/releases/latest" 2>/dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/') || true
-  [[ -z "$panel_ver" ]] && panel_ver="(could not fetch)"
+  _print_banner
+  echo ""
+  _print_info_panel
+}
 
-  _brake 60
-  _out "ArkanProjects — Pterodactyl Installer v$ARKAN_VERSION"
-  _out ""
-  _out "https://arkanprojects.vercel.app"
-  _out "Latest panel release: $panel_ver"
-  _out "OS: $OS $OS_VER  |  Arch: $CPU_ARCH ($ARCH)"
-  _brake 60
+_available_addons() {
+  echo ""
+  _sep
+  echo -e "  ${C_BOLD}Available Addons${C_NC}"
+  _sep
+  echo ""
+  echo -e "  ${C_GRN}[01]${C_NC} phpmyadmin     — phpMyAdmin database manager"
+  echo -e "  ${C_GRN}[02]${C_NC} fail2ban       — Brute-force protection"
+  echo -e "  ${C_GRN}[03]${C_NC} backup         — Automated panel backups"
+  echo -e "  ${C_GRN}[04]${C_NC} swap           — Docker swap space (2GB)"
+  echo -e "  ${C_GRN}[05]${C_NC} nodejs         — Node.js 20.x LTS"
+  echo -e "  ${C_GRN}[06]${C_NC} yarn           — Yarn package manager"
+  echo ""
+  _sep
+}
+
+_status_check() {
+  echo ""
+  echo -e "  ${C_BOLD}System Status & Health Check${C_NC}"
+  _sep
+  for svc in nginx php8.3-fpm mariadb redis-server pteroq wings docker; do
+    if systemctl is-active --quiet "$svc" 2>/dev/null; then
+      echo -e "  ${C_GRN}[✔]${C_NC} $svc"
+    else
+      echo -e "  ${C_RED}[✘]${C_NC} $svc ${C_DIM}(inactive)${C_NC}"
+    fi
+  done
+  echo ""
+  _info "Disk: $(df -h / | awk 'NR==2{print $3 "/" $2 " used (" $5 ")"}')"
+  _info "RAM:  $(free -h | awk '/Mem:/{print $3 "/" $2 " used"}')"
+  _info "CPU:  $(nproc) core(s)"
+  if [[ -f /var/www/pterodactyl/config/app.php ]]; then
+    local pv
+    pv=$(grep -oP "'version'\s*=>\s*'\K[^']+" /var/www/pterodactyl/config/app.php 2>/dev/null || echo "?")
+    _info "Panel version: $pv"
+  fi
+  if command -v wings &>/dev/null; then
+    _info "Wings version: $(wings --version 2>/dev/null || echo '?')"
+  fi
+  if command -v docker &>/dev/null; then
+    _info "Docker: $(docker --version 2>/dev/null | awk '{print $3}')"
+  fi
+  _sep
+}
+
+_main_menu() {
+  _welcome
+
+  while true; do
+    echo ""
+    _sep
+    echo -e "  ${C_BOLD}SELECT AN OPTION:${C_NC}"
+    _sep
+    echo ""
+    echo -e "  ${C_GRN}${C_BOLD}── INSTALL ───────────────────────────────────────────${C_NC}"
+    echo -e "  ${C_GRN}${C_BOLD}[0]${C_NC}  🚀  Install Panel"
+    echo -e "  ${C_GRN}${C_BOLD}[1]${C_NC}  🔧  Install Wings"
+    echo -e "  ${C_GRN}${C_BOLD}[2]${C_NC}  💎  Install Panel + Wings (same server)"
+    echo ""
+    echo -e "  ${C_MAGENTA}${C_BOLD}── EXTENSIONS ──────────────────────────────────────${C_NC}"
+    echo -e "  ${C_MAGENTA}${C_BOLD}[3]${C_NC}  🧩  Install Blueprint / Extension (.blueprint)"
+    echo -e "  ${C_MAGENTA}${C_BOLD}[4]${C_NC}  🎨  Install Theme (39 available)"
+    echo -e "  ${C_MAGENTA}${C_BOLD}[5]${C_NC}  📦  Install Addons Panel (game server addons)"
+    echo -e "  ${C_MAGENTA}${C_BOLD}[6]${C_NC}  ⚡  Load Addon (phpmyadmin, fail2ban, etc.)"
+    echo ""
+    echo -e "  ${C_CYN}${C_BOLD}── LIST / TOOLS ─────────────────────────────────────${C_NC}"
+    echo -e "  ${C_CYN}${C_BOLD}[7]${C_NC}  📋  List All Themes & Blueprints (39)"
+    echo -e "  ${C_CYN}${C_BOLD}[8]${C_NC}  📋  List All Addons"
+    echo -e "  ${C_CYN}${C_BOLD}[9]${C_NC}  📊  Status & Health Check"
+    echo ""
+    echo -e "  ${C_RED}${C_BOLD}── UNINSTALL ─────────────────────────────────────────${C_NC}"
+    echo -e "  ${C_RED}${C_BOLD}[10]${C_NC}  🗑️   Uninstall Panel"
+    echo -e "  ${C_RED}${C_BOLD}[11]${C_NC}  🗑️   Uninstall Wings"
+    echo ""
+    echo -e "  ${C_DIM}[12]  Exit${C_NC}"
+    _sep
+    echo -n "  ${C_CYN}Input${C_NC} (0-12): "
+    read -r choice
+
+    case "$choice" in
+      0)  _ui_panel; _panel_install ;;
+      1)  _ui_wings; _wings_install ;;
+      2)  _ui_panel; _panel_install; _out ""; _ui_wings; _wings_install ;;
+      3)
+        local bp_url=""
+        _ask bp_url "Enter blueprint URL (.blueprint or .ainx): " "URL is required."
+        _install_blueprint "$bp_url"
+        ;;
+      4)
+        _list_themes
+        echo ""
+        local theme_input=""
+        _ask theme_input "Enter theme name or URL: " "Theme name or URL is required."
+        _install_theme "$theme_input"
+        ;;
+      5)  _install_addons_panel ;;
+      6)
+        _available_addons
+        echo ""
+        local addon_name=""
+        _ask addon_name "Enter addon name: " "Addon name is required."
+        _load_addon "$addon_name"
+        ;;
+      7)  _list_themes ;;
+      8)  _available_addons ;;
+      9)  _status_check ;;
+      10) _uninstall_panel ;;
+      11) _uninstall_wings ;;
+      12) _out "Goodbye."; exit 0 ;;
+      *)  _err "Invalid option. Enter 0-12." ;;
+    esac
+  done
 }
 
 
@@ -1756,7 +1935,15 @@ Environment variables (for non-interactive / CI):
   WINGS_FQDN, WINGS_EMAIL, WINGS_INSTALL_MARIADB
   WINGS_CFG_MYSQL, WINGS_DB_USER, WINGS_DB_PASS, WINGS_DB_HOST
 
-Theme names: nebula, euphoria, betteradmin, nightadmin, loader
+Theme names: nebula, darkenate, euphoria, loader, nightadmin, snowflakes,
+  betteradmin, bluetables, serverbackgrounds, simplefavicons, resourcemanager,
+  blueannouncements, lyrdyannounce, mclogs, mcmods, mcplugins, mctools,
+  minecrafticonchanger, minecraftplayermanager, minecraftpluginmanager,
+  playerlisting, votifiertester, sagaautosuspension, sagaminecraftmodpackinstaller,
+  sagaminecraftplayermanager, sagaminecraftplugininstaller, sagarustplugininstaller,
+  sagaserverpropertiesui, sagaserversorter, dbedit, consolelogs, laravellogs,
+  huxregister, serverimporter, serversplitter, startupchanger, subdomainmanager,
+  subdomains, versionchanger
 
 Examples:
   curl -sSL https://arkanprojects.vercel.app/installer/pterodactyl.sh | bash

@@ -623,40 +623,98 @@ type TLine =
   | { type: "ok"; text: string }
   | { type: "ask"; label: string; answer: string }
   | { type: "warn"; text: string }
+  | { type: "info"; text: string }
   | { type: "blank" }
   | { type: "cursor" };
 
 const DEMO_SCRIPT: TLine[] = [
   { type: "cmd", text: "bash <(curl -s https://arkanprojects.vercel.app/installer/pterodactyl.sh)" },
   { type: "blank" },
-  { type: "out", text: "ArkanProjects — Pterodactyl Installer v1.0.0" },
-  { type: "out", text: "OS: Ubuntu 24.04 | Arch: x86_64 (amd64)" },
+  { type: "out", text: "████████╗██╗  ██╗███████╗ ██████╗██╗  ██╗██╗███╗   ██╗███████╗" },
+  { type: "out", text: "╚══██╔══╝██║  ██║██╔════╝██╔════╝██║  ██║██║████╗  ██║██╔════╝" },
+  { type: "out", text: "████╗  ███████║█████╗  ██║     ███████║██║██╔██╗ ██║█████╗" },
+  { type: "out", text: "██╔══╝  ██╔══██║██╔══╝  ██║     ██╔══██║██║██║╚██╗██║██╔══╝" },
+  { type: "out", text: "██║     ██║  ██║██║     ╚██████╗██║  ██║██║██║ ╚████║███████╗" },
+  { type: "out", text: "╚═╝     ╚═╝  ╚═╝╚═╝      ╚═════╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝╚══════╝" },
   { type: "blank" },
-  { type: "ask", label: "Masukkan FQDN panel", answer: "panel.arkandev.id" },
-  { type: "ask", label: "Email admin", answer: "admin@arkandev.id" },
-  { type: "ask", label: "Database password", answer: "••••••••••" },
+  { type: "out", text: "╔═══════════════════════════════════════════════════════════╗" },
+  { type: "out", text: "║ ⚡ ARKANPROJECTS — PTERODACTYL MASTER COMMAND            ║" },
+  { type: "out", text: "║ ░▒▓█  Pterodactyl Server Management Tool  █▓▒░            ║" },
+  { type: "out", text: "╠═══════════════════════════════════════════════════════════╣" },
+  { type: "out", text: "║ Version    │  v4.1.0                                         ║" },
+  { type: "out", text: "║ Panel       │  v1.0.0                                         ║" },
+  { type: "out", text: "║ Wings       │  v1.0.0                                         ║" },
+  { type: "out", text: "║ OS          │  Ubuntu 24.04 (x86_64)                              ║" },
+  { type: "out", text: "╠═══════════════════════════════════════════════════════════╣" },
+  { type: "out", text: "║ https://arkanprojects.vercel.app                       ║" },
+  { type: "out", text: "╚═══════════════════════════════════════════════════════════╝" },
   { type: "blank" },
-  { type: "out", text: "Menginstal panel dependencies..." },
+  { type: "warn", text: "──────────────────────────────────────────────────────────" },
+  { type: "out", text: " SELECT AN OPTION:" },
+  { type: "warn", text: "──────────────────────────────────────────────────────────" },
+  { type: "blank" },
+  { type: "out", text: " ── INSTALL ───────────────────────────────────────────" },
+  { type: "out", text: " [0]  🚀  Install Panel" },
+  { type: "out", text: " [1]  🔧  Install Wings" },
+  { type: "out", text: " [2]  💎  Install Panel + Wings (same server)" },
+  { type: "blank" },
+  { type: "out", text: " ── EXTENSIONS ──────────────────────────────────────" },
+  { type: "out", text: " [3]  🧩  Install Blueprint / Extension (.blueprint)" },
+  { type: "out", text: " [4]  🎨  Install Theme (39 available)" },
+  { type: "out", text: " [5]  📦  Install Addons Panel (game server addons)" },
+  { type: "out", text: " [6]  ⚡  Load Addon (phpmyadmin, fail2ban, etc.)" },
+  { type: "blank" },
+  { type: "out", text: " ── LIST / TOOLS ───────────────────────────────────" },
+  { type: "out", text: " [7]  📋  List All Themes & Blueprints (39)" },
+  { type: "out", text: " [8]  📋  List All Addons" },
+  { type: "out", text: " [9]  📊  Status & Health Check" },
+  { type: "blank" },
+  { type: "out", text: " ── UNINSTALL ──────────────────────────────────────" },
+  { type: "out", text: " [10]  🗑️   Uninstall Panel" },
+  { type: "out", text: " [11]  🗑️   Uninstall Wings" },
+  { type: "blank" },
+  { type: "out", text: " [12]  Exit" },
+  { type: "warn", text: "──────────────────────────────────────────────────────────" },
+  { type: "blank" },
+  { type: "ask", label: "Input (0-12)", answer: "2" },
+  { type: "blank" },
+  { type: "ask", label: "Database name [panel]:", answer: "panel" },
+  { type: "ask", label: "Database username [pterodactyl]:", answer: "pterodactyl" },
+  { type: "ask", label: "Database password (Enter for random):", answer: "•••••••••••••" },
+  { type: "ask", label: "Timezone [UTC]:", answer: "Asia/Jakarta" },
+  { type: "ask", label: "Email for Let's Encrypt & panel:", answer: "admin@arkandev.id" },
+  { type: "ask", label: "Admin email:", answer: "admin@arkandev.id" },
+  { type: "ask", label: "Admin username:", answer: "pixz" },
+  { type: "ask", label: "Admin first name:", answer: "Rafif" },
+  { type: "ask", label: "Admin last name:", answer: "Developer" },
+  { type: "ask", label: "Admin password:", answer: "••••••••" },
+  { type: "ask", label: "Panel FQDN (panel.example.com):", answer: "panel.arkandev.id" },
+  { type: "ask", label: "Configure UFW firewall (y/N):", answer: "y" },
+  { type: "ask", label: "Configure HTTPS with Let's Encrypt (y/N):", answer: "y" },
+  { type: "blank" },
+  { type: "out", text: "Installing panel dependencies for Ubuntu 24.04..." },
   { type: "ok", text: "Panel dependencies installed" },
-  { type: "out", text: "Mengunduh Pterodactyl Panel v1.0.0..." },
-  { type: "ok", text: "Panel downloaded" },
-  { type: "out", text: "Menginstal Composer dependencies..." },
+  { type: "out", text: "Installing Composer..." },
   { type: "ok", text: "Composer dependencies installed" },
-  { type: "out", text: "Mengonfigurasi panel..." },
+  { type: "out", text: "Downloading Pterodactyl panel..." },
+  { type: "ok", text: "Panel files extracted" },
+  { type: "out", text: "Configuring panel environment..." },
   { type: "ok", text: "Panel configured" },
-  { type: "blank" },
-  { type: "out", text: "Menginstal Wings daemon..." },
-  { type: "ok", text: "Wings installation complete" },
-  { type: "out", text: "Konfigurasi SSL dengan Let's Encrypt..." },
-  { type: "ok", text: "SSL certificate issued for panel.arkandev.id" },
-  { type: "blank" },
-  { type: "out", text: "Konfigurasi firewall..." },
+  { type: "out", text: "Starting Wings installation..." },
+  { type: "ok", text: "Wings binary installed" },
+  { type: "ok", text: "Wings service installed" },
+  { type: "out", text: "Configuring Let's Encrypt SSL..." },
+  { type: "ok", text: "SSL certificate obtained" },
+  { type: "out", text: "Configuring firewall (UFW)..." },
+  { type: "ok", text: "UFW enabled" },
   { type: "ok", text: "Firewall rules applied (80, 443, 8080, 2022)" },
   { type: "blank" },
-  { type: "warn", text: "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" },
-  { type: "ok", text: "Pterodactyl Panel & Wings berhasil diinstal!" },
-  { type: "out", text: "Panel:  https://panel.arkandev.id" },
-  { type: "warn", text: "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" },
+  { type: "ok", text: "Panel installation complete" },
+  { type: "ok", text: "Wings installation complete" },
+  { type: "blank" },
+  { type: "warn", text: "──────────────────────────────────────────────────────────" },
+  { type: "ok", text: "All operations completed successfully" },
+  { type: "warn", text: "──────────────────────────────────────────────────────────" },
   { type: "cursor" },
 ];
 
@@ -691,18 +749,18 @@ function TerminalDemo() {
   useEffect(() => {
     if (!started) return;
 
-    let delayAcc = 400;
+    let delayAcc = 500;
     const built: { html: string; delay: number }[] = [];
 
     for (const line of DEMO_SCRIPT) {
       if (line.type === "blank") {
         built.push({ html: "", delay: delayAcc });
-        delayAcc += 80;
+        delayAcc += 60;
       } else if (line.type === "cmd") {
         const speed = typingSpeed(line.text);
         const total = speed * line.text.length;
         built.push({
-          html: `<span class="text-emerald-400 font-semibold select-none">$ </span><span class="cmd-text" data-text="${line.text.replace(/"/g, "&quot;")}"></span>`,
+          html: `<span class="text-emerald-400 font-bold select-none">$ </span><span class="cmd-text" data-text="${line.text.replace(/"/g, "&quot;")}"></span>`,
           delay: delayAcc,
         });
         delayAcc += total + 200;
@@ -710,28 +768,34 @@ function TerminalDemo() {
         const speed = typingSpeed(line.answer);
         const total = speed * line.answer.length;
         built.push({
-          html: `<span class="text-violet-400 select-none">[?] </span><span class="text-muted-foreground">${line.label}: </span><span class="ask-text" data-text="${line.answer.replace(/"/g, "&quot;")}"></span>`,
+          html: `<span class="text-violet-400 font-bold select-none">[?] </span><span class="text-slate-400">${line.label}</span><span class="ask-text" data-text="${line.answer.replace(/"/g, "&quot;")}"></span>`,
           delay: delayAcc,
         });
-        delayAcc += 600 + total + 150;
+        delayAcc += 500 + total + 100;
       } else if (line.type === "out") {
         built.push({
-          html: `<span class="text-primary/60 select-none">  ● </span><span class="text-slate-300">${line.text}</span>`,
+          html: `<span class="text-slate-300/90">${line.text}</span>`,
           delay: delayAcc,
         });
-        delayAcc += 250 + Math.random() * 200;
+        delayAcc += 40 + Math.random() * 30;
       } else if (line.type === "ok") {
         built.push({
-          html: `<span class="text-emerald-400 select-none">  ✔ </span><span class="text-emerald-300/90">${line.text}</span>`,
+          html: `<span class="text-emerald-400 font-semibold">  [✔] </span><span class="text-emerald-300/80">${line.text}</span>`,
           delay: delayAcc,
         });
-        delayAcc += 200 + Math.random() * 150;
+        delayAcc += 80 + Math.random() * 60;
+      } else if (line.type === "info") {
+        built.push({
+          html: `<span class="text-cyan-400">  [•] </span><span class="text-cyan-300/80">${line.text}</span>`,
+          delay: delayAcc,
+        });
+        delayAcc += 120;
       } else if (line.type === "warn") {
         built.push({
-          html: `<span class="text-violet-400/70">${line.text}</span>`,
+          html: `<span class="text-indigo-400/60">${line.text}</span>`,
           delay: delayAcc,
         });
-        delayAcc += 200;
+        delayAcc += 40;
       } else if (line.type === "cursor") {
         built.push({
           html: `<span class="demo-cursor"></span>`,
@@ -808,10 +872,17 @@ function TerminalDemo() {
         <div className="terminal-dot terminal-dot-red" />
         <div className="terminal-dot terminal-dot-yellow" />
         <div className="terminal-dot terminal-dot-green" />
-        <div className="terminal-title">root@server — bash</div>
+        <div className="terminal-title">root@server — bash — 80×24</div>
         <div className="w-[46px]" />
       </div>
       <div ref={bodyRef} className="terminal-body demo-terminal-body">
+        <div className="terminal-matrix-rain">
+          {Array.from({ length: 9 }).map((_, i) => (
+            <span key={i} className="rain-column" style={{ left: `${(i + 1) * 10}%`, animationDuration: `${14 + i * 2}s`, animationDelay: `${i * 1.5}s` }}>
+              01001101010110010110
+            </span>
+          ))}
+        </div>
         {lines.slice(0, visible).map((line, i) => (
           <div
             key={i}
@@ -820,6 +891,17 @@ function TerminalDemo() {
             dangerouslySetInnerHTML={{ __html: line.html }}
           />
         ))}
+      </div>
+      <div className="terminal-status-bar">
+        <div className="terminal-status-text">
+          <span className="status-version">ARKANPROJECTS v4.1.0</span>
+          <span className="status-separator">│</span>
+          <span className="status-shell">bash</span>
+        </div>
+        <div className="terminal-status-indicator">
+          <span className="status-label">active</span>
+          <span className="status-blink-dot"></span>
+        </div>
       </div>
     </div>
   );
