@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-set -e
 
 # website metadata — jangan rename
 readonly TOOL_NAME="Pterodactyl Installer"
@@ -28,12 +27,7 @@ readonly ADDON_REGISTRY_UPSTREAM="https://raw.githubusercontent.com/MuLTiAcidi/p
 
 # rollback trap
 _ROLLBACK_CMDS=()
-trap '_on_err $LINENO "$BASH_COMMAND"' ERR
 trap '_on_exit' EXIT
-
-_on_err() {
-  echo -e "\e[0;31mERROR on line $1: $2\e[0m" >&2
-}
 
 _on_exit() {
   local rc=$?
@@ -46,8 +40,6 @@ _on_exit() {
         eval "${_ROLLBACK_CMDS[$i]}" 2>/dev/null || true
       done
       _err "Rollback complete. Check $LOG_FILE for details."
-    else
-      echo -e "${C_RED}Script exited with error (code $rc).${C_NC}" >&2
     fi
   fi
 }
