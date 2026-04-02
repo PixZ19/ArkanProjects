@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eo pipefail
+set -e
 
 # website metadata — jangan rename
 readonly TOOL_NAME="Pterodactyl Installer"
@@ -28,7 +28,12 @@ readonly ADDON_REGISTRY_UPSTREAM="https://raw.githubusercontent.com/MuLTiAcidi/p
 
 # rollback trap
 _ROLLBACK_CMDS=()
+trap '_on_err $LINENO "$BASH_COMMAND"' ERR
 trap '_on_exit' EXIT
+
+_on_err() {
+  echo -e "\e[0;31mERROR on line $1: $2\e[0m" >&2
+}
 
 _on_exit() {
   local rc=$?
