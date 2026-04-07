@@ -257,15 +257,21 @@ const ConstellationCanvas = memo(function ConstellationCanvas() {
       r: number; g: number; b: number;
     }
 
-    // 80 nodes for rich constellation
-    const nodeCount = 80;
-    const connectionDist = 160;
+    // 100 nodes for rich constellation
+    const nodeCount = 100;
+    const connectionDist = 250;
     // Triangle distance — 25% more excessive mesh formation
-    const triangleDist = 150;
-    const mouseDist = 200;
+    const triangleDist = 200;
+    const mouseDist = 250;
 
     const w = () => window.innerWidth;
     const h = () => window.innerHeight;
+    // Extended bounds for wider spread (nodes go beyond viewport)
+    const spread = 150;
+    const wMin = () => -spread;
+    const wMax = () => w() + spread;
+    const hMin = () => -spread;
+    const hMax = () => h() + spread;
 
     const nodes: Node[] = [];
     for (let i = 0; i < nodeCount; i++) {
@@ -273,16 +279,22 @@ const ConstellationCanvas = memo(function ConstellationCanvas() {
       const r = parseInt(color.slice(1, 3), 16);
       const g = parseInt(color.slice(3, 5), 16);
       const b = parseInt(color.slice(5, 7), 16);
+      // Each node has its own phase for sinusoidal ease-in-out
+      const phase = Math.random() * Math.PI * 2;
+      const freq = 0.3 + Math.random() * 0.4; // oscillation frequency
       nodes.push({
-        x: Math.random() * w(),
-        y: Math.random() * h(),
-        vx: (Math.random() - 0.5) * 1.4,
-        vy: (Math.random() - 0.5) * 1.4,
+        x: wMin() + Math.random() * (wMax() - wMin()),
+        y: hMin() + Math.random() * (hMax() - hMin()),
+        vx: (Math.random() - 0.5) * 1.0,
+        vy: (Math.random() - 0.5) * 1.0,
         size: Math.random() * 2.0 + 1.0,
         color,
         baseAlpha: Math.random() * 0.3 + 0.18,
         r, g, b,
-      });
+        // Ease-in/out animation properties
+        phase,
+        freq,
+      } as Node & { phase: number; freq: number });
     }
 
     // Pre-compute color strings to avoid runtime hex parsing
@@ -299,38 +311,47 @@ const ConstellationCanvas = memo(function ConstellationCanvas() {
 
       ctx.clearRect(0, 0, w(), h());
 
-      // Move nodes
+      const time = now * 0.001; // seconds
+
+      // Move nodes with ease-in/out sinusoidal modulation
       for (const node of nodes) {
+        // Sinusoidal ease-in/out: modulate velocity smoothly
+        const nodeAny = node as Node & { phase: number; freq: number };
+        const easeFactor = Math.sin(time * nodeAny.freq + nodeAny.phase) * 0.5 + 0.5; // 0..1 smooth oscillation
+        const speedMult = 0.3 + easeFactor * 0.7; // range 0.3..1.0 for smooth ease
+
         // Mouse attraction (gentle)
         const mx = mouseRef.current.x - node.x;
         const my = mouseRef.current.y - node.y;
-        const md = mx * mx + my * my; // squared distance (avoid sqrt)
+        const md = mx * mx + my * my;
         if (md < mouseDist * mouseDist && md > 0) {
           const dist = Math.sqrt(md);
-          const force = (1 - dist / mouseDist) * 0.015;
+          const force = (1 - dist / mouseDist) * 0.02;
           node.vx += (mx / dist) * force * dt;
           node.vy += (my / dist) * force * dt;
         }
 
         // Gentle damping
-        node.vx *= 0.998;
-        node.vy *= 0.998;
+        node.vx *= 0.997;
+        node.vy *= 0.997;
 
         // Clamp max speed
         const speed = Math.sqrt(node.vx * node.vx + node.vy * node.vy);
-        if (speed > 2.5) {
-          node.vx = (node.vx / speed) * 2.5;
-          node.vy = (node.vy / speed) * 2.5;
+        const maxSpeed = 2.0 * speedMult;
+        if (speed > maxSpeed) {
+          node.vx = (node.vx / speed) * maxSpeed;
+          node.vy = (node.vy / speed) * maxSpeed;
         }
 
-        node.x += node.vx * dt;
-        node.y += node.vy * dt;
+        // Apply velocity with ease-in/out modulation
+        node.x += node.vx * dt * speedMult;
+        node.y += node.vy * dt * speedMult;
 
-        // Bounce
-        if (node.x < 0) { node.x = 0; node.vx = Math.abs(node.vx); }
-        if (node.x > w()) { node.x = w(); node.vx = -Math.abs(node.vx); }
-        if (node.y < 0) { node.y = 0; node.vy = Math.abs(node.vy); }
-        if (node.y > h()) { node.y = h(); node.vy = -Math.abs(node.vy); }
+        // Bounce with extended bounds
+        if (node.x < wMin()) { node.x = wMin(); node.vx = Math.abs(node.vx) * 0.5; }
+        if (node.x > wMax()) { node.x = wMax(); node.vx = -Math.abs(node.vx) * 0.5; }
+        if (node.y < hMin()) { node.y = hMin(); node.vy = Math.abs(node.vy) * 0.5; }
+        if (node.y > hMax()) { node.y = hMax(); node.vy = -Math.abs(node.vy) * 0.5; }
       }
 
       // Draw connections (simple lines, no gradients for performance)
@@ -359,7 +380,7 @@ const ConstellationCanvas = memo(function ConstellationCanvas() {
       // Draw triangles — evenly distributed using spatial grid
       const triDistSq = triangleDist * triangleDist;
       let triCount = 0;
-      const maxTriangles = 40;
+      const maxTriangles = 55;
 
       // Spatial grid to ensure even distribution
       const gridSize = 200;

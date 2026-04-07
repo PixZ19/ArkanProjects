@@ -35,9 +35,9 @@ const wizardScript: WizardStep[] = [
   { type: 'output', text: '  [i] Panel terbaru: v1.0.0 | Wings terbaru: v1.0.7', color: '#00ff88', typingDelay: 0, lineDelay: 100 },
   { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 100 },
   // Menu selection
-  { type: 'output', text: '  ┌──────────────────────────────────────────┐', color: '#00ffff', typingDelay: 0, lineDelay: 50 },
-  { type: 'output', text: '  │  PILIHAN INSTALASI                        │', color: '#00ffff', typingDelay: 0, lineDelay: 30 },
-  { type: 'output', text: '  └──────────────────────────────────────────┘', color: '#00ffff', typingDelay: 0, lineDelay: 30 },
+  { type: 'output', text: '  ┌───────────────────────────────┐', color: '#00ffff', typingDelay: 0, lineDelay: 50 },
+  { type: 'output', text: '  │  PILIHAN INSTALASI              │', color: '#00ffff', typingDelay: 0, lineDelay: 30 },
+  { type: 'output', text: '  └───────────────────────────────┘', color: '#00ffff', typingDelay: 0, lineDelay: 30 },
   { type: 'output', text: '', color: '', typingDelay: 0, lineDelay: 50 },
   { type: 'output', text: '  1  Instal Panel saja', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
   { type: 'output', text: '  2  Instal Wings saja', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
@@ -47,9 +47,9 @@ const wizardScript: WizardStep[] = [
   { type: 'input', text: '  > Pilih [1-3]: 3', color: '#8888aa', typingDelay: 8, lineDelay: 200 },
   { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 150 },
   // Wizard configuration
-  { type: 'output', text: '  ┌──────────────────────────────────────────┐', color: '#00ffff', typingDelay: 0, lineDelay: 50 },
-  { type: 'output', text: '  │  KONFIGURASI PANEL                      │', color: '#00ffff', typingDelay: 0, lineDelay: 30 },
-  { type: 'output', text: '  └──────────────────────────────────────────┘', color: '#00ffff', typingDelay: 0, lineDelay: 30 },
+  { type: 'output', text: '  ┌───────────────────────────────┐', color: '#00ffff', typingDelay: 0, lineDelay: 50 },
+  { type: 'output', text: '  │  KONFIGURASI PANEL              │', color: '#00ffff', typingDelay: 0, lineDelay: 30 },
+  { type: 'output', text: '  └───────────────────────────────┘', color: '#00ffff', typingDelay: 0, lineDelay: 30 },
   { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 80 },
   { type: 'output', text: '  [i] Konfigurasi database', color: '#00ffff', typingDelay: 0, lineDelay: 100 },
   { type: 'input', text: '  > Nama database (panel): panel', color: '#8888aa', typingDelay: 8, lineDelay: 200 },
@@ -73,9 +73,9 @@ const wizardScript: WizardStep[] = [
   { type: 'output', text: '  [i] Memverifikasi DNS untuk panel.contoh.com...', color: '#00ffff', typingDelay: 0, lineDelay: 200 },
   { type: 'output', text: '  [ok] DNS terverifikasi ✓', color: '#00ff88', typingDelay: 0, lineDelay: 300 },
   { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 80 },
-  { type: 'output', text: '  ┌──────────────────────────────────────────┐', color: '#00ff88', typingDelay: 0, lineDelay: 40 },
-  { type: 'output', text: '  │  INSTALASI PANEL                        │', color: '#00ff88', typingDelay: 0, lineDelay: 30 },
-  { type: 'output', text: '  └──────────────────────────────────────────┘', color: '#00ff88', typingDelay: 0, lineDelay: 60 },
+  { type: 'output', text: '  ┌───────────────────────────────┐', color: '#00ff88', typingDelay: 0, lineDelay: 40 },
+  { type: 'output', text: '  │  INSTALASI PANEL                │', color: '#00ff88', typingDelay: 0, lineDelay: 30 },
+  { type: 'output', text: '  └───────────────────────────────┘', color: '#00ff88', typingDelay: 0, lineDelay: 60 },
   { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 100 },
   { type: 'output', text: '  [1/8] Menginstal dependensi untuk Ubuntu 24.04...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
   { type: 'output', text: '  [ok] Dependensi terinstal ✓', color: '#00ff88', typingDelay: 0, lineDelay: 350 },
@@ -95,13 +95,48 @@ const wizardScript: WizardStep[] = [
   { type: 'output', text: '  [ok] Sertifikat SSL berhasil dikonfigurasi ✓', color: '#00ff88', typingDelay: 0, lineDelay: 400 },
   { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 150 },
   // Completion
-  { type: 'output', text: '  ┌──────────────────────────────────────────┐', color: '#00ff88', typingDelay: 0, lineDelay: 40 },
-  { type: 'output', text: '  │          INSTALASI SELESAI ✓             │', color: '#00ff88', typingDelay: 0, lineDelay: 30 },
-  { type: 'output', text: '  └──────────────────────────────────────────┘', color: '#00ff88', typingDelay: 0, lineDelay: 40 },
+  { type: 'output', text: '  ┌───────────────────────────────┐', color: '#00ff88', typingDelay: 0, lineDelay: 40 },
+  { type: 'output', text: '  │    INSTALASI SELESAI ✓          │', color: '#00ff88', typingDelay: 0, lineDelay: 30 },
+  { type: 'output', text: '  └───────────────────────────────┘', color: '#00ff88', typingDelay: 0, lineDelay: 40 },
   { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 80 },
   { type: 'output', text: '  Panel tersedia di: https://panel.contoh.com', color: '#00ffff', typingDelay: 0, lineDelay: 80 },
   { type: 'output', text: '  Admin: admin@contoh.com / arkan', color: '#cccccc', typingDelay: 0, lineDelay: 50 },
   { type: 'output', text: '  Waktu pemasangan: 2m 34s', color: '#8888aa', typingDelay: 0, lineDelay: 50 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 80 },
+  // Blueprint installation demo
+  { type: 'input', text: '  > Instal Blueprint, Theme, atau Addon? (y/N): y', color: '#8888aa', typingDelay: 8, lineDelay: 200 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 100 },
+  { type: 'output', text: '  ┌───────────────────────────────┐', color: '#8800ff', typingDelay: 0, lineDelay: 50 },
+  { type: 'output', text: '  │  BLUEPRINT, THEME & ADDON       │', color: '#8800ff', typingDelay: 0, lineDelay: 30 },
+  { type: 'output', text: '  └───────────────────────────────┘', color: '#8800ff', typingDelay: 0, lineDelay: 30 },
+  { type: 'output', text: '  1  Blueprint — konfigurasi egg/server', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
+  { type: 'output', text: '  2  Theme — tema panel kustom', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
+  { type: 'output', text: '  3  Addon — ekstensi untuk panel', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 60 },
+  { type: 'input', text: '  > Pilih [0-3]: 2', color: '#8888aa', typingDelay: 8, lineDelay: 200 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 100 },
+  { type: 'output', text: '  ┌───────────────────────────────┐', color: '#8800ff', typingDelay: 0, lineDelay: 50 },
+  { type: 'output', text: '  │  INSTALASI THEME                │', color: '#8800ff', typingDelay: 0, lineDelay: 30 },
+  { type: 'output', text: '  └───────────────────────────────┘', color: '#8800ff', typingDelay: 0, lineDelay: 30 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 80 },
+  { type: 'output', text: '  1  Pterodactyl Blue Admin Theme', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
+  { type: 'output', text: '  2  Pterodactyl Twilight Theme', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
+  { type: 'output', text: '  3  Pterodactyl Styx Theme', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 60 },
+  { type: 'input', text: '  > Pilih theme [0-3]: 1', color: '#8888aa', typingDelay: 8, lineDelay: 200 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 100 },
+  { type: 'output', text: '  [1/4] Mengunduh pterodactyl-blue-admin...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
+  { type: 'output', text: '  [ok] Theme terunduh ✓', color: '#00ff88', typingDelay: 0, lineDelay: 300 },
+  { type: 'output', text: '  [2/4] Memasang theme ke Panel...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
+  { type: 'output', text: '  [ok] File theme dipasang ✓', color: '#00ff88', typingDelay: 0, lineDelay: 250 },
+  { type: 'output', text: '  [3/4] Mengatur permission...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
+  { type: 'output', text: '  [ok] Permission diatur ✓', color: '#00ff88', typingDelay: 0, lineDelay: 200 },
+  { type: 'output', text: '  [4/4] Membersihkan cache...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
+  { type: 'output', text: '  [ok] Cache dibersihkan ✓', color: '#00ff88', typingDelay: 0, lineDelay: 250 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 80 },
+  { type: 'output', text: '  ┌───────────────────────────────┐', color: '#00ff88', typingDelay: 0, lineDelay: 40 },
+  { type: 'output', text: '  │  THEME BERHASIL DIINSTAL ✓     │', color: '#00ff88', typingDelay: 0, lineDelay: 30 },
+  { type: 'output', text: '  └───────────────────────────────┘', color: '#00ff88', typingDelay: 0, lineDelay: 40 },
   { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 80 },
   { type: 'output', text: '  ArkanProjects — https://github.com/PixZ19/ArkanProjects', color: '#666688', typingDelay: 0, lineDelay: 50 },
 ];
@@ -468,7 +503,7 @@ export default function Hero() {
               {/* Terminal body with scrollable content */}
               <div
                 ref={scrollRef}
-                className="p-3 sm:p-4 lg:p-5 font-mono text-[10px] sm:text-[11px] lg:text-xs min-h-[280px] sm:min-h-[360px] lg:min-h-[420px] max-h-[350px] sm:max-h-[420px] lg:max-h-[480px] overflow-y-auto relative"
+                className="p-3 sm:p-4 lg:p-5 font-mono text-[10px] sm:text-[11px] lg:text-xs min-h-[280px] sm:min-h-[360px] lg:min-h-[420px] max-h-[350px] sm:max-h-[420px] lg:max-h-[480px] overflow-auto relative"
                 style={{
                   scrollBehavior: 'smooth',
                   scrollbarWidth: 'thin',
@@ -495,14 +530,14 @@ export default function Hero() {
                       transition: 'opacity 0.2s ease-out, transform 0.2s ease-out',
                     }}
                   >
-                    <span className="whitespace-pre-wrap break-all">{line.text || '\u00A0'}</span>
+                    <span className="whitespace-pre">{line.text || '\u00A0'}</span>
                   </div>
                 ))}
 
                 {/* Currently typing line */}
                 {isTyping && (
                   <div className="leading-[1.6]" style={{ color: currentColor }}>
-                    <span className="whitespace-pre-wrap break-all">{currentLine}</span>
+                    <span className="whitespace-pre">{currentLine}</span>
                     <span className="typing-cursor" />
                   </div>
                 )}
