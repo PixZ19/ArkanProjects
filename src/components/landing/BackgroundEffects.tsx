@@ -46,7 +46,7 @@ function useHydrated() {
 
 // Floating particles
 const FloatingParticles = memo(function FloatingParticles() {
-  const [particles] = useState<Particle[]>(() => generateParticles(35));
+  const [particles] = useState<Particle[]>(() => generateParticles(20));
 
   return (
     <>
@@ -89,7 +89,6 @@ function ShapeMorphBlob({ size, color, opacity, top, left, duration, delay, blur
   delay: number;
   blur?: number;
 }) {
-  // Generate organic blob paths
   const path1 = generateBlobPath(6, 0.7);
   const path2 = generateBlobPath(8, 0.9);
   const path3 = generateBlobPath(5, 0.6);
@@ -150,7 +149,7 @@ function generateBlobPath(points: number, radiusFactor: number): string {
   return points_arr.join(' ');
 }
 
-// Triangle Morphing Shape — morphs between triangle, square, pentagon, hexagon
+// Polygon Morph
 function PolygonMorph({ size, color, opacity, top, left, duration, delay }: {
   size: number;
   color: string;
@@ -160,7 +159,7 @@ function PolygonMorph({ size, color, opacity, top, left, duration, delay }: {
   duration: number;
   delay: number;
 }) {
-  const sides = [3, 6, 4, 5, 3]; // triangle, hexagon, square, pentagon, back to triangle
+  const sides = [3, 6, 4, 5, 3];
   const paths = sides.map(n => regularPolygonPath(100, 100, 70, n));
 
   return (
@@ -169,12 +168,7 @@ function PolygonMorph({ size, color, opacity, top, left, duration, delay }: {
       style={{ width: size, height: size, top, left, opacity, zIndex: 1 }}
       viewBox="0 0 200 200"
     >
-      <path
-        fill="none"
-        stroke={color}
-        strokeWidth="1"
-        strokeOpacity="0.12"
-      >
+      <path fill="none" stroke={color} strokeWidth="1" strokeOpacity="0.12">
         <animate
           attributeName="d"
           dur={`${duration}s`}
@@ -183,11 +177,7 @@ function PolygonMorph({ size, color, opacity, top, left, duration, delay }: {
           values={paths.join(';')}
         />
       </path>
-      {/* Inner filled with low opacity */}
-      <path
-        fill={color}
-        fillOpacity="0.02"
-      >
+      <path fill={color} fillOpacity="0.02">
         <animate
           attributeName="d"
           dur={`${duration}s`}
@@ -212,22 +202,31 @@ function regularPolygonPath(cx: number, cy: number, r: number, sides: number): s
 }
 
 // ============================================================
-// Constellation Canvas — dots form lines AND triangles when close
+// Constellation Canvas — optimized: faster, fewer triangles,
+// handles tab visibility, reduced lag
 // ============================================================
 const ConstellationCanvas = memo(function ConstellationCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number>(0);
   const mouseRef = useRef({ x: -999, y: -999 });
+  const visibleRef = useRef(true);
+  const lastTimeRef = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
+    let dpr = typeof window !== 'undefined' ? Math.min(window.devicePixelRatio || 1, 2) : 1;
+
     const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      canvas.style.width = window.innerWidth + 'px';
+      canvas.style.height = window.innerHeight + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
     resize();
     window.addEventListener('resize', resize);
@@ -235,132 +234,167 @@ const ConstellationCanvas = memo(function ConstellationCanvas() {
     const handleMouse = (e: MouseEvent) => {
       mouseRef.current = { x: e.clientX, y: e.clientY };
     };
-    window.addEventListener('mousemove', handleMouse);
-    window.addEventListener('mouseleave', () => { mouseRef.current = { x: -999, y: -999 }; });
+    window.addEventListener('mousemove', handleMouse, { passive: true });
+    window.addEventListener('mouseleave', () => { mouseRef.current = { x: -999, y: -999 }; }, { passive: true });
 
+    // Handle tab visibility — pause when hidden, resume when visible
+    const handleVisibility = () => {
+      if (document.hidden) {
+        visibleRef.current = false;
+        cancelAnimationFrame(animRef.current);
+      } else {
+        visibleRef.current = true;
+        lastTimeRef.current = performance.now();
+        animRef.current = requestAnimationFrame(draw);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility, { passive: true });
+
+    // Node interface
     interface Node {
       x: number; y: number; vx: number; vy: number;
       size: number; color: string; baseAlpha: number;
+      r: number; g: number; b: number;
     }
 
-    const nodeCount = 80;
-    const connectionDist = 150;
-    const triangleDist = 120;
-    const mouseDist = 200;
+    // FEWER nodes for performance
+    const nodeCount = 50;
+    const connectionDist = 130;
+    // MUCH higher threshold = fewer triangles
+    const triangleDist = 70;
+    const mouseDist = 180;
+
+    const w = () => window.innerWidth;
+    const h = () => window.innerHeight;
 
     const nodes: Node[] = [];
     for (let i = 0; i < nodeCount; i++) {
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const r = parseInt(color.slice(1, 3), 16);
+      const g = parseInt(color.slice(3, 5), 16);
+      const b = parseInt(color.slice(5, 7), 16);
       nodes.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
-        size: Math.random() * 2 + 1,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        baseAlpha: Math.random() * 0.3 + 0.15,
+        x: Math.random() * w(),
+        y: Math.random() * h(),
+        // FASTER movement: 0.8 -> 1.6 base speed
+        vx: (Math.random() - 0.5) * 1.6,
+        vy: (Math.random() - 0.5) * 1.6,
+        size: Math.random() * 1.5 + 0.8,
+        color,
+        baseAlpha: Math.random() * 0.25 + 0.12,
+        r, g, b,
       });
     }
 
-    function drawTriangle(ax: number, ay: number, bx: number, by: number, cx: number, cy: number, color: string, alpha: number) {
-      ctx.beginPath();
-      ctx.moveTo(ax, ay);
-      ctx.lineTo(bx, by);
-      ctx.lineTo(cx, cy);
-      ctx.closePath();
-      ctx.fillStyle = color;
-      ctx.globalAlpha = alpha * 0.03;
-      ctx.fill();
-      ctx.strokeStyle = color;
-      ctx.globalAlpha = alpha * 0.08;
-      ctx.lineWidth = 0.5;
-      ctx.stroke();
+    // Pre-compute color strings to avoid runtime hex parsing
+    function nodeRgba(node: Node, a: number): string {
+      return `rgba(${node.r},${node.g},${node.b},${a})`;
     }
 
-    function hexToRgba(hex: string, a: number): string {
-      const r = parseInt(hex.slice(1, 3), 16);
-      const g = parseInt(hex.slice(3, 5), 16);
-      const b = parseInt(hex.slice(5, 7), 16);
-      return `rgba(${r},${g},${b},${a})`;
-    }
+    function draw(now: number) {
+      if (!visibleRef.current) return;
 
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Delta time for smooth animation regardless of frame rate
+      const dt = Math.min((now - lastTimeRef.current) / 16.67, 3); // cap at 3x speed
+      lastTimeRef.current = now;
+
+      ctx.clearRect(0, 0, w(), h());
 
       // Move nodes
       for (const node of nodes) {
         // Mouse attraction (gentle)
         const mx = mouseRef.current.x - node.x;
         const my = mouseRef.current.y - node.y;
-        const md = Math.sqrt(mx * mx + my * my);
-        if (md < mouseDist && md > 0) {
-          const force = (1 - md / mouseDist) * 0.008;
-          node.vx += (mx / md) * force;
-          node.vy += (my / md) * force;
+        const md = mx * mx + my * my; // squared distance (avoid sqrt)
+        if (md < mouseDist * mouseDist && md > 0) {
+          const dist = Math.sqrt(md);
+          const force = (1 - dist / mouseDist) * 0.015;
+          node.vx += (mx / dist) * force * dt;
+          node.vy += (my / dist) * force * dt;
         }
 
-        // Damping
-        node.vx *= 0.999;
-        node.vy *= 0.999;
+        // Gentle damping
+        node.vx *= 0.998;
+        node.vy *= 0.998;
 
-        node.x += node.vx;
-        node.y += node.vy;
+        // Clamp max speed
+        const speed = Math.sqrt(node.vx * node.vx + node.vy * node.vy);
+        if (speed > 2.5) {
+          node.vx = (node.vx / speed) * 2.5;
+          node.vy = (node.vy / speed) * 2.5;
+        }
+
+        node.x += node.vx * dt;
+        node.y += node.vy * dt;
 
         // Bounce
-        if (node.x < 0) { node.x = 0; node.vx *= -1; }
-        if (node.x > canvas.width) { node.x = canvas.width; node.vx *= -1; }
-        if (node.y < 0) { node.y = 0; node.vy *= -1; }
-        if (node.y > canvas.height) { node.y = canvas.height; node.vy *= -1; }
+        if (node.x < 0) { node.x = 0; node.vx = Math.abs(node.vx); }
+        if (node.x > w()) { node.x = w(); node.vx = -Math.abs(node.vx); }
+        if (node.y < 0) { node.y = 0; node.vy = Math.abs(node.vy); }
+        if (node.y > h()) { node.y = h(); node.vy = -Math.abs(node.vy); }
       }
 
-      // Draw connections
+      // Draw connections (simple lines, no gradients for performance)
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
           const dx = nodes[i].x - nodes[j].x;
           const dy = nodes[i].y - nodes[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
+          const distSq = dx * dx + dy * dy;
+          const maxDistSq = connectionDist * connectionDist;
 
-          if (dist < connectionDist) {
+          if (distSq < maxDistSq) {
+            const dist = Math.sqrt(distSq);
             const alpha = (1 - dist / connectionDist);
+            const avgAlpha = (nodes[i].baseAlpha + nodes[j].baseAlpha) * 0.5;
 
-            // Draw line
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
             ctx.lineTo(nodes[j].x, nodes[j].y);
-
-            // Gradient line
-            const gradient = ctx.createLinearGradient(nodes[i].x, nodes[i].y, nodes[j].x, nodes[j].y);
-            gradient.addColorStop(0, hexToRgba(nodes[i].color, alpha * 0.25));
-            gradient.addColorStop(1, hexToRgba(nodes[j].color, alpha * 0.25));
-            ctx.strokeStyle = gradient;
-            ctx.lineWidth = alpha * 0.8;
+            ctx.strokeStyle = nodeRgba(nodes[i], alpha * 0.2 * avgAlpha);
+            ctx.lineWidth = alpha * 0.6;
             ctx.stroke();
           }
         }
       }
 
-      // Draw triangles (when 3 nodes are close to each other)
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const dij = Math.sqrt((nodes[i].x - nodes[j].x) ** 2 + (nodes[i].y - nodes[j].y) ** 2);
-          if (dij > triangleDist) continue;
+      // Draw triangles (HIGH threshold = very few, only very close nodes)
+      const triDistSq = triangleDist * triangleDist;
+      let triCount = 0;
+      const maxTriangles = 8; // hard cap triangles per frame
 
-          for (let k = j + 1; k < nodes.length; k++) {
-            const dik = Math.sqrt((nodes[i].x - nodes[k].x) ** 2 + (nodes[i].y - nodes[k].y) ** 2);
-            const djk = Math.sqrt((nodes[j].x - nodes[k].x) ** 2 + (nodes[j].y - nodes[k].y) ** 2);
+      for (let i = 0; i < nodes.length && triCount < maxTriangles; i++) {
+        for (let j = i + 1; j < nodes.length && triCount < maxTriangles; j++) {
+          const dxij = nodes[i].x - nodes[j].x;
+          const dyij = nodes[i].y - nodes[j].y;
+          const dijSq = dxij * dxij + dyij * dyij;
+          if (dijSq > triDistSq) continue;
 
-            if (dik < triangleDist && djk < triangleDist) {
-              // All three close — draw filled triangle
-              const avgDist = (dij + dik + djk) / 3;
-              const closeness = 1 - (avgDist / triangleDist);
-              const mixColor = nodes[i].color; // Use first node color
-              drawTriangle(
-                nodes[i].x, nodes[i].y,
-                nodes[j].x, nodes[j].y,
-                nodes[k].x, nodes[k].y,
-                mixColor,
-                closeness
-              );
-            }
+          for (let k = j + 1; k < nodes.length && triCount < maxTriangles; k++) {
+            const dxik = nodes[i].x - nodes[k].x;
+            const dyik = nodes[i].y - nodes[k].y;
+            const dikSq = dxik * dxik + dyik * dyik;
+            if (dikSq > triDistSq) continue;
+
+            const dxjk = nodes[j].x - nodes[k].x;
+            const dyjk = nodes[j].y - nodes[k].y;
+            const djkSq = dxjk * dxjk + dyjk * dyjk;
+            if (djkSq > triDistSq) continue;
+
+            // All three very close — draw subtle filled triangle
+            const avgDist = (Math.sqrt(dijSq) + Math.sqrt(dikSq) + Math.sqrt(djkSq)) / 3;
+            const closeness = 1 - (avgDist / triangleDist);
+
+            ctx.beginPath();
+            ctx.moveTo(nodes[i].x, nodes[i].y);
+            ctx.lineTo(nodes[j].x, nodes[j].y);
+            ctx.lineTo(nodes[k].x, nodes[k].y);
+            ctx.closePath();
+            ctx.fillStyle = nodeRgba(nodes[i], closeness * 0.025);
+            ctx.fill();
+            ctx.strokeStyle = nodeRgba(nodes[i], closeness * 0.06);
+            ctx.lineWidth = 0.4;
+            ctx.stroke();
+            triCount++;
           }
         }
       }
@@ -377,44 +411,24 @@ const ConstellationCanvas = memo(function ConstellationCanvas() {
             ctx.beginPath();
             ctx.moveTo(node.x, node.y);
             ctx.lineTo(mouseRef.current.x, mouseRef.current.y);
-            ctx.strokeStyle = hexToRgba('#00ffff', alpha * 0.15);
-            ctx.lineWidth = alpha * 1;
+            ctx.strokeStyle = `rgba(0,255,255,${alpha * 0.12})`;
+            ctx.lineWidth = alpha * 0.8;
             ctx.stroke();
           }
         }
-
-        // Mouse glow
-        const mouseGrad = ctx.createRadialGradient(mouseRef.current.x, mouseRef.current.y, 0, mouseRef.current.x, mouseRef.current.y, 80);
-        mouseGrad.addColorStop(0, 'rgba(0,255,255,0.04)');
-        mouseGrad.addColorStop(1, 'transparent');
-        ctx.fillStyle = mouseGrad;
-        ctx.fillRect(mouseRef.current.x - 80, mouseRef.current.y - 80, 160, 160);
       }
 
-      // Draw nodes (on top of everything)
+      // Draw nodes (simple dots, no shadow for performance)
       for (const node of nodes) {
-        // Triangle-shaped dot
-        const s = node.size;
         ctx.beginPath();
-        ctx.moveTo(node.x, node.y - s * 1.2);
-        ctx.lineTo(node.x - s, node.y + s * 0.6);
-        ctx.lineTo(node.x + s, node.y + s * 0.6);
-        ctx.closePath();
-        ctx.fillStyle = node.color;
-        ctx.globalAlpha = node.baseAlpha;
+        ctx.arc(node.x, node.y, node.size, 0, Math.PI * 2);
+        ctx.fillStyle = nodeRgba(node, node.baseAlpha);
         ctx.fill();
 
-        // Glow
-        ctx.shadowColor = node.color;
-        ctx.shadowBlur = 6;
-        ctx.fill();
-        ctx.shadowBlur = 0;
-
-        // Tiny inner circle
+        // Tiny bright center
         ctx.beginPath();
-        ctx.arc(node.x, node.y, s * 0.4, 0, Math.PI * 2);
-        ctx.fillStyle = '#ffffff';
-        ctx.globalAlpha = node.baseAlpha * 0.5;
+        ctx.arc(node.x, node.y, node.size * 0.35, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${node.baseAlpha * 0.4})`;
         ctx.fill();
       }
 
@@ -422,12 +436,13 @@ const ConstellationCanvas = memo(function ConstellationCanvas() {
       animRef.current = requestAnimationFrame(draw);
     }
 
-    draw();
+    lastTimeRef.current = performance.now();
+    animRef.current = requestAnimationFrame(draw);
 
     return () => {
       window.removeEventListener('resize', resize);
       window.removeEventListener('mousemove', handleMouse);
-      window.removeEventListener('mouseleave', () => {});
+      document.removeEventListener('visibilitychange', handleVisibility);
       cancelAnimationFrame(animRef.current);
     };
   }, []);
@@ -449,140 +464,29 @@ export default function BackgroundEffects() {
 
   return (
     <>
-      {/* Constellation Canvas — triangle dots forming lines & triangles */}
+      {/* Constellation Canvas */}
       <ConstellationCanvas />
 
-      {/* CSS floating particles */}
+      {/* CSS floating particles — reduced count */}
       {mounted && <FloatingParticles />}
 
       {/* ========== SHAPE MORPH BLOBS ========== */}
       {mounted && (
         <>
-          {/* Large blob top-left */}
-          <ShapeMorphBlob
-            size={300}
-            color="#00ffff"
-            opacity={0.3}
-            top="5%"
-            left="-2%"
-            duration={25}
-            delay={0}
-            blur={2}
-          />
-          {/* Medium blob right */}
-          <ShapeMorphBlob
-            size={220}
-            color="#8800ff"
-            opacity={0.25}
-            top="30%"
-            left="75%"
-            duration={20}
-            delay={3}
-            blur={1}
-          />
-          {/* Small blob bottom-left */}
-          <ShapeMorphBlob
-            size={180}
-            color="#ff0088"
-            opacity={0.2}
-            top="65%"
-            left="10%"
-            duration={18}
-            delay={5}
-          />
-          {/* Tiny blob center-right */}
-          <ShapeMorphBlob
-            size={140}
-            color="#00ff88"
-            opacity={0.2}
-            top="50%"
-            left="50%"
-            duration={22}
-            delay={8}
-          />
-          {/* Extra blob bottom-right */}
-          <ShapeMorphBlob
-            size={250}
-            color="#8800ff"
-            opacity={0.15}
-            top="80%"
-            left="65%"
-            duration={28}
-            delay={2}
-            blur={3}
-          />
-          {/* Blob top-center */}
-          <ShapeMorphBlob
-            size={160}
-            color="#00ffff"
-            opacity={0.18}
-            top="15%"
-            left="40%"
-            duration={15}
-            delay={6}
-          />
+          <ShapeMorphBlob size={300} color="#00ffff" opacity={0.3} top="5%" left="-2%" duration={25} delay={0} blur={2} />
+          <ShapeMorphBlob size={220} color="#8800ff" opacity={0.25} top="30%" left="75%" duration={20} delay={3} blur={1} />
+          <ShapeMorphBlob size={180} color="#ff0088" opacity={0.2} top="65%" left="10%" duration={18} delay={5} />
+          <ShapeMorphBlob size={140} color="#00ff88" opacity={0.2} top="50%" left="50%" duration={22} delay={8} />
+          <ShapeMorphBlob size={250} color="#8800ff" opacity={0.15} top="80%" left="65%" duration={28} delay={2} blur={3} />
+          <ShapeMorphBlob size={160} color="#00ffff" opacity={0.18} top="15%" left="40%" duration={15} delay={6} />
 
           {/* ========== POLYGON MORPH SHAPES ========== */}
-          {/* Morphing triangle↔hexagon↔square — top area */}
-          <PolygonMorph
-            size={200}
-            color="#00ffff"
-            opacity={0.4}
-            top="8%"
-            left="60%"
-            duration={18}
-            delay={0}
-          />
-          {/* Morphing shape — middle left */}
-          <PolygonMorph
-            size={150}
-            color="#8800ff"
-            opacity={0.35}
-            top="40%"
-            left="2%"
-            duration={22}
-            delay={4}
-          />
-          {/* Morphing shape — bottom area */}
-          <PolygonMorph
-            size={180}
-            color="#ff0088"
-            opacity={0.3}
-            top="75%"
-            left="30%"
-            duration={20}
-            delay={2}
-          />
-          {/* Morphing shape — right side */}
-          <PolygonMorph
-            size={120}
-            color="#00ff88"
-            opacity={0.3}
-            top="55%"
-            left="85%"
-            duration={16}
-            delay={7}
-          />
-          {/* Morphing shape — small top-left */}
-          <PolygonMorph
-            size={100}
-            color="#00ffff"
-            opacity={0.25}
-            top="20%"
-            left="15%"
-            duration={24}
-            delay={10}
-          />
-          {/* Morphing shape — center */}
-          <PolygonMorph
-            size={160}
-            color="#8800ff"
-            opacity={0.2}
-            top="45%"
-            left="35%"
-            duration={19}
-            delay={5}
-          />
+          <PolygonMorph size={200} color="#00ffff" opacity={0.4} top="8%" left="60%" duration={18} delay={0} />
+          <PolygonMorph size={150} color="#8800ff" opacity={0.35} top="40%" left="2%" duration={22} delay={4} />
+          <PolygonMorph size={180} color="#ff0088" opacity={0.3} top="75%" left="30%" duration={20} delay={2} />
+          <PolygonMorph size={120} color="#00ff88" opacity={0.3} top="55%" left="85%" duration={16} delay={7} />
+          <PolygonMorph size={100} color="#00ffff" opacity={0.25} top="20%" left="15%" duration={24} delay={10} />
+          <PolygonMorph size={160} color="#8800ff" opacity={0.2} top="45%" left="35%" duration={19} delay={5} />
         </>
       )}
 

@@ -5,23 +5,201 @@ import {
   Terminal, Github, ChevronRight,
   Code2, Database, Cpu, Braces,
 } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
-const terminalLines = [
-  { text: '$ bash <(curl -s https://arkanprojects.vercel.app/installer/pterodactyl.sh)', color: '#00ffff', delay: 0 },
-  { text: '', color: '', delay: 0.3 },
-  { text: '  ArkanProjects — Pterodactyl All-in-One Installer', color: '#00ffff', delay: 0.6 },
-  { text: '  https://github.com/PixZ19/ArkanProjects', color: '#8888aa', delay: 0.8 },
-  { text: '', color: '', delay: 1.0 },
-  { text: '  [i] Sistem operasi terdeteksi: Ubuntu 24.04 (amd64)', color: '#00ff88', delay: 1.3 },
-  { text: '  [i] Panel terbaru: v1.0.0 | Wings terbaru: v1.0.7', color: '#00ff88', delay: 1.6 },
-  { text: '', color: '', delay: 1.8 },
-  { text: '  [?] Pilih [1-3]: 3', color: '#8888aa', delay: 2.1 },
-  { text: '  [i] Memverifikasi DNS...', color: '#00ffff', delay: 2.5 },
-  { text: '  [ok] DNS terverifikasi', color: '#00ff88', delay: 2.9 },
-  { text: '  [1/8] Menginstal dependensi...', color: '#00ffff', delay: 3.3 },
-  { text: '  [ok] Dependensi terinstal', color: '#00ff88', delay: 3.8 },
+// ============================================================
+// Interactive Wizard Terminal — bot types through install wizard
+// ============================================================
+
+interface WizardStep {
+  type: 'output' | 'input' | 'blank' | 'progress';
+  text: string;
+  color: string;
+  typingDelay: number; // ms per character for typing effect
+  charPause?: number;  // pause after each character
+  lineDelay?: number;  // delay before this line starts (ms)
+}
+
+const wizardScript: WizardStep[] = [
+  // Command to run installer
+  { type: 'input', text: '$ bash <(curl -s https://arkanprojects.vercel.app/installer/pterodactyl.sh)', color: '#00ffff', typingDelay: 18, lineDelay: 400 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 600 },
+  // Banner
+  { type: 'output', text: '  ArkanProjects', color: '#00ffff', typingDelay: 30, lineDelay: 200 },
+  { type: 'output', text: '  ──────────────────────────────────────────────', color: '#444466', typingDelay: 2, lineDelay: 100 },
+  { type: 'output', text: '  Pterodactyl All-in-One Installer  v1.0.0', color: '#cccccc', typingDelay: 15, lineDelay: 100 },
+  { type: 'output', text: '  https://github.com/PixZ19/ArkanProjects', color: '#8888aa', typingDelay: 10, lineDelay: 100 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 200 },
+  // OS detection
+  { type: 'output', text: '  [i] Sistem operasi terdeteksi: Ubuntu 24.04 (amd64)', color: '#00ff88', typingDelay: 12, lineDelay: 300 },
+  { type: 'output', text: '  [i] Panel terbaru: v1.0.0 | Wings terbaru: v1.0.7', color: '#00ff88', typingDelay: 12, lineDelay: 200 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 200 },
+  // Menu selection
+  { type: 'output', text: '  ┌──────────────────────────────────────────┐', color: '#00ffff', typingDelay: 1, lineDelay: 100 },
+  { type: 'output', text: '  │  PILIHAN INSTALASI                        │', color: '#00ffff', typingDelay: 8, lineDelay: 50 },
+  { type: 'output', text: '  └──────────────────────────────────────────┘', color: '#00ffff', typingDelay: 1, lineDelay: 50 },
+  { type: 'output', text: '', color: '', typingDelay: 0, lineDelay: 100 },
+  { type: 'output', text: '  1  Instal Panel saja', color: '#cccccc', typingDelay: 8, lineDelay: 50 },
+  { type: 'output', text: '  2  Instal Wings saja', color: '#cccccc', typingDelay: 8, lineDelay: 50 },
+  { type: 'output', text: '  3  Instal Panel + Wings (satu mesin)', color: '#00ff88', typingDelay: 8, lineDelay: 50 },
+  { type: 'output', text: '', color: '', typingDelay: 0, lineDelay: 100 },
+  // User picks option 3
+  { type: 'input', text: '  > Pilih [1-3]: 3', color: '#8888aa', typingDelay: 40, lineDelay: 300 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 300 },
+  // Wizard configuration
+  { type: 'output', text: '  ┌──────────────────────────────────────────┐', color: '#00ffff', typingDelay: 1, lineDelay: 100 },
+  { type: 'output', text: '  │  KONFIGURASI PANEL                      │', color: '#00ffff', typingDelay: 8, lineDelay: 50 },
+  { type: 'output', text: '  └──────────────────────────────────────────┘', color: '#00ffff', typingDelay: 1, lineDelay: 50 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 150 },
+  { type: 'output', text: '  [i] Konfigurasi database', color: '#00ffff', typingDelay: 10, lineDelay: 200 },
+  { type: 'input', text: '  > Nama database (panel): panel', color: '#8888aa', typingDelay: 25, lineDelay: 400 },
+  { type: 'input', text: '  > Username database (pterodactyl): pterodactyl', color: '#8888aa', typingDelay: 18, lineDelay: 300 },
+  { type: 'input', text: '  > Password database: •••••••••••••••••••••••••••••••', color: '#8888aa', typingDelay: 8, lineDelay: 300 },
+  { type: 'input', text: '  > Zona waktu (Asia/Jakarta): Asia/Jakarta', color: '#8888aa', typingDelay: 15, lineDelay: 250 },
+  { type: 'input', text: '  > Email untuk SSL: admin@contoh.com', color: '#8888aa', typingDelay: 20, lineDelay: 300 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 150 },
+  { type: 'output', text: '  [i] Akun admin awal', color: '#00ffff', typingDelay: 10, lineDelay: 200 },
+  { type: 'input', text: '  > Email admin: admin@contoh.com', color: '#8888aa', typingDelay: 20, lineDelay: 300 },
+  { type: 'input', text: '  > Username admin: arkan', color: '#8888aa', typingDelay: 25, lineDelay: 300 },
+  { type: 'input', text: '  > Nama depan: Arkan', color: '#8888aa', typingDelay: 30, lineDelay: 250 },
+  { type: 'input', text: '  > Nama belakang: Dev', color: '#8888aa', typingDelay: 30, lineDelay: 250 },
+  { type: 'input', text: '  > Password admin: •••••••••••••', color: '#8888aa', typingDelay: 10, lineDelay: 300 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 150 },
+  { type: 'input', text: '  > FQDN Panel: panel.contoh.com', color: '#8888aa', typingDelay: 18, lineDelay: 400 },
+  { type: 'input', text: '  > Konfigurasi UFW? (y/N): y', color: '#8888aa', typingDelay: 35, lineDelay: 300 },
+  { type: 'input', text: '  > Konfigurasi SSL Let\'s Encrypt? (y/N): y', color: '#8888aa', typingDelay: 22, lineDelay: 300 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 200 },
+  // Installation begins
+  { type: 'output', text: '  [i] Memverifikasi DNS untuk panel.contoh.com...', color: '#00ffff', typingDelay: 10, lineDelay: 400 },
+  { type: 'output', text: '  [ok] DNS terverifikasi ✓', color: '#00ff88', typingDelay: 15, lineDelay: 600 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 200 },
+  { type: 'output', text: '  ┌──────────────────────────────────────────┐', color: '#00ff88', typingDelay: 1, lineDelay: 100 },
+  { type: 'output', text: '  │  INSTALASI PANEL                        │', color: '#00ff88', typingDelay: 8, lineDelay: 50 },
+  { type: 'output', text: '  └──────────────────────────────────────────┘', color: '#00ff88', typingDelay: 1, lineDelay: 100 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 200 },
+  { type: 'output', text: '  [1/8] Menginstal dependensi untuk Ubuntu 24.04...', color: '#00ffff', typingDelay: 12, lineDelay: 300 },
+  { type: 'output', text: '  [ok] Dependensi terinstal ✓', color: '#00ff88', typingDelay: 15, lineDelay: 800 },
+  { type: 'output', text: '  [2/8] Menginstal Composer...', color: '#00ffff', typingDelay: 15, lineDelay: 300 },
+  { type: 'output', text: '  [ok] Composer terinstal ✓', color: '#00ff88', typingDelay: 12, lineDelay: 700 },
+  { type: 'output', text: '  [3/8] Mengunduh file Pterodactyl Panel v1.0.0...', color: '#00ffff', typingDelay: 10, lineDelay: 300 },
+  { type: 'output', text: '  [ok] File panel terunduh ✓', color: '#00ff88', typingDelay: 12, lineDelay: 900 },
+  { type: 'output', text: '  [4/8] Menginstal dependensi Composer...', color: '#00ffff', typingDelay: 12, lineDelay: 300 },
+  { type: 'output', text: '  [ok] Dependensi Composer terinstal ✓', color: '#00ff88', typingDelay: 12, lineDelay: 800 },
+  { type: 'output', text: '  [5/8] Mengkonfigurasi database...', color: '#00ffff', typingDelay: 15, lineDelay: 300 },
+  { type: 'output', text: '  [ok] Database dikonfigurasi ✓', color: '#00ff88', typingDelay: 12, lineDelay: 600 },
+  { type: 'output', text: '  [6/8] Mengkonfigurasi environment Panel...', color: '#00ffff', typingDelay: 10, lineDelay: 300 },
+  { type: 'output', text: '  [ok] Environment Panel dikonfigurasi ✓', color: '#00ff88', typingDelay: 10, lineDelay: 700 },
+  { type: 'output', text: '  [7/8] Mengkonfigurasi Nginx dan service...', color: '#00ffff', typingDelay: 12, lineDelay: 300 },
+  { type: 'output', text: '  [ok] Nginx dan service dikonfigurasi ✓', color: '#00ff88', typingDelay: 10, lineDelay: 600 },
+  { type: 'output', text: '  [8/8] Konfigurasi SSL...', color: '#00ffff', typingDelay: 15, lineDelay: 300 },
+  { type: 'output', text: '  [ok] Sertifikat SSL berhasil dikonfigurasi ✓', color: '#00ff88', typingDelay: 10, lineDelay: 1000 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 300 },
+  // Completion
+  { type: 'output', text: '  ┌──────────────────────────────────────────┐', color: '#00ff88', typingDelay: 1, lineDelay: 100 },
+  { type: 'output', text: '  │          INSTALASI SELESAI ✓             │', color: '#00ff88', typingDelay: 8, lineDelay: 50 },
+  { type: 'output', text: '  └──────────────────────────────────────────┘', color: '#00ff88', typingDelay: 1, lineDelay: 100 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 200 },
+  { type: 'output', text: '  Panel tersedia di: https://panel.contoh.com', color: '#00ffff', typingDelay: 12, lineDelay: 200 },
+  { type: 'output', text: '  Admin: admin@contoh.com / arkan', color: '#cccccc', typingDelay: 12, lineDelay: 100 },
+  { type: 'output', text: '  Waktu pemasangan: 2m 34s', color: '#8888aa', typingDelay: 12, lineDelay: 100 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 200 },
+  { type: 'output', text: '  ArkanProjects — https://github.com/PixZ19/ArkanProjects', color: '#666688', typingDelay: 8, lineDelay: 100 },
 ];
+
+function useTypingWizard(steps: WizardStep[]) {
+  const [completedLines, setCompletedLines] = useState<{ text: string; color: string; type: string; isTyping?: boolean }[]>([]);
+  const [currentLine, setCurrentLine] = useState('');
+  const [currentColor, setCurrentColor] = useState('');
+  const [currentType, setCurrentType] = useState('output');
+  const [isTyping, setIsTyping] = useState(false);
+  const [lineIndex, setLineIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pausedRef = useRef(false);
+  const lineIndexRef = useRef(0);
+  const charIndexRef = useRef(0);
+
+  // Auto-scroll to bottom
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [completedLines, currentLine]);
+
+  // Handle visibility — pause typing when tab hidden, resume when visible
+  useEffect(() => {
+    const handleVis = () => {
+      pausedRef.current = document.hidden;
+      setPaused(document.hidden);
+    };
+    document.addEventListener('visibilitychange', handleVis, { passive: true });
+    return () => document.removeEventListener('visibilitychange', handleVis);
+  }, []);
+
+  useEffect(() => {
+    if (lineIndex >= steps.length) return;
+    if (paused) return;
+
+    const step = steps[lineIndex];
+
+    // Wait lineDelay before starting this line
+    if (charIndex === 0 && lineIndex > 0 || (lineIndex === 0 && charIndex === 0 && step.lineDelay)) {
+      const delay = lineIndex === 0 && charIndex === 0 ? (step.lineDelay || 0) : (step.lineDelay || 0);
+      timeoutRef.current = setTimeout(() => {
+        if (pausedRef.current) return;
+        if (step.type === 'blank') {
+          setCompletedLines(prev => [...prev, { text: '', color: '', type: 'blank' }]);
+          lineIndexRef.current = lineIndex + 1;
+          setLineIndex(lineIndex + 1);
+        } else {
+          setCurrentColor(step.color);
+          setCurrentType(step.type);
+          setCurrentLine(step.text[0] || '');
+          setCharIndex(1);
+          charIndexRef.current = 1;
+          setIsTyping(true);
+        }
+      }, delay);
+      return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); };
+    }
+
+    if (step.type === 'blank') {
+      // Already handled above
+      return;
+    }
+
+    // Typing effect — type one character at a time
+    if (charIndex < step.text.length) {
+      const delay = step.typingDelay + (step.charPause || 0) * (Math.random() * 0.5);
+      timeoutRef.current = setTimeout(() => {
+        if (pausedRef.current) return;
+        const nextCharIndex = charIndexRef.current + 1;
+        charIndexRef.current = nextCharIndex;
+        setCharIndex(nextCharIndex);
+        setCurrentLine(step.text.slice(0, nextCharIndex));
+      }, delay);
+      return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); };
+    }
+
+    // Line complete — move to completed
+    timeoutRef.current = setTimeout(() => {
+      if (pausedRef.current) return;
+      setCompletedLines(prev => [...prev, { text: step.text, color: step.color, type: step.type }]);
+      setCurrentLine('');
+      setCharIndex(0);
+      setIsTyping(false);
+      charIndexRef.current = 0;
+      lineIndexRef.current = lineIndex + 1;
+      setLineIndex(lineIndex + 1);
+    }, step.type === 'input' ? 200 : 100);
+
+    return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); };
+  }, [lineIndex, charIndex, paused, steps]);
+
+  return { completedLines, currentLine, currentColor, currentType, isTyping, scrollRef, isDone: lineIndex >= steps.length };
+}
 
 const floatingSnippets = [
   { text: 'apt install -y php8.3', x: '5%', y: '12%', delay: 0 },
@@ -62,16 +240,9 @@ function StatCounter({ value, label, suffix = '' }: { value: number; label: stri
 }
 
 export default function Hero() {
-  const [visibleLines, setVisibleLines] = useState(0);
+  const { completedLines, currentLine, currentColor, currentType, isTyping, scrollRef, isDone } = useTypingWizard(wizardScript);
   const mouseRef = useRef({ x: 0, y: 0 });
   const glowRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const timers = terminalLines.map((line, i) =>
-      setTimeout(() => setVisibleLines(i + 1), line.delay * 1000)
-    );
-    return () => timers.forEach(clearTimeout);
-  }, []);
 
   useEffect(() => {
     const handleMouse = (e: MouseEvent) => {
@@ -81,18 +252,14 @@ export default function Hero() {
         glowRef.current.style.top = `${e.clientY}px`;
       }
     };
-    window.addEventListener('mousemove', handleMouse);
+    window.addEventListener('mousemove', handleMouse, { passive: true });
     return () => window.removeEventListener('mousemove', handleMouse);
   }, []);
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 sm:px-6 pt-24 pb-8">
       {/* Mouse following glow */}
-      <div
-        ref={glowRef}
-        className="mouse-glow"
-        style={{ opacity: 0.6 }}
-      />
+      <div ref={glowRef} className="mouse-glow" style={{ opacity: 0.6 }} />
 
       {/* Gradient mesh background */}
       <div className="absolute inset-0 gradient-mesh" />
@@ -113,8 +280,6 @@ export default function Hero() {
       {/* Grid pattern */}
       <div className="grid-bg" />
       <div className="grid-bg-fine" />
-
-      {/* Hex grid overlay */}
       <div className="hex-grid" />
 
       {/* Floating code snippets */}
@@ -145,45 +310,6 @@ export default function Hero() {
       <div className="absolute top-[30%] left-[5%] pointer-events-none">
         <div className="geo-ring opacity-50" />
       </div>
-      <div className="absolute bottom-[35%] right-[5%] pointer-events-none">
-        <div className="geo-diamond opacity-20" style={{ width: '25px', height: '25px', animationDuration: '20s' }} />
-      </div>
-      <div className="absolute top-[70%] left-[40%] pointer-events-none hidden lg:block">
-        <div className="geo-circle opacity-20" style={{ width: '40px', height: '40px', animationDuration: '35s' }} />
-      </div>
-      <div className="absolute top-[45%] left-[18%] pointer-events-none hidden xl:block">
-        <div className="geo-cross opacity-30" />
-      </div>
-      <div className="absolute top-[20%] right-[25%] pointer-events-none hidden xl:block">
-        <div className="geo-plus opacity-25" />
-      </div>
-
-      {/* Organic morphing blobs */}
-      <div className="absolute top-[5%] right-[5%] pointer-events-none hidden lg:block">
-        <div className="organic-blob-1 w-[120px] h-[120px] border border-[#00ffff]/[0.06]" />
-      </div>
-      <div className="absolute bottom-[10%] left-[3%] pointer-events-none hidden lg:block">
-        <div className="organic-blob-2 w-[100px] h-[100px] border border-[#8800ff]/[0.06]" />
-      </div>
-      <div className="absolute top-[35%] right-[3%] pointer-events-none hidden xl:block">
-        <div className="organic-blob-3 w-[80px] h-[80px] border border-[#ff0088]/[0.05]" />
-      </div>
-
-      {/* Spinning morph shapes */}
-      <div className="absolute bottom-[15%] right-[30%] pointer-events-none hidden lg:block">
-        <div className="spin-morph w-[60px] h-[60px] bg-[#00ffff]/[0.02] border border-[#00ffff]/[0.04]" />
-      </div>
-      <div className="absolute top-[60%] left-[12%] pointer-events-none hidden xl:block">
-        <div className="spin-morph-reverse w-[50px] h-[50px] bg-[#8800ff]/[0.02] border border-[#8800ff]/[0.04]" />
-      </div>
-
-      {/* Morph border shapes */}
-      <div className="absolute top-[80%] left-[45%] pointer-events-none hidden lg:block">
-        <div className="morph-border w-[40px] h-[40px] bg-[#00ff88]/[0.02] border border-[#00ff88]/[0.05]" />
-      </div>
-      <div className="absolute top-[10%] left-[45%] pointer-events-none hidden xl:block">
-        <div className="morph-border-slow w-[35px] h-[35px] bg-[#ff0088]/[0.02] border border-[#ff0088]/[0.04]" />
-      </div>
 
       {/* Glow dots */}
       <div className="absolute top-[22%] left-[30%] pointer-events-none">
@@ -205,38 +331,32 @@ export default function Hero() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
           >
-            {/* Logo with animated gradient ring */}
+            {/* Title with inline logo — NO effects on logo */}
             <motion.div
-              className="mb-8 flex justify-center lg:justify-start"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <div className="relative gradient-ring rounded-2xl">
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border border-white/10 shadow-lg shadow-cyan-500/10 bg-[#0a0a0f] relative z-10">
-                  <img src="/logo.png" alt="ArkanProjects Logo" className="w-full h-full object-cover" />
-                </div>
-                <div className="absolute -inset-1 rounded-2xl border border-cyan-500/10 pulse-ring" />
-              </div>
-            </motion.div>
-
-            {/* Title */}
-            <motion.h1
-              className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight mb-6 text-center lg:text-left"
-              initial={{ opacity: 0, y: 20 }}
+              className="mb-6"
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
             >
-              <span className="neon-gradient-text">Arkan</span>
-              <span className="text-white/90">Projects</span>
-            </motion.h1>
+              <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight mb-6 text-center lg:text-left flex items-center justify-center lg:justify-start gap-3 sm:gap-4">
+                <img
+                  src="/logo.png"
+                  alt="ArkanProjects"
+                  className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-xl flex-shrink-0"
+                />
+                <span className="inline-flex flex-col sm:flex-row sm:items-center sm:gap-0">
+                  <span className="neon-gradient-text">Arkan</span>
+                  <span className="text-white/90">Projects</span>
+                </span>
+              </h1>
+            </motion.div>
 
             {/* Subtitle */}
             <motion.p
               className="text-base sm:text-lg md:text-xl text-[#8888aa] max-w-xl mx-auto lg:mx-0 mb-10 leading-relaxed text-center lg:text-left"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
             >
               Pterodactyl All-in-One Installer — Solusi lengkap untuk instalasi{' '}
               <span className="text-[#00ffff]/80">Pterodactyl Panel</span> dan{' '}
@@ -248,7 +368,7 @@ export default function Hero() {
               className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.7 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
             >
               <a
                 href="https://arkanprojects.vercel.app/installer/pterodactyl.sh"
@@ -280,7 +400,7 @@ export default function Hero() {
               className="grid grid-cols-3 gap-3 mt-10 max-w-md mx-auto lg:mx-0"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.9 }}
+              transition={{ duration: 0.8, delay: 0.7 }}
             >
               <StatCounter value={10} label="OS Didukung" />
               <StatCounter value={9} label="Fitur Utama" />
@@ -288,12 +408,12 @@ export default function Hero() {
             </motion.div>
           </motion.div>
 
-          {/* Right: Terminal mockup */}
+          {/* Right: Interactive Wizard Terminal */}
           <motion.div
             className="hidden lg:block"
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
           >
             <div className="terminal-mockup relative">
               {/* Terminal header */}
@@ -312,32 +432,48 @@ export default function Hero() {
                 </div>
               </div>
 
-              {/* Terminal body */}
-              <div className="p-4 sm:p-5 font-mono text-xs sm:text-sm min-h-[320px] relative data-stream">
-                {terminalLines.slice(0, visibleLines).map((line, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: -5 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="leading-6"
-                    style={{ color: line.color || 'transparent' }}
-                  >
-                    {line.text || '\u00A0'}
-                  </motion.div>
-                ))}
-
-                {/* Blinking cursor */}
-                {visibleLines < terminalLines.length && (
-                  <span className="typing-cursor" />
-                )}
-
-                {/* Subtle scan line inside terminal */}
-                <div className="absolute inset-0 pointer-events-none opacity-[0.02]"
+              {/* Terminal body with scrollable content */}
+              <div
+                ref={scrollRef}
+                className="p-4 sm:p-5 font-mono text-[11px] sm:text-xs min-h-[420px] max-h-[480px] overflow-y-auto relative"
+                style={{
+                  scrollBehavior: 'smooth',
+                  scrollbarWidth: 'thin',
+                  scrollbarColor: 'rgba(0,255,255,0.15) transparent',
+                }}
+              >
+                {/* Scan line effect inside terminal */}
+                <div className="absolute inset-0 pointer-events-none opacity-[0.015]"
                   style={{
                     backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.05) 2px, rgba(255,255,255,0.05) 4px)',
                   }}
                 />
+
+                {/* Completed lines */}
+                {completedLines.map((line, i) => (
+                  <div
+                    key={i}
+                    className="leading-[1.6]"
+                    style={{ color: line.color || 'transparent', minHeight: '1.6em' }}
+                  >
+                    {line.text || '\u00A0'}
+                  </div>
+                ))}
+
+                {/* Currently typing line */}
+                {isTyping && (
+                  <div className="leading-[1.6]" style={{ color: currentColor }}>
+                    {currentLine}
+                    <span className="typing-cursor" />
+                  </div>
+                )}
+
+                {/* Show cursor after done */}
+                {isDone && (
+                  <div className="leading-[1.6] mt-1" style={{ color: '#8888aa' }}>
+                    <span className="typing-cursor" />
+                  </div>
+                )}
               </div>
 
               {/* Terminal glow effect */}
