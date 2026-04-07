@@ -266,8 +266,8 @@ const ConstellationCanvas = memo(function ConstellationCanvas() {
 
     const w = () => window.innerWidth;
     const h = () => window.innerHeight;
-    // Extended bounds for wider spread (nodes go beyond viewport)
-    const spread = 150;
+    // Extended bounds for wider spread (nodes go far beyond viewport)
+    const spread = 500;
     const wMin = () => -spread;
     const wMax = () => w() + spread;
     const hMin = () => -spread;
