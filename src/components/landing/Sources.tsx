@@ -1,13 +1,16 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ExternalLink, Star, GitFork, Box } from 'lucide-react';
+import { ExternalLink, Star, GitFork, Box, Code2, GitBranch } from 'lucide-react';
 
 interface Source {
   title: string;
   description: string;
   url: string;
   color: string;
+  language: string;
+  license: string;
+  detail: string;
 }
 
 const sources: Source[] = [
@@ -17,6 +20,9 @@ const sources: Source[] = [
       'Instalasi terstruktur dengan UI branding khusus',
     url: 'https://github.com/HemanRathore/pterodactyl-installer',
     color: '#00ffff',
+    language: 'Shell',
+    license: 'MIT',
+    detail: 'Bootstrap downloader + installer moduler dengan branding ZynrCloud',
   },
   {
     title: 'pterodactyl-installer/pterodactyl-installer',
@@ -24,6 +30,9 @@ const sources: Source[] = [
       'Installer resmi komunitas oleh Vilhelm Prytz',
     url: 'https://github.com/pterodactyl-installer/pterodactyl-installer',
     color: '#00ff88',
+    language: 'Shell',
+    license: 'MIT',
+    detail: 'Referensi utama — arsitektur modular dengan lib/, ui/, installers/, configs/',
   },
   {
     title: 'MuLTiAcidi/pterodactyl-addons',
@@ -31,6 +40,9 @@ const sources: Source[] = [
       'Panel dengan addon game dan tema premium',
     url: 'https://github.com/MuLTiAcidi/pterodactyl-addons',
     color: '#8800ff',
+    language: 'Shell',
+    license: 'MIT',
+    detail: 'Fitur tambahan: addon Minecraft/FiveM/Rust, tema kustom, dan BungeeCord',
   },
 ];
 
@@ -63,6 +75,9 @@ export default function Sources() {
       <div className="absolute top-16 left-[8%] pointer-events-none hidden xl:block">
         <div className="geo-circle opacity-20" style={{ width: '45px', height: '45px' }} />
       </div>
+      <div className="absolute bottom-16 right-[6%] pointer-events-none hidden xl:block">
+        <div className="geo-cross opacity-25" />
+      </div>
 
       <div className="max-w-4xl mx-auto relative">
         {/* Section title */}
@@ -73,14 +88,20 @@ export default function Sources() {
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.6 }}
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] mb-4"
+            data-aos="fade-down" data-aos-delay="100"
+          >
             <div className="glow-dot" style={{ color: '#ff0088', width: '4px', height: '4px' }} />
             <span className="text-xs text-[#8888aa]">REFERENSI</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
+            data-aos="fade-up" data-aos-delay="150"
+          >
             <span className="neon-gradient-text">Sumber & Referensi</span>
           </h2>
-          <p className="text-[#8888aa] text-lg max-w-xl mx-auto">
+          <p className="text-[#8888aa] text-lg max-w-xl mx-auto"
+            data-aos="fade-up" data-aos-delay="200"
+          >
             Proyek-proyek yang menjadi inspirasi dan referensi ArkanProjects
           </p>
         </motion.div>
@@ -93,16 +114,19 @@ export default function Sources() {
           whileInView="visible"
           viewport={{ once: true, margin: '-50px' }}
         >
-          {sources.map((source) => (
+          {sources.map((source, index) => (
             <motion.a
               key={source.url}
               variants={itemVariants}
               href={source.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="glass-card rotating-border p-6 group cursor-pointer block"
+              className="glass-card rotating-border p-6 group cursor-pointer block glow-line-top"
+              style={{ '--glow-color': source.color } as React.CSSProperties}
               whileHover={{ scale: 1.03, y: -4 }}
               transition={{ duration: 0.3 }}
+              data-aos="fade-up"
+              data-aos-delay={`${index * 100}`}
             >
               {/* Inner hover glow */}
               <div
@@ -130,10 +154,13 @@ export default function Sources() {
                 <h3 className="text-sm font-semibold text-white/90 mb-2 leading-tight font-mono">
                   {source.title}
                 </h3>
-                <p className="text-xs text-[#8888aa] leading-relaxed">
+                <p className="text-xs text-[#8888aa] leading-relaxed mb-3">
                   {source.description}
                 </p>
-                <div className="flex items-center gap-3 mt-4 pt-3 border-t border-white/5">
+                <p className="text-[10px] text-[#8888aa]/50 leading-relaxed">
+                  {source.detail}
+                </p>
+                <div className="flex items-center gap-3 mt-4 pt-3 border-t border-white/5 flex-wrap">
                   <div className="flex items-center gap-1 text-[#8888aa] group-hover:text-[#00ffff]/60 transition-colors">
                     <Star className="w-3 h-3" />
                     <span className="text-xs">GitHub</span>
@@ -141,6 +168,14 @@ export default function Sources() {
                   <div className="flex items-center gap-1 text-[#8888aa] group-hover:text-[#00ffff]/60 transition-colors">
                     <GitFork className="w-3 h-3" />
                     <span className="text-xs">Open Source</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-[#8888aa] group-hover:text-[#00ffff]/60 transition-colors">
+                    <Code2 className="w-3 h-3" />
+                    <span className="text-xs">{source.language}</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-[#8888aa] group-hover:text-[#00ffff]/60 transition-colors">
+                    <GitBranch className="w-3 h-3" />
+                    <span className="text-xs">{source.license}</span>
                   </div>
                 </div>
               </div>

@@ -111,7 +111,7 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.08 },
+    transition: { staggerChildren: 0.05 },
   },
 };
 
@@ -139,6 +139,9 @@ export default function Features() {
       <div className="absolute bottom-20 left-10 pointer-events-none hidden lg:block">
         <div className="geo-circle opacity-20" style={{ animationDuration: '30s' }} />
       </div>
+      <div className="absolute top-1/2 right-[3%] pointer-events-none hidden xl:block">
+        <div className="geo-cross opacity-20" />
+      </div>
 
       {/* Grid bg */}
       <div className="grid-bg-fine" />
@@ -152,16 +155,29 @@ export default function Features() {
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.6 }}
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] mb-4"
+            data-aos="fade-down" data-aos-delay="100"
+          >
             <div className="glow-dot" style={{ color: '#00ffff', width: '4px', height: '4px' }} />
             <span className="text-xs text-[#8888aa]">FITUR UNGGULAN</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
+            data-aos="fade-up" data-aos-delay="150"
+          >
             <span className="neon-gradient-text">Fitur Utama</span>
           </h2>
-          <p className="text-[#8888aa] text-lg max-w-xl mx-auto">
+          <p className="text-[#8888aa] text-lg max-w-xl mx-auto"
+            data-aos="fade-up" data-aos-delay="200"
+          >
             Semua yang Anda butuhkan untuk menjalankan Pterodactyl Panel dan Wings
           </p>
+          {/* Feature count */}
+          <div className="mt-4 inline-flex items-center gap-2 text-xs text-[#8888aa]/60"
+            data-aos="fade-up" data-aos-delay="250"
+          >
+            <span className="count-shimmer font-bold text-sm">{features.length}</span>
+            <span>fitur terintegrasi</span>
+          </div>
         </motion.div>
 
         {/* Features grid */}
@@ -176,9 +192,12 @@ export default function Features() {
             <motion.div
               key={feature.title}
               variants={itemVariants}
-              className="glass-card rotating-border p-6 group cursor-default"
+              className="glass-card rotating-border p-6 group cursor-default glow-line-top"
+              style={{ '--glow-color': feature.color } as React.CSSProperties}
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.3 }}
+              data-aos="fade-up"
+              data-aos-delay={`${index * 50}`}
             >
               {/* Inner glow on hover */}
               <div

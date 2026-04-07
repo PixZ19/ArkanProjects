@@ -1,22 +1,52 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Copy, Check, AlertCircle, Server, Globe, MemoryStick, Shield } from 'lucide-react';
+
+const commandText = 'bash <(curl -s https://arkanprojects.vercel.app/installer/pterodactyl.sh)';
+
+function TypingCommand() {
+  const [displayedText, setDisplayedText] = useState('');
+  const [showCursor, setShowCursor] = useState(true);
+  const hasTyped = useRef(false);
+
+  useEffect(() => {
+    if (hasTyped.current) return;
+    hasTyped.current = true;
+    let i = 0;
+    const timer = setInterval(() => {
+      if (i < commandText.length) {
+        setDisplayedText(commandText.slice(0, i + 1));
+        i++;
+      } else {
+        clearInterval(timer);
+        setTimeout(() => setShowCursor(false), 1500);
+      }
+    }, 25);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <span className="font-mono">
+      <span className="text-[#8888aa]">$</span>{' '}
+      <span className="text-white/80">{displayedText}</span>
+      {showCursor && <span className="typing-cursor" />}
+    </span>
+  );
+}
 
 export default function InstallGuide() {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(
-        'bash <(curl -s https://arkanprojects.vercel.app/installer/pterodactyl.sh)'
-      );
+      await navigator.clipboard.writeText(commandText);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
       const textArea = document.createElement('textarea');
-      textArea.value = 'bash <(curl -s https://arkanprojects.vercel.app/installer/pterodactyl.sh)';
+      textArea.value = commandText;
       document.body.appendChild(textArea);
       textArea.select();
       document.execCommand('copy');
@@ -34,6 +64,8 @@ export default function InstallGuide() {
     { icon: Globe, text: 'Domain/FQDN mengarah ke IP server (untuk SSL)' },
   ];
 
+  const supportedOS = ['Ubuntu', 'Debian', 'Rocky Linux', 'AlmaLinux'];
+
   return (
     <section id="install" className="relative py-24 sm:py-32 px-4 sm:px-6 overflow-hidden">
       {/* Background effects */}
@@ -48,6 +80,9 @@ export default function InstallGuide() {
       <div className="absolute bottom-10 right-[20%] pointer-events-none hidden xl:block">
         <div className="geo-triangle opacity-40" />
       </div>
+      <div className="absolute top-1/2 right-[5%] pointer-events-none hidden xl:block">
+        <div className="geo-plus opacity-20" />
+      </div>
 
       <div className="max-w-4xl mx-auto relative">
         {/* Section title */}
@@ -58,16 +93,40 @@ export default function InstallGuide() {
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.6 }}
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] mb-4"
+            data-aos="fade-down" data-aos-delay="100"
+          >
             <div className="glow-dot" style={{ color: '#8800ff', width: '4px', height: '4px' }} />
             <span className="text-xs text-[#8888aa]">QUICK START</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
+            data-aos="fade-up" data-aos-delay="150"
+          >
             <span className="neon-gradient-text">Cara Instalasi</span>
           </h2>
-          <p className="text-[#8888aa] text-lg">
+          <p className="text-[#8888aa] text-lg"
+            data-aos="fade-up" data-aos-delay="200"
+          >
             Jalankan satu perintah, sisanya dikerjakan script
           </p>
+        </motion.div>
+
+        {/* Supported OS badges */}
+        <motion.div
+          className="flex flex-wrap items-center justify-center gap-2 mb-8"
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          data-aos="fade-up" data-aos-delay="250"
+        >
+          <span className="text-xs text-[#8888aa]/60 mr-1">Didukung:</span>
+          {supportedOS.map((os) => (
+            <span key={os} className="os-badge text-[#8888aa]">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#00ff88] pulse-online" />
+              {os}
+            </span>
+          ))}
         </motion.div>
 
         {/* Code block with glow */}
@@ -77,12 +136,13 @@ export default function InstallGuide() {
           viewport={{ once: true, margin: '-50px' }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mb-12"
+          data-aos="zoom-in" data-aos-delay="300"
         >
           <div className="relative">
             {/* Glow behind code block */}
             <div className="absolute -inset-4 bg-gradient-to-r from-[#00ffff]/5 via-[#8800ff]/5 to-[#00ff88]/5 blur-2xl rounded-2xl" />
 
-            <div className="code-block p-1 relative">
+            <div className="code-block p-1 relative border-glow">
               {/* Code block header */}
               <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/5">
                 <div className="flex items-center gap-2">
@@ -110,16 +170,10 @@ export default function InstallGuide() {
                   )}
                 </button>
               </div>
-              {/* Code content */}
+              {/* Code content with typing effect */}
               <div className="p-4 sm:p-5 overflow-x-auto">
-                <code className="text-sm sm:text-base text-[#00ffff] font-mono whitespace-nowrap">
-                  <span className="text-[#8888aa]">$</span>{' '}
-                  <span className="text-white/80">bash</span>{' '}
-                  <span className="text-[#00ff88]">&lt;(</span>
-                  <span className="text-white/80">curl</span>{' '}
-                  <span className="text-[#8800ff]">-s</span>{' '}
-                  <span className="text-[#ff0088]">https://arkanprojects.vercel.app/installer/pterodactyl.sh</span>
-                  <span className="text-[#00ff88]">)</span>
+                <code className="text-sm sm:text-base font-mono whitespace-nowrap">
+                  <TypingCommand />
                 </code>
               </div>
             </div>
@@ -133,7 +187,9 @@ export default function InstallGuide() {
           viewport={{ once: true, margin: '-50px' }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <div className="flex items-center gap-2 mb-5">
+          <div className="flex items-center gap-2 mb-5"
+            data-aos="fade-right" data-aos-delay="350"
+          >
             <AlertCircle className="w-5 h-5 text-[#ff0088]" />
             <h3 className="text-lg font-semibold text-white/90">Persyaratan</h3>
           </div>
@@ -143,6 +199,8 @@ export default function InstallGuide() {
                 key={index}
                 className="flex items-center gap-3 text-sm text-[#8888aa] py-2.5 px-3.5 rounded-lg bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.04] hover:border-white/[0.08] transition-all duration-300 group"
                 whileHover={{ x: 4 }}
+                data-aos="fade-up"
+                data-aos-delay={`${400 + index * 50}`}
               >
                 <req.icon className="w-4 h-4 text-[#00ffff]/60 flex-shrink-0 group-hover:text-[#00ffff] transition-colors" />
                 <span>{req.text}</span>

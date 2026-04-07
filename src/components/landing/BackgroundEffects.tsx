@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore, memo } from 'react';
 
 interface Particle {
   id: number;
@@ -11,11 +11,14 @@ interface Particle {
   delay: number;
   color: string;
   opacity: number;
+  type: 'dot' | 'line' | 'cross';
+  rotation: number;
 }
 
 const colors = ['#00ffff', '#00ff88', '#8800ff', '#ff0088'];
 
 function generateParticles(count: number): Particle[] {
+  const types: Particle['type'][] = ['dot', 'dot', 'dot', 'line', 'cross'];
   return Array.from({ length: count }, (_, i) => ({
     id: i,
     x: Math.random() * 100,
@@ -25,12 +28,59 @@ function generateParticles(count: number): Particle[] {
     delay: Math.random() * 10,
     color: colors[Math.floor(Math.random() * colors.length)],
     opacity: Math.random() * 0.3 + 0.1,
+    type: types[Math.floor(Math.random() * types.length)],
+    rotation: Math.random() * 360,
   }));
 }
 
+// Hydration-safe client detection via useSyncExternalStore
+const emptySubscribe = () => () => {};
+
+function useHydrated() {
+  return useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
+}
+
+// Separate memoized component — only renders client-side
+const FloatingParticles = memo(function FloatingParticles() {
+  const [particles] = useState<Particle[]>(() => generateParticles(35));
+
+  return (
+    <>
+      {particles.map((p) => (
+        <div
+          key={p.id}
+          className="fixed pointer-events-none"
+          style={{
+            left: `${p.x}%`,
+            width: p.type === 'dot' ? p.size : p.type === 'line' ? p.size * 8 : p.size * 5,
+            height: p.type === 'dot' ? p.size : p.size,
+            backgroundColor: p.type === 'dot' ? p.color : 'transparent',
+            opacity: p.opacity,
+            animation: `particle-float ${p.duration}s linear ${p.delay}s infinite`,
+            zIndex: 1,
+            borderRadius: p.type === 'dot' ? '50%' : '0',
+            transform: `rotate(${p.rotation}deg)`,
+            ...(p.type === 'line' ? {
+              background: `linear-gradient(90deg, transparent, ${p.color}, transparent)`,
+            } : {}),
+            ...(p.type === 'cross' ? {
+              background: `linear-gradient(0deg, ${p.color}, ${p.color})`,
+              boxShadow: `0 0 0 ${p.size * 0.6}px ${p.color}`,
+            } : {}),
+          }}
+        />
+      ))}
+    </>
+  );
+});
+
 export default function BackgroundEffects() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [particles] = useState<Particle[]>(() => generateParticles(25));
+  const mounted = useHydrated();
   const mouseRef = useRef({ x: 0, y: 0 });
   const animFrameRef = useRef<number>(0);
 
@@ -135,22 +185,8 @@ export default function BackgroundEffects() {
         style={{ zIndex: 0 }}
       />
 
-      {/* CSS floating particles */}
-      {particles.map((p) => (
-        <div
-          key={p.id}
-          className="fixed rounded-full pointer-events-none"
-          style={{
-            left: `${p.x}%`,
-            width: p.size,
-            height: p.size,
-            backgroundColor: p.color,
-            opacity: p.opacity,
-            animation: `particle-float ${p.duration}s linear ${p.delay}s infinite`,
-            zIndex: 1,
-          }}
-        />
-      ))}
+      {/* CSS floating particles — client-only via separate component */}
+      {mounted && <FloatingParticles />}
 
       {/* Noise overlay */}
       <div className="noise-overlay" />

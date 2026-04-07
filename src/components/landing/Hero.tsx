@@ -1,8 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Terminal, Github, ChevronRight } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import {
+  Terminal, Github, ChevronRight,
+  Code2, Database, Cpu, Braces,
+} from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 
 const terminalLines = [
   { text: '$ bash <(curl -s https://arkanprojects.vercel.app/installer/pterodactyl.sh)', color: '#00ffff', delay: 0 },
@@ -18,6 +21,15 @@ const terminalLines = [
   { text: '  [ok] DNS terverifikasi', color: '#00ff88', delay: 2.9 },
   { text: '  [1/8] Menginstal dependensi...', color: '#00ffff', delay: 3.3 },
   { text: '  [ok] Dependensi terinstal', color: '#00ff88', delay: 3.8 },
+];
+
+const floatingSnippets = [
+  { text: 'apt install -y php8.3', x: '5%', y: '12%', delay: 0 },
+  { text: 'systemctl enable wings', x: '75%', y: '18%', delay: 1.5 },
+  { text: 'mariadb -u root', x: '10%', y: '70%', delay: 3 },
+  { text: 'docker ps', x: '80%', y: '65%', delay: 2 },
+  { text: 'nginx -t', x: '15%', y: '40%', delay: 4 },
+  { text: 'redis-cli ping', x: '70%', y: '42%', delay: 1 },
 ];
 
 function StatCounter({ value, label, suffix = '' }: { value: number; label: string; suffix?: string }) {
@@ -40,7 +52,7 @@ function StatCounter({ value, label, suffix = '' }: { value: number; label: stri
   }, [value]);
 
   return (
-    <div className="stat-card">
+    <div className="stat-card" data-aos="zoom-in" data-aos-delay="200">
       <div className="count-shimmer text-2xl sm:text-3xl font-bold mb-1">
         {count}{suffix}
       </div>
@@ -51,6 +63,8 @@ function StatCounter({ value, label, suffix = '' }: { value: number; label: stri
 
 export default function Hero() {
   const [visibleLines, setVisibleLines] = useState(0);
+  const mouseRef = useRef({ x: 0, y: 0 });
+  const glowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timers = terminalLines.map((line, i) =>
@@ -59,12 +73,31 @@ export default function Hero() {
     return () => timers.forEach(clearTimeout);
   }, []);
 
+  useEffect(() => {
+    const handleMouse = (e: MouseEvent) => {
+      mouseRef.current = { x: e.clientX, y: e.clientY };
+      if (glowRef.current) {
+        glowRef.current.style.left = `${e.clientX}px`;
+        glowRef.current.style.top = `${e.clientY}px`;
+      }
+    };
+    window.addEventListener('mousemove', handleMouse);
+    return () => window.removeEventListener('mousemove', handleMouse);
+  }, []);
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 sm:px-6">
+      {/* Mouse following glow */}
+      <div
+        ref={glowRef}
+        className="mouse-glow"
+        style={{ opacity: 0.6 }}
+      />
+
       {/* Gradient mesh background */}
       <div className="absolute inset-0 gradient-mesh" />
 
-      {/* Floating orbs - more of them, layered */}
+      {/* Floating orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="orb-1 absolute top-[10%] left-[15%] w-[500px] h-[500px] rounded-full bg-gradient-to-br from-cyan-500/8 to-transparent blur-[120px]" />
         <div className="orb-2 absolute top-[40%] right-[10%] w-[450px] h-[450px] rounded-full bg-gradient-to-br from-purple-600/8 to-transparent blur-[100px]" />
@@ -84,6 +117,21 @@ export default function Hero() {
       {/* Hex grid overlay */}
       <div className="hex-grid" />
 
+      {/* Floating code snippets */}
+      {floatingSnippets.map((snippet, i) => (
+        <div
+          key={i}
+          className="floating-code absolute hidden lg:block text-[10px] font-mono text-[#00ffff]/10 whitespace-nowrap"
+          style={{
+            left: snippet.x,
+            top: snippet.y,
+            animationDelay: `${snippet.delay}s`,
+          }}
+        >
+          {snippet.text}
+        </div>
+      ))}
+
       {/* Floating geometric shapes */}
       <div className="absolute top-[15%] right-[10%] pointer-events-none">
         <div className="geo-diamond opacity-40" />
@@ -102,6 +150,12 @@ export default function Hero() {
       </div>
       <div className="absolute top-[70%] left-[40%] pointer-events-none hidden lg:block">
         <div className="geo-circle opacity-20" style={{ width: '40px', height: '40px', animationDuration: '35s' }} />
+      </div>
+      <div className="absolute top-[45%] left-[18%] pointer-events-none hidden xl:block">
+        <div className="geo-cross opacity-30" />
+      </div>
+      <div className="absolute top-[20%] right-[25%] pointer-events-none hidden xl:block">
+        <div className="geo-plus opacity-25" />
       </div>
 
       {/* Glow dots */}
@@ -124,15 +178,15 @@ export default function Hero() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
           >
-            {/* Logo */}
+            {/* Logo with animated gradient ring */}
             <motion.div
               className="mb-8 flex justify-center lg:justify-start"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <div className="relative">
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border border-white/10 shadow-lg shadow-cyan-500/10">
+              <div className="relative gradient-ring rounded-2xl">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border border-white/10 shadow-lg shadow-cyan-500/10 bg-[#0a0a0f] relative z-10">
                   <img src="/logo.png" alt="ArkanProjects Logo" className="w-full h-full object-cover" />
                 </div>
                 <div className="absolute -inset-1 rounded-2xl border border-cyan-500/10 pulse-ring" />
@@ -201,8 +255,8 @@ export default function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.9 }}
             >
-              <StatCounter value={5} label="OS Didukung" />
-              <StatCounter value={8} label="Fitur Utama" />
+              <StatCounter value={10} label="OS Didukung" />
+              <StatCounter value={9} label="Fitur Utama" />
               <StatCounter value={1} label="Perintah" />
             </motion.div>
           </motion.div>
@@ -223,10 +277,16 @@ export default function Hero() {
                   <div className="w-3 h-3 rounded-full bg-[#28c840]/80" />
                 </div>
                 <span className="text-xs text-[#8888aa] ml-2 font-mono">arkanprojects — bash</span>
+                <div className="ml-auto flex items-center gap-1.5 opacity-40">
+                  <Code2 className="w-3 h-3" />
+                  <Database className="w-3 h-3" />
+                  <Cpu className="w-3 h-3" />
+                  <Braces className="w-3 h-3" />
+                </div>
               </div>
 
               {/* Terminal body */}
-              <div className="p-4 sm:p-5 font-mono text-xs sm:text-sm min-h-[320px] relative">
+              <div className="p-4 sm:p-5 font-mono text-xs sm:text-sm min-h-[320px] relative data-stream">
                 {terminalLines.slice(0, visibleLines).map((line, i) => (
                   <motion.div
                     key={i}

@@ -75,3 +75,89 @@ Stage Summary:
 - next.config.ts: headers middleware untuk installer files
 - vercel.json: konfigurasi static headers untuk Vercel deployment
 - Script bisa diakses via curl langsung
+
+---
+## Task ID: 6 - full-stack-developer
+### Work Task
+Fix hydration mismatch di BackgroundEffects, install AOS, dan massive visual/content overhaul pada landing page ArkanProjects.
+
+### Work Summary
+
+**Task 1 — Hydration Fix (BackgroundEffects.tsx):**
+- Root cause: `Math.random()` in `useState` initializer produces different values on server vs client
+- Solution: Used `useSyncExternalStore` for hydration-safe client detection + separated `FloatingParticles` as a memoized child component that only mounts client-side
+- Added new particle types: dots, lines (gradient), and crosses (with box-shadow)
+- Zero ESLint errors with strict React hooks rules
+
+**Task 2 — Install AOS:**
+- Installed `aos@2.3.4` and `@types/aos@3.0.7` via bun
+- Created `AOSProvider.tsx` component with AOS initialization (duration: 700ms, ease-out-cubic, once: true)
+- Added AOSProvider to `layout.tsx`
+
+**Task 3 — Massive Visual & Content Overhaul:**
+
+A) BackgroundEffects.tsx:
+- Fixed hydration via useSyncExternalStore + memoized FloatingParticles component
+- Added 3 particle types: dots, lines (gradient), crosses (with box-shadow)
+
+B) AOS on ALL existing components:
+- Added data-aos attributes to every section, card, title across all 10+ components
+- Used variety: fade-up, fade-down, zoom-in, fade-right with staggered delays
+
+C) 3 NEW sections:
+1. **TechStack.tsx** — 12 real technology cards (PHP 8.3, MariaDB 10.11, Nginx 1.24, Redis 7.x, Docker CE, Composer 2.x, Let's Encrypt, Certbot, Node.js, tar/zip/unzip, git, curl) with icons, versions, descriptions
+2. **Compatibility.tsx** — 10 OS cards (Ubuntu 22/24, Debian 10-13, Rocky 8/9, Alma 8/9) with codenames, archs, LTS/Stable status + minimum requirements grid
+3. **FAQ.tsx** — 8 FAQ items in Indonesian with accordion/collapsible animations and ChevronDown icons
+
+D) Enhanced existing components:
+- **Hero.tsx**: Animated gradient ring around logo, floating code snippets background, mouse-following glow effect, updated stats (10 OS, 9 features)
+- **Features.tsx**: Glow line top on hover, staggered AOS delays (50ms apart), feature count badge
+- **InstallGuide.tsx**: OS badges row, terminal typing effect, border-glow animation on code block
+- **HowItWorks.tsx**: Connecting lines between steps, duration estimates per step, hover-reveal details
+- **Sources.tsx**: Real repo details (language, license, descriptions), Code2/GitBranch icons
+- **About.tsx**: Developer roles (Lead Developer, Backend Developer, UI/UX Designer), vision section with icon grid, project timeline (v1.0.0, v1.1.0, v2.0.0)
+- **Footer.tsx**: More links (Dokumentasi, Discord, Script Installer), animated gradient border at top
+- **Navbar.tsx**: Added TechStack, Kompatibilitas, FAQ nav links
+
+E) New CSS effects in globals.css:
+- `@keyframes border-dance` — animated dashed border
+- `@keyframes text-glow` — pulsing text glow
+- `.border-glow` class — animated border glow
+- `.card-spotlight` — mouse-following spotlight (CSS variable driven)
+- `.geo-cross`, `.geo-plus` — new geometric shapes
+- `.cyber-line` — cyberpunk horizontal line with traveling glow
+- `.data-stream` — vertical data stream animation
+- `.glass-card-alt`, `.glass-card-colored` — glass card variants
+- `.glow-line-top` — card top glow line on hover
+- `.gradient-ring` — animated conic-gradient ring
+- `.footer-animated-border` — flowing gradient border
+- `.floating-code` — floating code snippet animation
+- `.mouse-glow` — mouse follow glow
+- `.faq-content`, `.faq-chevron` — FAQ accordion animations
+- `.os-badge`, `.arch-tag`, `.status-lts`, `.status-stable` — OS info styling
+- `.pulse-online` — green pulse dot animation
+- `.connecting-line-animated` — dashed line flow animation
+- `.typing-effect` — terminal typing animation
+- `.typing-effect-cursor` — blink cursor
+- AOS compatibility overrides
+
+**Files modified/created:**
+- `src/components/landing/BackgroundEffects.tsx` — Hydration fix + new particle types
+- `src/components/landing/AOSProvider.tsx` — NEW
+- `src/components/landing/TechStack.tsx` — NEW (12 tech cards)
+- `src/components/landing/Compatibility.tsx` — NEW (10 OS cards + requirements)
+- `src/components/landing/FAQ.tsx` — NEW (8 FAQ items with accordion)
+- `src/components/landing/Hero.tsx` — Enhanced with gradient ring, code snippets, mouse glow
+- `src/components/landing/Features.tsx` — Enhanced with glow lines, staggered delays, count
+- `src/components/landing/InstallGuide.tsx` — Enhanced with typing effect, OS badges
+- `src/components/landing/HowItWorks.tsx` — Enhanced with durations, connecting lines, details
+- `src/components/landing/Sources.tsx` — Enhanced with real details
+- `src/components/landing/About.tsx` — Enhanced with roles, vision, timeline
+- `src/components/landing/Footer.tsx` — Enhanced with links, animated border
+- `src/components/landing/Navbar.tsx` — Enhanced with new nav links
+- `src/app/page.tsx` — Added 3 new sections
+- `src/app/layout.tsx` — Added AOSProvider
+- `src/app/globals.css` — Added 20+ new CSS classes/animations
+
+- Zero ESLint errors
+- Dev server compiles successfully, all routes returning 200

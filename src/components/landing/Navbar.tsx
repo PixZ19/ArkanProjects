@@ -6,8 +6,11 @@ import { Menu, X } from 'lucide-react';
 
 const navLinks = [
   { label: 'Fitur', href: '#fitur' },
+  { label: 'Teknologi', href: '#teknologi' },
   { label: 'Instalasi', href: '#install' },
   { label: 'Cara Kerja', href: '#cara-kerja' },
+  { label: 'Kompatibilitas', href: '#kompatibilitas' },
+  { label: 'FAQ', href: '#faq' },
   { label: 'Sumber', href: '#sumber' },
   { label: 'Tentang', href: '#tentang' },
 ];
@@ -58,12 +61,14 @@ export default function Navbar() {
           </a>
 
           {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-1">
-            {navLinks.map((link) => (
+          <div className="hidden lg:flex items-center gap-0.5">
+            {navLinks.map((link, index) => (
               <button
                 key={link.href}
                 onClick={() => handleNavClick(link.href)}
-                className="px-3 py-1.5 text-sm text-[#8888aa] hover:text-[#00ffff] transition-colors rounded-lg hover:bg-white/[0.03] cursor-pointer"
+                className="px-2.5 py-1.5 text-[13px] text-[#8888aa] hover:text-[#00ffff] transition-colors rounded-lg hover:bg-white/[0.03] cursor-pointer"
+                data-aos="fade-down"
+                data-aos-delay={`${index * 40}`}
               >
                 {link.label}
               </button>
@@ -71,7 +76,7 @@ export default function Navbar() {
           </div>
 
           {/* Desktop CTA */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-3">
             <a
               href="https://arkanprojects.vercel.app/installer/pterodactyl.sh"
               target="_blank"
@@ -85,7 +90,7 @@ export default function Navbar() {
           {/* Mobile menu button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 text-[#8888aa] hover:text-white transition-colors cursor-pointer"
+            className="lg:hidden p-2 text-[#8888aa] hover:text-white transition-colors cursor-pointer"
           >
             {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -99,7 +104,7 @@ export default function Navbar() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
-              className="md:hidden mt-2 glass-card p-4"
+              className="lg:hidden mt-2 glass-card p-4 max-h-[70vh] overflow-y-auto"
               style={{
                 background: 'rgba(10, 10, 15, 0.95)',
                 backdropFilter: 'blur(20px)',

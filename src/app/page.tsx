@@ -1,8 +1,11 @@
 import Navbar from '@/components/landing/Navbar';
 import Hero from '@/components/landing/Hero';
 import Features from '@/components/landing/Features';
+import TechStack from '@/components/landing/TechStack';
 import InstallGuide from '@/components/landing/InstallGuide';
 import HowItWorks from '@/components/landing/HowItWorks';
+import Compatibility from '@/components/landing/Compatibility';
+import FAQ from '@/components/landing/FAQ';
 import Sources from '@/components/landing/Sources';
 import About from '@/components/landing/About';
 import Footer from '@/components/landing/Footer';
@@ -19,10 +22,19 @@ export default function Home() {
       <Features />
 
       <div className="section-divider max-w-6xl mx-auto" />
+      <TechStack />
+
+      <div className="section-divider max-w-6xl mx-auto" />
       <InstallGuide />
 
       <div className="section-divider max-w-6xl mx-auto" />
       <HowItWorks />
+
+      <div className="section-divider max-w-6xl mx-auto" />
+      <Compatibility />
+
+      <div className="section-divider max-w-6xl mx-auto" />
+      <FAQ />
 
       <div className="section-divider max-w-6xl mx-auto" />
       <Sources />
