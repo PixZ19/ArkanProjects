@@ -188,6 +188,7 @@
   mask-composite: exclude;
   opacity: 0;
   transition: opacity 0.4s ease;
+  pointer-events: none;
 }
 
 .glass-card:hover::before {
@@ -216,6 +217,10 @@
   overflow: hidden;
 }
 
+.glass-card-alt::before {
+  pointer-events: none;
+}
+
 .glass-card-alt:hover {
   background: rgba(255, 255, 255, 0.04);
   border-color: rgba(136, 0, 255, 0.12);
@@ -235,6 +240,10 @@
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   position: relative;
   overflow: hidden;
+}
+
+.glass-card-colored::before {
+  pointer-events: none;
 }
 
 .glass-card-colored:hover {
