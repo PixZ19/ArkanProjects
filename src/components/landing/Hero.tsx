@@ -107,7 +107,7 @@ const wizardScript: WizardStep[] = [
 ];
 
 function useTypingWizard(steps: WizardStep[]) {
-  const [completedLines, setCompletedLines] = useState<{ text: string; color: string; type: string; isFading?: boolean }[]>([]);
+  const [lines, setLines] = useState<{ text: string; color: string; type: string; visible: boolean; id: number }[]>([]);
   const [currentLine, setCurrentLine] = useState('');
   const [currentColor, setCurrentColor] = useState('');
   const [currentType, setCurrentType] = useState('output');
@@ -120,13 +120,14 @@ function useTypingWizard(steps: WizardStep[]) {
   const pausedRef = useRef(false);
   const lineIndexRef = useRef(0);
   const charIndexRef = useRef(0);
+  const idCounterRef = useRef(0);
 
   // Auto-scroll to bottom
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [completedLines, currentLine]);
+  }, [lines, currentLine]);
 
   // Handle visibility — pause typing when tab hidden, resume when visible
   useEffect(() => {
@@ -137,6 +138,18 @@ function useTypingWizard(steps: WizardStep[]) {
     document.addEventListener('visibilitychange', handleVis, { passive: true });
     return () => document.removeEventListener('visibilitychange', handleVis);
   }, []);
+
+  // Make lines visible with fade-in (triggered after mount)
+  useEffect(() => {
+    const hiddenLines = lines.filter(l => !l.visible);
+    if (hiddenLines.length === 0) return;
+    
+    // Use requestAnimationFrame to ensure the opacity:0 is painted first
+    const raf = requestAnimationFrame(() => {
+      setLines(prev => prev.map(l => l.visible ? l : { ...l, visible: true }));
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [lines.length]); // Only trigger when new lines are added
 
   // Advance to next line
   const advanceLine = useCallback((idx: number) => {
@@ -160,23 +173,22 @@ function useTypingWizard(steps: WizardStep[]) {
 
         // Blank lines — instant
         if (step.type === 'blank' || step.text === '') {
-          setCompletedLines(prev => [...prev, { text: '', color: '', type: 'blank' }]);
+          const id = idCounterRef.current++;
+          setLines(prev => [...prev, { text: '', color: '', type: 'blank', visible: true, id }]);
           advanceLine(lineIndex);
           return;
         }
 
         // OUTPUT lines — appear INSTANTLY with fade-in (no typing)
         if (step.type === 'output') {
-          setCompletedLines(prev => [...prev, { text: step.text, color: step.color, type: 'output', isFading: true }]);
-          // Remove fading flag after animation completes
-          setTimeout(() => {
-            setCompletedLines(prev => prev.map((l, i) => i === prev.length - 1 ? { ...l, isFading: false } : l));
-          }, 300);
+          const id = idCounterRef.current++;
+          // Add line as invisible first, then the useEffect above will make it visible
+          setLines(prev => [...prev, { text: step.text, color: step.color, type: 'output', visible: false, id }]);
           advanceLine(lineIndex);
           return;
         }
 
-        // INPUT lines — typing effect
+        // INPUT lines — typing effect (faster)
         setCurrentColor(step.color);
         setCurrentType(step.type);
         setCurrentLine(step.text[0] || '');
@@ -191,8 +203,8 @@ function useTypingWizard(steps: WizardStep[]) {
     if (step.type !== 'input') return;
 
     if (charIndex < step.text.length) {
-      // Fast typing — 8ms per char base
-      const typeDelay = 8 + Math.random() * 6;
+      // Faster typing — 5ms per char base
+      const typeDelay = 5 + Math.random() * 4;
       timeoutRef.current = setTimeout(() => {
         if (pausedRef.current) return;
         const next = charIndexRef.current + 1;
@@ -206,16 +218,17 @@ function useTypingWizard(steps: WizardStep[]) {
     // Input line complete
     timeoutRef.current = setTimeout(() => {
       if (pausedRef.current) return;
-      setCompletedLines(prev => [...prev, { text: step.text, color: step.color, type: 'input' }]);
+      const id = idCounterRef.current++;
+      setLines(prev => [...prev, { text: step.text, color: step.color, type: 'input', visible: true, id }]);
       setCurrentLine('');
       setIsTyping(false);
       advanceLine(lineIndex);
-    }, 150);
+    }, 100);
 
     return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); };
   }, [lineIndex, charIndex, paused, steps, advanceLine]);
 
-  return { completedLines, currentLine, currentColor, currentType, isTyping, scrollRef, isDone: lineIndex >= steps.length };
+  return { lines, currentLine, currentColor, currentType, isTyping, scrollRef, isDone: lineIndex >= steps.length };
 }
 
 const floatingSnippets = [
@@ -257,7 +270,7 @@ function StatCounter({ value, label, suffix = '' }: { value: number; label: stri
 }
 
 export default function Hero() {
-  const { completedLines, currentLine, currentColor, currentType, isTyping, scrollRef, isDone } = useTypingWizard(wizardScript);
+  const { lines, currentLine, currentColor, currentType, isTyping, scrollRef, isDone } = useTypingWizard(wizardScript);
   const mouseRef = useRef({ x: 0, y: 0 });
   const glowRef = useRef<HTMLDivElement>(null);
 
@@ -470,16 +483,16 @@ export default function Hero() {
                 />
 
                 {/* Completed lines */}
-                {completedLines.map((line, i) => (
+                {lines.map((line) => (
                   <div
-                    key={i}
+                    key={line.id}
                     className="leading-[1.6]"
                     style={{
                       color: line.color || 'transparent',
                       minHeight: '1.6em',
-                      opacity: line.isFading ? 0 : 1,
-                      transform: line.isFading ? 'translateY(4px)' : 'translateY(0)',
-                      transition: 'opacity 0.25s ease, transform 0.25s ease',
+                      opacity: line.visible ? 1 : 0,
+                      transform: line.visible ? 'translateY(0)' : 'translateY(4px)',
+                      transition: 'opacity 0.2s ease-out, transform 0.2s ease-out',
                     }}
                   >
                     {line.text || '\u00A0'}

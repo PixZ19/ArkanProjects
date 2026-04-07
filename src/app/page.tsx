@@ -14,7 +14,7 @@ import BackgroundEffects from '@/components/landing/BackgroundEffects';
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen overflow-hidden">
+    <main className="relative min-h-screen">
       <BackgroundEffects />
       <Navbar />
       <Hero />

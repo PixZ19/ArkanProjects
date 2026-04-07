@@ -161,3 +161,19 @@ E) New CSS effects in globals.css:
 
 - Zero ESLint errors
 - Dev server compiles successfully, all routes returning 200
+
+---
+Task ID: 7
+Agent: Main Agent
+Task: Fix navbar scroll, triangle distribution, and terminal demo
+
+Work Log:
+- Fixed navbar scroll: Added `scroll-behavior: smooth` to `html` in globals.css, removed `overflow-hidden` from `<main>` in page.tsx (this was the root cause preventing scroll), added setTimeout delay for mobile menu close before scroll
+- Fixed triangle distribution: Rewrote triangle algorithm to use spatial grid partitioning (200px grid cells). Triangles are now collected by centroid grid cell, sorted by closeness per cell, and limited per cell to ensure even screen coverage. Increased maxTriangles from 32 to 40.
+- Fixed terminal demo: Rewrote useTypingWizard hook with new state structure using unique IDs. Output lines are added with `visible: false`, then a requestAnimationFrame useEffect makes them `visible: true` on next frame, ensuring CSS transition fires properly. Typing speed increased (5-9ms per char vs previous 8-14ms). Input completion delay reduced to 100ms.
+
+Stage Summary:
+- Build successful, all 3 issues fixed
+- Navbar now scrolls smoothly to sections
+- Triangles distribute evenly across screen via spatial grid
+- Terminal output lines fade in correctly, all lines now visible

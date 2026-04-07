@@ -356,19 +356,28 @@ const ConstellationCanvas = memo(function ConstellationCanvas() {
         }
       }
 
-      // Draw triangles — visible mesh when nodes cluster
+      // Draw triangles — evenly distributed using spatial grid
       const triDistSq = triangleDist * triangleDist;
       let triCount = 0;
-      const maxTriangles = 32; // 25% more triangles for richer mesh
+      const maxTriangles = 40;
 
-      for (let i = 0; i < nodes.length && triCount < maxTriangles; i++) {
-        for (let j = i + 1; j < nodes.length && triCount < maxTriangles; j++) {
+      // Spatial grid to ensure even distribution
+      const gridSize = 200;
+      const gridCols = Math.ceil(w() / gridSize) || 1;
+      const gridRows = Math.ceil(h() / gridSize) || 1;
+      const gridCapacity = Math.ceil(maxTriangles / (gridCols * gridRows)) + 1;
+      const gridTriangles: { i: number; j: number; k: number; closeness: number }[][] = 
+        Array.from({ length: gridCols * gridRows }, () => []);
+
+      // Collect all possible triangles grouped by grid cell (centroid-based)
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
           const dxij = nodes[i].x - nodes[j].x;
           const dyij = nodes[i].y - nodes[j].y;
           const dijSq = dxij * dxij + dyij * dyij;
           if (dijSq > triDistSq) continue;
 
-          for (let k = j + 1; k < nodes.length && triCount < maxTriangles; k++) {
+          for (let k = j + 1; k < nodes.length; k++) {
             const dxik = nodes[i].x - nodes[k].x;
             const dyik = nodes[i].y - nodes[k].y;
             const dikSq = dxik * dxik + dyik * dyik;
@@ -379,22 +388,43 @@ const ConstellationCanvas = memo(function ConstellationCanvas() {
             const djkSq = dxjk * dxjk + dyjk * dyjk;
             if (djkSq > triDistSq) continue;
 
-            // Draw filled triangle with visible colors
             const avgDist = (Math.sqrt(dijSq) + Math.sqrt(dikSq) + Math.sqrt(djkSq)) / 3;
             const closeness = 1 - (avgDist / triangleDist);
 
-            ctx.beginPath();
-            ctx.moveTo(nodes[i].x, nodes[i].y);
-            ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.lineTo(nodes[k].x, nodes[k].y);
-            ctx.closePath();
-            ctx.fillStyle = nodeRgba(nodes[i], closeness * 0.08);
-            ctx.fill();
-            ctx.strokeStyle = nodeRgba(nodes[i], closeness * 0.2);
-            ctx.lineWidth = 0.6;
-            ctx.stroke();
-            triCount++;
+            // Place triangle in grid cell based on centroid
+            const cx = (nodes[i].x + nodes[j].x + nodes[k].x) / 3;
+            const cy = (nodes[i].y + nodes[j].y + nodes[k].y) / 3;
+            const gc = Math.min(Math.floor(cx / gridSize), gridCols - 1);
+            const gr = Math.min(Math.floor(cy / gridSize), gridRows - 1);
+            const gIdx = gr * gridCols + gc;
+            if (gridTriangles[gIdx] && gridTriangles[gIdx].length < gridCapacity * 2) {
+              gridTriangles[gIdx].push({ i, j, k, closeness });
+            }
           }
+        }
+      }
+
+      // Draw triangles from each grid cell (evenly spread)
+      for (const cell of gridTriangles) {
+        if (triCount >= maxTriangles) break;
+        // Sort by closeness (prefer tighter triangles) and take limited per cell
+        cell.sort((a, b) => b.closeness - a.closeness);
+        const limit = Math.min(gridCapacity, cell.length);
+        for (let t = 0; t < limit && triCount < maxTriangles; t++) {
+          const tri = cell[t];
+          const nI = nodes[tri.i], nJ = nodes[tri.j], nK = nodes[tri.k];
+
+          ctx.beginPath();
+          ctx.moveTo(nI.x, nI.y);
+          ctx.lineTo(nJ.x, nJ.y);
+          ctx.lineTo(nK.x, nK.y);
+          ctx.closePath();
+          ctx.fillStyle = nodeRgba(nI, tri.closeness * 0.08);
+          ctx.fill();
+          ctx.strokeStyle = nodeRgba(nI, tri.closeness * 0.2);
+          ctx.lineWidth = 0.6;
+          ctx.stroke();
+          triCount++;
         }
       }
 
