@@ -5,6 +5,7 @@ import TechStack from '@/components/landing/TechStack';
 import InstallGuide from '@/components/landing/InstallGuide';
 import HowItWorks from '@/components/landing/HowItWorks';
 import Compatibility from '@/components/landing/Compatibility';
+import BlueprintAddons from '@/components/landing/BlueprintAddons';
 import FAQ from '@/components/landing/FAQ';
 import Sources from '@/components/landing/Sources';
 import About from '@/components/landing/About';
@@ -32,6 +33,9 @@ export default function Home() {
 
       <div className="section-divider max-w-6xl mx-auto" />
       <Compatibility />
+
+      <div className="section-divider max-w-6xl mx-auto" />
+      <BlueprintAddons />
 
       <div className="section-divider max-w-6xl mx-auto" />
       <FAQ />

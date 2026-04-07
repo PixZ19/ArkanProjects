@@ -51,7 +51,7 @@ const itemVariants = {
 
 export default function Compatibility() {
   return (
-    <section className="relative py-24 sm:py-32 px-4 sm:px-6 overflow-hidden">
+    <section id="kompatibilitas" className="relative py-24 sm:py-32 px-4 sm:px-6 overflow-hidden">
       {/* Background */}
       <div className="section-glow-green top-0 left-1/2 -translate-x-1/2" />
       <div className="section-glow-cyan bottom-0 right-0" />

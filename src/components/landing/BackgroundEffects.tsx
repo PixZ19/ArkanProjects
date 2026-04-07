@@ -259,9 +259,9 @@ const ConstellationCanvas = memo(function ConstellationCanvas() {
 
     // 80 nodes for rich constellation
     const nodeCount = 80;
-    const connectionDist = 150;
-    // Triangle distance — close enough to form visible triangles
-    const triangleDist = 120;
+    const connectionDist = 160;
+    // Triangle distance — 25% more excessive mesh formation
+    const triangleDist = 150;
     const mouseDist = 200;
 
     const w = () => window.innerWidth;
@@ -359,7 +359,7 @@ const ConstellationCanvas = memo(function ConstellationCanvas() {
       // Draw triangles — visible mesh when nodes cluster
       const triDistSq = triangleDist * triangleDist;
       let triCount = 0;
-      const maxTriangles = 25; // allow more triangles for richer mesh
+      const maxTriangles = 32; // 25% more triangles for richer mesh
 
       for (let i = 0; i < nodes.length && triCount < maxTriangles; i++) {
         for (let j = i + 1; j < nodes.length && triCount < maxTriangles; j++) {
@@ -388,10 +388,10 @@ const ConstellationCanvas = memo(function ConstellationCanvas() {
             ctx.lineTo(nodes[j].x, nodes[j].y);
             ctx.lineTo(nodes[k].x, nodes[k].y);
             ctx.closePath();
-            ctx.fillStyle = nodeRgba(nodes[i], closeness * 0.06);
+            ctx.fillStyle = nodeRgba(nodes[i], closeness * 0.08);
             ctx.fill();
-            ctx.strokeStyle = nodeRgba(nodes[i], closeness * 0.15);
-            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = nodeRgba(nodes[i], closeness * 0.2);
+            ctx.lineWidth = 0.6;
             ctx.stroke();
             triCount++;
           }

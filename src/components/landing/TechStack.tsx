@@ -144,7 +144,7 @@ const itemVariants = {
 
 export default function TechStack() {
   return (
-    <section className="relative py-24 sm:py-32 px-4 sm:px-6 overflow-hidden">
+    <section id="teknologi" className="relative py-24 sm:py-32 px-4 sm:px-6 overflow-hidden">
       {/* Background */}
       <div className="section-glow-cyan top-10 right-0" />
       <div className="section-glow-purple bottom-10 left-0" />

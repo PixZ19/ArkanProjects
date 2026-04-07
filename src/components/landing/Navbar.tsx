@@ -10,6 +10,7 @@ const navLinks = [
   { label: 'Instalasi', href: '#install' },
   { label: 'Cara Kerja', href: '#cara-kerja' },
   { label: 'Kompatibilitas', href: '#kompatibilitas' },
+  { label: 'Blueprint', href: '#blueprint' },
   { label: 'FAQ', href: '#faq' },
   { label: 'Sumber', href: '#sumber' },
   { label: 'Tentang', href: '#tentang' },
@@ -55,7 +56,7 @@ export default function Navbar() {
               alt="ArkanProjects"
               className="w-7 h-7 rounded-md"
             />
-            <span className="font-bold text-base text-white/90 hidden sm:block">
+            <span className="font-bold text-base text-white/90">
               Arkan<span className="text-[#00ffff]">Projects</span>
             </span>
           </a>

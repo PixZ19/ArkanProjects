@@ -60,7 +60,7 @@ export default function FAQ() {
   };
 
   return (
-    <section className="relative py-24 sm:py-32 px-4 sm:px-6 overflow-hidden">
+    <section id="faq" className="relative py-24 sm:py-32 px-4 sm:px-6 overflow-hidden">
       {/* Background */}
       <div className="section-glow-purple top-10 left-1/4" />
       <div className="section-glow-cyan bottom-10 right-1/4" />
