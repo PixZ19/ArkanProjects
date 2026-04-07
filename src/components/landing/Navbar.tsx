@@ -21,9 +21,15 @@ export default function Navbar() {
 
   const handleNavClick = (href: string) => {
     setIsOpen(false);
+    if (href === '#') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
     const el = document.querySelector(href);
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+      const navHeight = 80;
+      const top = el.getBoundingClientRect().top + window.scrollY - navHeight;
+      window.scrollTo({ top, behavior: 'smooth' });
     }
   };
 

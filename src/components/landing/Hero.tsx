@@ -22,92 +22,92 @@ interface WizardStep {
 
 const wizardScript: WizardStep[] = [
   // Command to run installer
-  { type: 'input', text: '$ bash <(curl -s https://arkanprojects.vercel.app/installer/pterodactyl.sh)', color: '#00ffff', typingDelay: 18, lineDelay: 400 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 600 },
+  { type: 'input', text: '$ bash <(curl -s https://arkanprojects.vercel.app/installer/pterodactyl.sh)', color: '#00ffff', typingDelay: 8, lineDelay: 400 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 300 },
   // Banner
-  { type: 'output', text: '  ArkanProjects', color: '#00ffff', typingDelay: 30, lineDelay: 200 },
-  { type: 'output', text: '  ──────────────────────────────────────────────', color: '#444466', typingDelay: 2, lineDelay: 100 },
-  { type: 'output', text: '  Pterodactyl All-in-One Installer  v1.0.0', color: '#cccccc', typingDelay: 15, lineDelay: 100 },
-  { type: 'output', text: '  https://github.com/PixZ19/ArkanProjects', color: '#8888aa', typingDelay: 10, lineDelay: 100 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 200 },
+  { type: 'output', text: '  ArkanProjects', color: '#00ffff', typingDelay: 0, lineDelay: 80 },
+  { type: 'output', text: '  ──────────────────────────────────────────────', color: '#444466', typingDelay: 0, lineDelay: 40 },
+  { type: 'output', text: '  Pterodactyl All-in-One Installer  v1.0.0', color: '#cccccc', typingDelay: 0, lineDelay: 40 },
+  { type: 'output', text: '  https://github.com/PixZ19/ArkanProjects', color: '#8888aa', typingDelay: 0, lineDelay: 40 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 120 },
   // OS detection
-  { type: 'output', text: '  [i] Sistem operasi terdeteksi: Ubuntu 24.04 (amd64)', color: '#00ff88', typingDelay: 12, lineDelay: 300 },
-  { type: 'output', text: '  [i] Panel terbaru: v1.0.0 | Wings terbaru: v1.0.7', color: '#00ff88', typingDelay: 12, lineDelay: 200 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 200 },
+  { type: 'output', text: '  [i] Sistem operasi terdeteksi: Ubuntu 24.04 (amd64)', color: '#00ff88', typingDelay: 0, lineDelay: 150 },
+  { type: 'output', text: '  [i] Panel terbaru: v1.0.0 | Wings terbaru: v1.0.7', color: '#00ff88', typingDelay: 0, lineDelay: 100 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 100 },
   // Menu selection
-  { type: 'output', text: '  ┌──────────────────────────────────────────┐', color: '#00ffff', typingDelay: 1, lineDelay: 100 },
-  { type: 'output', text: '  │  PILIHAN INSTALASI                        │', color: '#00ffff', typingDelay: 8, lineDelay: 50 },
-  { type: 'output', text: '  └──────────────────────────────────────────┘', color: '#00ffff', typingDelay: 1, lineDelay: 50 },
-  { type: 'output', text: '', color: '', typingDelay: 0, lineDelay: 100 },
-  { type: 'output', text: '  1  Instal Panel saja', color: '#cccccc', typingDelay: 8, lineDelay: 50 },
-  { type: 'output', text: '  2  Instal Wings saja', color: '#cccccc', typingDelay: 8, lineDelay: 50 },
-  { type: 'output', text: '  3  Instal Panel + Wings (satu mesin)', color: '#00ff88', typingDelay: 8, lineDelay: 50 },
-  { type: 'output', text: '', color: '', typingDelay: 0, lineDelay: 100 },
+  { type: 'output', text: '  ┌──────────────────────────────────────────┐', color: '#00ffff', typingDelay: 0, lineDelay: 50 },
+  { type: 'output', text: '  │  PILIHAN INSTALASI                        │', color: '#00ffff', typingDelay: 0, lineDelay: 30 },
+  { type: 'output', text: '  └──────────────────────────────────────────┘', color: '#00ffff', typingDelay: 0, lineDelay: 30 },
+  { type: 'output', text: '', color: '', typingDelay: 0, lineDelay: 50 },
+  { type: 'output', text: '  1  Instal Panel saja', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
+  { type: 'output', text: '  2  Instal Wings saja', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
+  { type: 'output', text: '  3  Instal Panel + Wings (satu mesin)', color: '#00ff88', typingDelay: 0, lineDelay: 30 },
+  { type: 'output', text: '', color: '', typingDelay: 0, lineDelay: 60 },
   // User picks option 3
-  { type: 'input', text: '  > Pilih [1-3]: 3', color: '#8888aa', typingDelay: 40, lineDelay: 300 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 300 },
+  { type: 'input', text: '  > Pilih [1-3]: 3', color: '#8888aa', typingDelay: 8, lineDelay: 200 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 150 },
   // Wizard configuration
-  { type: 'output', text: '  ┌──────────────────────────────────────────┐', color: '#00ffff', typingDelay: 1, lineDelay: 100 },
-  { type: 'output', text: '  │  KONFIGURASI PANEL                      │', color: '#00ffff', typingDelay: 8, lineDelay: 50 },
-  { type: 'output', text: '  └──────────────────────────────────────────┘', color: '#00ffff', typingDelay: 1, lineDelay: 50 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 150 },
-  { type: 'output', text: '  [i] Konfigurasi database', color: '#00ffff', typingDelay: 10, lineDelay: 200 },
-  { type: 'input', text: '  > Nama database (panel): panel', color: '#8888aa', typingDelay: 25, lineDelay: 400 },
-  { type: 'input', text: '  > Username database (pterodactyl): pterodactyl', color: '#8888aa', typingDelay: 18, lineDelay: 300 },
-  { type: 'input', text: '  > Password database: •••••••••••••••••••••••••••••••', color: '#8888aa', typingDelay: 8, lineDelay: 300 },
-  { type: 'input', text: '  > Zona waktu (Asia/Jakarta): Asia/Jakarta', color: '#8888aa', typingDelay: 15, lineDelay: 250 },
-  { type: 'input', text: '  > Email untuk SSL: admin@contoh.com', color: '#8888aa', typingDelay: 20, lineDelay: 300 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 150 },
-  { type: 'output', text: '  [i] Akun admin awal', color: '#00ffff', typingDelay: 10, lineDelay: 200 },
-  { type: 'input', text: '  > Email admin: admin@contoh.com', color: '#8888aa', typingDelay: 20, lineDelay: 300 },
-  { type: 'input', text: '  > Username admin: arkan', color: '#8888aa', typingDelay: 25, lineDelay: 300 },
-  { type: 'input', text: '  > Nama depan: Arkan', color: '#8888aa', typingDelay: 30, lineDelay: 250 },
-  { type: 'input', text: '  > Nama belakang: Dev', color: '#8888aa', typingDelay: 30, lineDelay: 250 },
-  { type: 'input', text: '  > Password admin: •••••••••••••', color: '#8888aa', typingDelay: 10, lineDelay: 300 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 150 },
-  { type: 'input', text: '  > FQDN Panel: panel.contoh.com', color: '#8888aa', typingDelay: 18, lineDelay: 400 },
-  { type: 'input', text: '  > Konfigurasi UFW? (y/N): y', color: '#8888aa', typingDelay: 35, lineDelay: 300 },
-  { type: 'input', text: '  > Konfigurasi SSL Let\'s Encrypt? (y/N): y', color: '#8888aa', typingDelay: 22, lineDelay: 300 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 200 },
+  { type: 'output', text: '  ┌──────────────────────────────────────────┐', color: '#00ffff', typingDelay: 0, lineDelay: 50 },
+  { type: 'output', text: '  │  KONFIGURASI PANEL                      │', color: '#00ffff', typingDelay: 0, lineDelay: 30 },
+  { type: 'output', text: '  └──────────────────────────────────────────┘', color: '#00ffff', typingDelay: 0, lineDelay: 30 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 80 },
+  { type: 'output', text: '  [i] Konfigurasi database', color: '#00ffff', typingDelay: 0, lineDelay: 100 },
+  { type: 'input', text: '  > Nama database (panel): panel', color: '#8888aa', typingDelay: 8, lineDelay: 200 },
+  { type: 'input', text: '  > Username database (pterodactyl): pterodactyl', color: '#8888aa', typingDelay: 8, lineDelay: 150 },
+  { type: 'input', text: '  > Password database: •••••••••••••••••••••••••••••••', color: '#8888aa', typingDelay: 4, lineDelay: 120 },
+  { type: 'input', text: '  > Zona waktu (Asia/Jakarta): Asia/Jakarta', color: '#8888aa', typingDelay: 8, lineDelay: 100 },
+  { type: 'input', text: '  > Email untuk SSL: admin@contoh.com', color: '#8888aa', typingDelay: 8, lineDelay: 150 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 80 },
+  { type: 'output', text: '  [i] Akun admin awal', color: '#00ffff', typingDelay: 0, lineDelay: 100 },
+  { type: 'input', text: '  > Email admin: admin@contoh.com', color: '#8888aa', typingDelay: 8, lineDelay: 150 },
+  { type: 'input', text: '  > Username admin: arkan', color: '#8888aa', typingDelay: 8, lineDelay: 120 },
+  { type: 'input', text: '  > Nama depan: Arkan', color: '#8888aa', typingDelay: 8, lineDelay: 100 },
+  { type: 'input', text: '  > Nama belakang: Dev', color: '#8888aa', typingDelay: 8, lineDelay: 100 },
+  { type: 'input', text: '  > Password admin: •••••••••••••', color: '#8888aa', typingDelay: 4, lineDelay: 120 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 80 },
+  { type: 'input', text: '  > FQDN Panel: panel.contoh.com', color: '#8888aa', typingDelay: 8, lineDelay: 200 },
+  { type: 'input', text: '  > Konfigurasi UFW? (y/N): y', color: '#8888aa', typingDelay: 8, lineDelay: 120 },
+  { type: 'input', text: '  > Konfigurasi SSL Let\'s Encrypt? (y/N): y', color: '#8888aa', typingDelay: 8, lineDelay: 120 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 120 },
   // Installation begins
-  { type: 'output', text: '  [i] Memverifikasi DNS untuk panel.contoh.com...', color: '#00ffff', typingDelay: 10, lineDelay: 400 },
-  { type: 'output', text: '  [ok] DNS terverifikasi ✓', color: '#00ff88', typingDelay: 15, lineDelay: 600 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 200 },
-  { type: 'output', text: '  ┌──────────────────────────────────────────┐', color: '#00ff88', typingDelay: 1, lineDelay: 100 },
-  { type: 'output', text: '  │  INSTALASI PANEL                        │', color: '#00ff88', typingDelay: 8, lineDelay: 50 },
-  { type: 'output', text: '  └──────────────────────────────────────────┘', color: '#00ff88', typingDelay: 1, lineDelay: 100 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 200 },
-  { type: 'output', text: '  [1/8] Menginstal dependensi untuk Ubuntu 24.04...', color: '#00ffff', typingDelay: 12, lineDelay: 300 },
-  { type: 'output', text: '  [ok] Dependensi terinstal ✓', color: '#00ff88', typingDelay: 15, lineDelay: 800 },
-  { type: 'output', text: '  [2/8] Menginstal Composer...', color: '#00ffff', typingDelay: 15, lineDelay: 300 },
-  { type: 'output', text: '  [ok] Composer terinstal ✓', color: '#00ff88', typingDelay: 12, lineDelay: 700 },
-  { type: 'output', text: '  [3/8] Mengunduh file Pterodactyl Panel v1.0.0...', color: '#00ffff', typingDelay: 10, lineDelay: 300 },
-  { type: 'output', text: '  [ok] File panel terunduh ✓', color: '#00ff88', typingDelay: 12, lineDelay: 900 },
-  { type: 'output', text: '  [4/8] Menginstal dependensi Composer...', color: '#00ffff', typingDelay: 12, lineDelay: 300 },
-  { type: 'output', text: '  [ok] Dependensi Composer terinstal ✓', color: '#00ff88', typingDelay: 12, lineDelay: 800 },
-  { type: 'output', text: '  [5/8] Mengkonfigurasi database...', color: '#00ffff', typingDelay: 15, lineDelay: 300 },
-  { type: 'output', text: '  [ok] Database dikonfigurasi ✓', color: '#00ff88', typingDelay: 12, lineDelay: 600 },
-  { type: 'output', text: '  [6/8] Mengkonfigurasi environment Panel...', color: '#00ffff', typingDelay: 10, lineDelay: 300 },
-  { type: 'output', text: '  [ok] Environment Panel dikonfigurasi ✓', color: '#00ff88', typingDelay: 10, lineDelay: 700 },
-  { type: 'output', text: '  [7/8] Mengkonfigurasi Nginx dan service...', color: '#00ffff', typingDelay: 12, lineDelay: 300 },
-  { type: 'output', text: '  [ok] Nginx dan service dikonfigurasi ✓', color: '#00ff88', typingDelay: 10, lineDelay: 600 },
-  { type: 'output', text: '  [8/8] Konfigurasi SSL...', color: '#00ffff', typingDelay: 15, lineDelay: 300 },
-  { type: 'output', text: '  [ok] Sertifikat SSL berhasil dikonfigurasi ✓', color: '#00ff88', typingDelay: 10, lineDelay: 1000 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 300 },
+  { type: 'output', text: '  [i] Memverifikasi DNS untuk panel.contoh.com...', color: '#00ffff', typingDelay: 0, lineDelay: 200 },
+  { type: 'output', text: '  [ok] DNS terverifikasi ✓', color: '#00ff88', typingDelay: 0, lineDelay: 300 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 80 },
+  { type: 'output', text: '  ┌──────────────────────────────────────────┐', color: '#00ff88', typingDelay: 0, lineDelay: 40 },
+  { type: 'output', text: '  │  INSTALASI PANEL                        │', color: '#00ff88', typingDelay: 0, lineDelay: 30 },
+  { type: 'output', text: '  └──────────────────────────────────────────┘', color: '#00ff88', typingDelay: 0, lineDelay: 60 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 100 },
+  { type: 'output', text: '  [1/8] Menginstal dependensi untuk Ubuntu 24.04...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
+  { type: 'output', text: '  [ok] Dependensi terinstal ✓', color: '#00ff88', typingDelay: 0, lineDelay: 350 },
+  { type: 'output', text: '  [2/8] Menginstal Composer...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
+  { type: 'output', text: '  [ok] Composer terinstal ✓', color: '#00ff88', typingDelay: 0, lineDelay: 300 },
+  { type: 'output', text: '  [3/8] Mengunduh file Pterodactyl Panel v1.0.0...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
+  { type: 'output', text: '  [ok] File panel terunduh ✓', color: '#00ff88', typingDelay: 0, lineDelay: 400 },
+  { type: 'output', text: '  [4/8] Menginstal dependensi Composer...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
+  { type: 'output', text: '  [ok] Dependensi Composer terinstal ✓', color: '#00ff88', typingDelay: 0, lineDelay: 350 },
+  { type: 'output', text: '  [5/8] Mengkonfigurasi database...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
+  { type: 'output', text: '  [ok] Database dikonfigurasi ✓', color: '#00ff88', typingDelay: 0, lineDelay: 250 },
+  { type: 'output', text: '  [6/8] Mengkonfigurasi environment Panel...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
+  { type: 'output', text: '  [ok] Environment Panel dikonfigurasi ✓', color: '#00ff88', typingDelay: 0, lineDelay: 300 },
+  { type: 'output', text: '  [7/8] Mengkonfigurasi Nginx dan service...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
+  { type: 'output', text: '  [ok] Nginx dan service dikonfigurasi ✓', color: '#00ff88', typingDelay: 0, lineDelay: 250 },
+  { type: 'output', text: '  [8/8] Konfigurasi SSL...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
+  { type: 'output', text: '  [ok] Sertifikat SSL berhasil dikonfigurasi ✓', color: '#00ff88', typingDelay: 0, lineDelay: 400 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 150 },
   // Completion
-  { type: 'output', text: '  ┌──────────────────────────────────────────┐', color: '#00ff88', typingDelay: 1, lineDelay: 100 },
-  { type: 'output', text: '  │          INSTALASI SELESAI ✓             │', color: '#00ff88', typingDelay: 8, lineDelay: 50 },
-  { type: 'output', text: '  └──────────────────────────────────────────┘', color: '#00ff88', typingDelay: 1, lineDelay: 100 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 200 },
-  { type: 'output', text: '  Panel tersedia di: https://panel.contoh.com', color: '#00ffff', typingDelay: 12, lineDelay: 200 },
-  { type: 'output', text: '  Admin: admin@contoh.com / arkan', color: '#cccccc', typingDelay: 12, lineDelay: 100 },
-  { type: 'output', text: '  Waktu pemasangan: 2m 34s', color: '#8888aa', typingDelay: 12, lineDelay: 100 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 200 },
-  { type: 'output', text: '  ArkanProjects — https://github.com/PixZ19/ArkanProjects', color: '#666688', typingDelay: 8, lineDelay: 100 },
+  { type: 'output', text: '  ┌──────────────────────────────────────────┐', color: '#00ff88', typingDelay: 0, lineDelay: 40 },
+  { type: 'output', text: '  │          INSTALASI SELESAI ✓             │', color: '#00ff88', typingDelay: 0, lineDelay: 30 },
+  { type: 'output', text: '  └──────────────────────────────────────────┘', color: '#00ff88', typingDelay: 0, lineDelay: 40 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 80 },
+  { type: 'output', text: '  Panel tersedia di: https://panel.contoh.com', color: '#00ffff', typingDelay: 0, lineDelay: 80 },
+  { type: 'output', text: '  Admin: admin@contoh.com / arkan', color: '#cccccc', typingDelay: 0, lineDelay: 50 },
+  { type: 'output', text: '  Waktu pemasangan: 2m 34s', color: '#8888aa', typingDelay: 0, lineDelay: 50 },
+  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 80 },
+  { type: 'output', text: '  ArkanProjects — https://github.com/PixZ19/ArkanProjects', color: '#666688', typingDelay: 0, lineDelay: 50 },
 ];
 
 function useTypingWizard(steps: WizardStep[]) {
-  const [completedLines, setCompletedLines] = useState<{ text: string; color: string; type: string; isTyping?: boolean }[]>([]);
+  const [completedLines, setCompletedLines] = useState<{ text: string; color: string; type: string; isFading?: boolean }[]>([]);
   const [currentLine, setCurrentLine] = useState('');
   const [currentColor, setCurrentColor] = useState('');
   const [currentType, setCurrentType] = useState('output');
@@ -138,65 +138,82 @@ function useTypingWizard(steps: WizardStep[]) {
     return () => document.removeEventListener('visibilitychange', handleVis);
   }, []);
 
+  // Advance to next line
+  const advanceLine = useCallback((idx: number) => {
+    lineIndexRef.current = idx + 1;
+    setLineIndex(idx + 1);
+    setCharIndex(0);
+    charIndexRef.current = 0;
+  }, []);
+
   useEffect(() => {
     if (lineIndex >= steps.length) return;
     if (paused) return;
 
     const step = steps[lineIndex];
+    const delay = lineIndex === 0 ? (step.lineDelay || 0) : (step.lineDelay || 0);
 
-    // Wait lineDelay before starting this line
-    if (charIndex === 0 && lineIndex > 0 || (lineIndex === 0 && charIndex === 0 && step.lineDelay)) {
-      const delay = lineIndex === 0 && charIndex === 0 ? (step.lineDelay || 0) : (step.lineDelay || 0);
+    // Initial delay before processing this line
+    if (charIndex === 0) {
       timeoutRef.current = setTimeout(() => {
         if (pausedRef.current) return;
-        if (step.type === 'blank') {
+
+        // Blank lines — instant
+        if (step.type === 'blank' || step.text === '') {
           setCompletedLines(prev => [...prev, { text: '', color: '', type: 'blank' }]);
-          lineIndexRef.current = lineIndex + 1;
-          setLineIndex(lineIndex + 1);
-        } else {
-          setCurrentColor(step.color);
-          setCurrentType(step.type);
-          setCurrentLine(step.text[0] || '');
-          setCharIndex(1);
-          charIndexRef.current = 1;
-          setIsTyping(true);
+          advanceLine(lineIndex);
+          return;
         }
+
+        // OUTPUT lines — appear INSTANTLY with fade-in (no typing)
+        if (step.type === 'output') {
+          setCompletedLines(prev => [...prev, { text: step.text, color: step.color, type: 'output', isFading: true }]);
+          // Remove fading flag after animation completes
+          setTimeout(() => {
+            setCompletedLines(prev => prev.map((l, i) => i === prev.length - 1 ? { ...l, isFading: false } : l));
+          }, 300);
+          advanceLine(lineIndex);
+          return;
+        }
+
+        // INPUT lines — typing effect
+        setCurrentColor(step.color);
+        setCurrentType(step.type);
+        setCurrentLine(step.text[0] || '');
+        setCharIndex(1);
+        charIndexRef.current = 1;
+        setIsTyping(true);
       }, delay);
       return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); };
     }
 
-    if (step.type === 'blank') {
-      // Already handled above
-      return;
-    }
+    // Only input lines reach here — typing effect
+    if (step.type !== 'input') return;
 
-    // Typing effect — type one character at a time
     if (charIndex < step.text.length) {
-      const delay = step.typingDelay + (step.charPause || 0) * (Math.random() * 0.5);
+      // Fast typing — 8ms per char base
+      const typeDelay = 8 + Math.random() * 6;
       timeoutRef.current = setTimeout(() => {
         if (pausedRef.current) return;
-        const nextCharIndex = charIndexRef.current + 1;
-        charIndexRef.current = nextCharIndex;
-        setCharIndex(nextCharIndex);
-        setCurrentLine(step.text.slice(0, nextCharIndex));
-      }, delay);
+        const next = charIndexRef.current + 1;
+        charIndexRef.current = next;
+        setCharIndex(next);
+        setCurrentLine(step.text.slice(0, next));
+      }, typeDelay);
       return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); };
     }
 
-    // Line complete — move to completed
+    // Input line complete
     timeoutRef.current = setTimeout(() => {
       if (pausedRef.current) return;
-      setCompletedLines(prev => [...prev, { text: step.text, color: step.color, type: step.type }]);
+      setCompletedLines(prev => [...prev, { text: step.text, color: step.color, type: 'input' }]);
       setCurrentLine('');
-      setCharIndex(0);
       setIsTyping(false);
-      charIndexRef.current = 0;
-      lineIndexRef.current = lineIndex + 1;
-      setLineIndex(lineIndex + 1);
-    }, step.type === 'input' ? 200 : 100);
+      advanceLine(lineIndex);
+    }, 150);
 
     return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); };
-  }, [lineIndex, charIndex, paused, steps]);
+  }, [lineIndex, charIndex, paused, steps, advanceLine]);
 
   return { completedLines, currentLine, currentColor, currentType, isTyping, scrollRef, isDone: lineIndex >= steps.length };
 }
@@ -457,7 +474,13 @@ export default function Hero() {
                   <div
                     key={i}
                     className="leading-[1.6]"
-                    style={{ color: line.color || 'transparent', minHeight: '1.6em' }}
+                    style={{
+                      color: line.color || 'transparent',
+                      minHeight: '1.6em',
+                      opacity: line.isFading ? 0 : 1,
+                      transform: line.isFading ? 'translateY(4px)' : 'translateY(0)',
+                      transition: 'opacity 0.25s ease, transform 0.25s ease',
+                    }}
                   >
                     {line.text || '\u00A0'}
                   </div>
