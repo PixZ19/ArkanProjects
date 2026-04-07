@@ -158,6 +158,33 @@ export default function Hero() {
         <div className="geo-plus opacity-25" />
       </div>
 
+      {/* Organic morphing blobs */}
+      <div className="absolute top-[5%] right-[5%] pointer-events-none hidden lg:block">
+        <div className="organic-blob-1 w-[120px] h-[120px] border border-[#00ffff]/[0.06]" />
+      </div>
+      <div className="absolute bottom-[10%] left-[3%] pointer-events-none hidden lg:block">
+        <div className="organic-blob-2 w-[100px] h-[100px] border border-[#8800ff]/[0.06]" />
+      </div>
+      <div className="absolute top-[35%] right-[3%] pointer-events-none hidden xl:block">
+        <div className="organic-blob-3 w-[80px] h-[80px] border border-[#ff0088]/[0.05]" />
+      </div>
+
+      {/* Spinning morph shapes */}
+      <div className="absolute bottom-[15%] right-[30%] pointer-events-none hidden lg:block">
+        <div className="spin-morph w-[60px] h-[60px] bg-[#00ffff]/[0.02] border border-[#00ffff]/[0.04]" />
+      </div>
+      <div className="absolute top-[60%] left-[12%] pointer-events-none hidden xl:block">
+        <div className="spin-morph-reverse w-[50px] h-[50px] bg-[#8800ff]/[0.02] border border-[#8800ff]/[0.04]" />
+      </div>
+
+      {/* Morph border shapes */}
+      <div className="absolute top-[80%] left-[45%] pointer-events-none hidden lg:block">
+        <div className="morph-border w-[40px] h-[40px] bg-[#00ff88]/[0.02] border border-[#00ff88]/[0.05]" />
+      </div>
+      <div className="absolute top-[10%] left-[45%] pointer-events-none hidden xl:block">
+        <div className="morph-border-slow w-[35px] h-[35px] bg-[#ff0088]/[0.02] border border-[#ff0088]/[0.04]" />
+      </div>
+
       {/* Glow dots */}
       <div className="absolute top-[22%] left-[30%] pointer-events-none">
         <div className="glow-dot" style={{ color: '#00ffff' }} />
