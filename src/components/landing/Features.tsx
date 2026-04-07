@@ -20,6 +20,7 @@ interface Feature {
   description: string;
   color: string;
   bgColor: string;
+  glow: string;
 }
 
 const features: Feature[] = [
@@ -30,6 +31,7 @@ const features: Feature[] = [
       'Instalasi Pterodactyl Panel dan Wings dalam satu script. Tidak perlu menjalankan beberapa installer terpisah. Satu perintah untuk semuanya.',
     color: '#00ffff',
     bgColor: 'rgba(0, 255, 255, 0.1)',
+    glow: 'rgba(0, 255, 255, 0.08)',
   },
   {
     icon: Monitor,
@@ -38,6 +40,7 @@ const features: Feature[] = [
       'Kompatibel dengan Ubuntu 22/24, Debian 10-13, Rocky Linux 8/9, dan AlmaLinux 8/9. Deteksi sistem operasi dan arsitektur (amd64/arm64) secara otomatis.',
     color: '#00ff88',
     bgColor: 'rgba(0, 255, 136, 0.1)',
+    glow: 'rgba(0, 255, 136, 0.08)',
   },
   {
     icon: Shield,
@@ -46,6 +49,7 @@ const features: Feature[] = [
       "Konfigurasi Let's Encrypt dengan verifikasi DNS. Sertifikat SSL dikeluarkan dan dikonfigurasi secara otomatis pada Nginx.",
     color: '#8800ff',
     bgColor: 'rgba(136, 0, 255, 0.1)',
+    glow: 'rgba(136, 0, 255, 0.08)',
   },
   {
     icon: ShieldCheck,
@@ -54,6 +58,7 @@ const features: Feature[] = [
       'UFW untuk Ubuntu/Debian dan FirewallD untuk Rocky/AlmaLinux. Port yang diperlukan dibuka secara otomatis.',
     color: '#ff0088',
     bgColor: 'rgba(255, 0, 136, 0.1)',
+    glow: 'rgba(255, 0, 136, 0.08)',
   },
   {
     icon: Container,
@@ -62,6 +67,7 @@ const features: Feature[] = [
       'Docker CE diinstal dan dikonfigurasi otomatis sebagai dependensi Wings. Termasuk systemd service untuk manajemen proses.',
     color: '#00ffff',
     bgColor: 'rgba(0, 255, 255, 0.1)',
+    glow: 'rgba(0, 255, 255, 0.08)',
   },
   {
     icon: Database,
@@ -70,6 +76,7 @@ const features: Feature[] = [
       'Database dan cache layer dikonfigurasi otomatis. MariaDB untuk penyimpanan data, Redis untuk session, cache, dan queue.',
     color: '#00ff88',
     bgColor: 'rgba(0, 255, 136, 0.1)',
+    glow: 'rgba(0, 255, 136, 0.08)',
   },
   {
     icon: Code2,
@@ -78,6 +85,7 @@ const features: Feature[] = [
       'Menggunakan PHP 8.3 terbaru melalui repository resmi (PPA Ondrej untuk Ubuntu, Sury untuk Debian, Remi untuk RHEL).',
     color: '#8800ff',
     bgColor: 'rgba(136, 0, 255, 0.1)',
+    glow: 'rgba(136, 0, 255, 0.08)',
   },
   {
     icon: TerminalSquare,
@@ -86,6 +94,7 @@ const features: Feature[] = [
       'Tampilan terminal berwarna dengan step indicator, progress tracking, dividers, dan feedback jelas untuk setiap tahap instalasi.',
     color: '#ff0088',
     bgColor: 'rgba(255, 0, 136, 0.1)',
+    glow: 'rgba(255, 0, 136, 0.08)',
   },
   {
     icon: RefreshCw,
@@ -94,6 +103,7 @@ const features: Feature[] = [
       'Script aman dijalankan ulang. Deteksi instalasi yang sudah ada. Validasi FQDN dan DNS sebelum memulai.',
     color: '#00ffff',
     bgColor: 'rgba(0, 255, 255, 0.1)',
+    glow: 'rgba(0, 255, 255, 0.08)',
   },
 ];
 
@@ -101,9 +111,7 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-    },
+    transition: { staggerChildren: 0.08 },
   },
 };
 
@@ -118,8 +126,24 @@ const itemVariants = {
 
 export default function Features() {
   return (
-    <section id="fitur" className="relative py-24 sm:py-32 px-4 sm:px-6">
-      <div className="max-w-6xl mx-auto">
+    <section id="fitur" className="relative py-24 sm:py-32 px-4 sm:px-6 overflow-hidden">
+      {/* Background glows */}
+      <div className="section-glow-cyan -top-40 -left-40" />
+      <div className="section-glow-purple -bottom-40 -right-40" />
+      <div className="section-glow-green top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+
+      {/* Floating geometry */}
+      <div className="absolute top-20 right-10 pointer-events-none hidden lg:block">
+        <div className="geo-diamond opacity-20" style={{ animationDuration: '40s' }} />
+      </div>
+      <div className="absolute bottom-20 left-10 pointer-events-none hidden lg:block">
+        <div className="geo-circle opacity-20" style={{ animationDuration: '30s' }} />
+      </div>
+
+      {/* Grid bg */}
+      <div className="grid-bg-fine" />
+
+      <div className="max-w-6xl mx-auto relative">
         {/* Section title */}
         <motion.div
           className="text-center mb-16"
@@ -128,6 +152,10 @@ export default function Features() {
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.6 }}
         >
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] mb-4">
+            <div className="glow-dot" style={{ color: '#00ffff', width: '4px', height: '4px' }} />
+            <span className="text-xs text-[#8888aa]">FITUR UNGGULAN</span>
+          </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
             <span className="neon-gradient-text">Fitur Utama</span>
           </h2>
@@ -144,30 +172,50 @@ export default function Features() {
           whileInView="visible"
           viewport={{ once: true, margin: '-50px' }}
         >
-          {features.map((feature) => (
+          {features.map((feature, index) => (
             <motion.div
               key={feature.title}
               variants={itemVariants}
-              className="glass-card p-6 group"
+              className="glass-card rotating-border p-6 group cursor-default"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.3 }}
             >
+              {/* Inner glow on hover */}
               <div
-                className="feature-icon mb-4"
-                style={{ backgroundColor: feature.bgColor }}
-              >
-                <feature.icon
-                  className="w-5 h-5"
+                className="absolute inset-0 rounded-[16px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                style={{
+                  background: `radial-gradient(circle at 30% 30%, ${feature.glow}, transparent 70%)`,
+                }}
+              />
+
+              <div className="relative">
+                <div
+                  className="feature-icon mb-4"
+                  style={{ backgroundColor: feature.bgColor }}
+                >
+                  <feature.icon
+                    className="w-5 h-5 transition-transform duration-300 group-hover:rotate-12"
+                    style={{ color: feature.color }}
+                  />
+                </div>
+                <h3
+                  className="text-lg font-semibold mb-2 transition-colors duration-300"
                   style={{ color: feature.color }}
-                />
+                >
+                  {feature.title}
+                </h3>
+                <p className="text-sm text-[#8888aa] leading-relaxed">
+                  {feature.description}
+                </p>
+
+                {/* Bottom accent line */}
+                <div className="mt-4 pt-3 border-t border-white/[0.04]">
+                  <div
+                    className="h-[2px] rounded-full transition-all duration-500 w-0 group-hover:w-full"
+                    style={{ background: `linear-gradient(90deg, ${feature.color}40, transparent)` }}
+                  />
+                </div>
               </div>
-              <h3
-                className="text-lg font-semibold mb-2"
-                style={{ color: feature.color }}
-              >
-                {feature.title}
-              </h3>
-              <p className="text-sm text-[#8888aa] leading-relaxed">
-                {feature.description}
-              </p>
             </motion.div>
           ))}
         </motion.div>

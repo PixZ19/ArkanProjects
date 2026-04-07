@@ -67,9 +67,7 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
+    transition: { staggerChildren: 0.1 },
   },
 };
 
@@ -84,8 +82,18 @@ const itemVariants = {
 
 export default function HowItWorks() {
   return (
-    <section id="cara-kerja" className="relative py-24 sm:py-32 px-4 sm:px-6">
-      <div className="max-w-4xl mx-auto">
+    <section id="cara-kerja" className="relative py-24 sm:py-32 px-4 sm:px-6 overflow-hidden">
+      {/* Background effects */}
+      <div className="section-glow-green top-10 right-10" />
+      <div className="section-glow-purple bottom-10 left-10" />
+      <div className="grid-bg-fine" />
+
+      {/* Geometric accents */}
+      <div className="absolute top-20 right-[5%] pointer-events-none hidden lg:block">
+        <div className="geo-diamond opacity-25" style={{ width: '30px', height: '30px', animationDuration: '35s' }} />
+      </div>
+
+      <div className="max-w-4xl mx-auto relative">
         {/* Section title */}
         <motion.div
           className="text-center mb-16"
@@ -94,6 +102,10 @@ export default function HowItWorks() {
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.6 }}
         >
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] mb-4">
+            <div className="glow-dot" style={{ color: '#00ff88', width: '4px', height: '4px' }} />
+            <span className="text-xs text-[#8888aa]">ALUR KERJA</span>
+          </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
             <span className="neon-gradient-text">Cara Kerja Installer</span>
           </h2>
@@ -110,33 +122,62 @@ export default function HowItWorks() {
           whileInView="visible"
           viewport={{ once: true, margin: '-50px' }}
         >
-          {/* Vertical line */}
-          <div className="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-[#00ffff]/20 via-[#8800ff]/20 to-[#00ff88]/20 hidden sm:block" />
+          {/* Vertical gradient line */}
+          <div className="absolute left-6 top-0 bottom-0 w-px hidden sm:block">
+            <div
+              className="w-full h-full"
+              style={{
+                background: 'linear-gradient(180deg, #00ffff20, #8800ff20, #00ff8820, #ff008820, #00ffff20)',
+              }}
+            />
+            {/* Animated pulse on the line */}
+            <motion.div
+              className="absolute top-0 left-0 w-1 h-8 rounded-full bg-gradient-to-b from-transparent via-[#00ffff]/30 to-transparent blur-sm"
+              animate={{ top: ['0%', '100%'] }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+            />
+          </div>
 
-          <div className="space-y-8">
-            {steps.map((step) => (
+          <div className="space-y-6 sm:space-y-8">
+            {steps.map((step, index) => (
               <motion.div
                 key={step.number}
                 variants={itemVariants}
-                className="relative flex gap-5 sm:gap-6"
+                className="relative flex gap-5 sm:gap-6 group"
               >
                 {/* Step number */}
-                <div
-                  className="step-number relative z-10"
-                  style={{
-                    borderColor: `${step.color}40`,
-                    background: `linear-gradient(135deg, ${step.color}15, ${step.color}08)`,
-                    color: step.color,
-                  }}
-                >
-                  {step.number}
+                <div className="relative">
+                  <div
+                    className="step-number relative z-10"
+                    style={{
+                      borderColor: `${step.color}40`,
+                      background: `linear-gradient(135deg, ${step.color}15, ${step.color}08)`,
+                      color: step.color,
+                    }}
+                  >
+                    {step.number}
+                  </div>
+                  {/* Glow ring around step number */}
+                  <div
+                    className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{
+                      boxShadow: `0 0 15px ${step.color}20, 0 0 30px ${step.color}10`,
+                    }}
+                  />
                 </div>
 
                 {/* Content */}
-                <div className="glass-card p-5 flex-1 group">
-                  <div className="flex items-start gap-3">
+                <div className="glass-card p-5 flex-1 rotating-border">
+                  {/* Inner hover glow */}
+                  <div
+                    className="absolute inset-0 rounded-[16px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                    style={{
+                      background: `radial-gradient(circle at 0% 50%, ${step.color}06, transparent 60%)`,
+                    }}
+                  />
+                  <div className="relative flex items-start gap-3">
                     <step.icon
-                      className="w-5 h-5 mt-0.5 flex-shrink-0"
+                      className="w-5 h-5 mt-0.5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110"
                       style={{ color: step.color }}
                     />
                     <div>
@@ -147,6 +188,23 @@ export default function HowItWorks() {
                         {step.description}
                       </p>
                     </div>
+                  </div>
+
+                  {/* Progress indicator */}
+                  <div className="mt-3 flex items-center gap-2">
+                    <div className="flex-1 h-[1px] bg-white/[0.04]">
+                      <motion.div
+                        className="h-full rounded-full"
+                        style={{ background: step.color, opacity: 0.3 }}
+                        initial={{ width: '0%' }}
+                        whileInView={{ width: `${((index + 1) / steps.length) * 100}%` }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1, delay: index * 0.2 }}
+                      />
+                    </div>
+                    <span className="text-[10px] font-mono" style={{ color: `${step.color}60` }}>
+                      {Math.round(((index + 1) / steps.length) * 100)}%
+                    </span>
                   </div>
                 </div>
               </motion.div>

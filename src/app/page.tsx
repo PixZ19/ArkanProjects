@@ -6,10 +6,12 @@ import HowItWorks from '@/components/landing/HowItWorks';
 import Sources from '@/components/landing/Sources';
 import About from '@/components/landing/About';
 import Footer from '@/components/landing/Footer';
+import BackgroundEffects from '@/components/landing/BackgroundEffects';
 
 export default function Home() {
   return (
     <main className="relative min-h-screen overflow-hidden">
+      <BackgroundEffects />
       <Navbar />
       <Hero />
 

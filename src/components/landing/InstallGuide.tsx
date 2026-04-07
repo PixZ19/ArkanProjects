@@ -15,7 +15,6 @@ export default function InstallGuide() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Fallback
       const textArea = document.createElement('textarea');
       textArea.value = 'bash <(curl -s https://arkanprojects.vercel.app/installer/pterodactyl.sh)';
       document.body.appendChild(textArea);
@@ -36,8 +35,21 @@ export default function InstallGuide() {
   ];
 
   return (
-    <section id="install" className="relative py-24 sm:py-32 px-4 sm:px-6">
-      <div className="max-w-4xl mx-auto">
+    <section id="install" className="relative py-24 sm:py-32 px-4 sm:px-6 overflow-hidden">
+      {/* Background effects */}
+      <div className="section-glow-purple top-0 right-0" />
+      <div className="section-glow-cyan bottom-0 left-0" />
+      <div className="grid-bg" />
+
+      {/* Geometric shapes */}
+      <div className="absolute top-10 left-[15%] pointer-events-none hidden xl:block">
+        <div className="geo-ring opacity-30" style={{ width: '50px', height: '50px' }} />
+      </div>
+      <div className="absolute bottom-10 right-[20%] pointer-events-none hidden xl:block">
+        <div className="geo-triangle opacity-40" />
+      </div>
+
+      <div className="max-w-4xl mx-auto relative">
         {/* Section title */}
         <motion.div
           className="text-center mb-12"
@@ -46,6 +58,10 @@ export default function InstallGuide() {
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.6 }}
         >
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] mb-4">
+            <div className="glow-dot" style={{ color: '#8800ff', width: '4px', height: '4px' }} />
+            <span className="text-xs text-[#8888aa]">QUICK START</span>
+          </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
             <span className="neon-gradient-text">Cara Instalasi</span>
           </h2>
@@ -54,7 +70,7 @@ export default function InstallGuide() {
           </p>
         </motion.div>
 
-        {/* Code block */}
+        {/* Code block with glow */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -62,45 +78,50 @@ export default function InstallGuide() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mb-12"
         >
-          <div className="code-block p-1">
-            {/* Code block header */}
-            <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/5">
-              <div className="flex items-center gap-2">
-                <div className="flex gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-white/10" />
-                  <div className="w-3 h-3 rounded-full bg-white/10" />
-                  <div className="w-3 h-3 rounded-full bg-white/10" />
+          <div className="relative">
+            {/* Glow behind code block */}
+            <div className="absolute -inset-4 bg-gradient-to-r from-[#00ffff]/5 via-[#8800ff]/5 to-[#00ff88]/5 blur-2xl rounded-2xl" />
+
+            <div className="code-block p-1 relative">
+              {/* Code block header */}
+              <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/5">
+                <div className="flex items-center gap-2">
+                  <div className="flex gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-[#ff5f57]/80" />
+                    <div className="w-3 h-3 rounded-full bg-[#febc2e]/80" />
+                    <div className="w-3 h-3 rounded-full bg-[#28c840]/80" />
+                  </div>
+                  <span className="text-xs text-[#8888aa] ml-2 font-mono">terminal</span>
                 </div>
-                <span className="text-xs text-[#8888aa] ml-2 font-mono">terminal</span>
+                <button
+                  onClick={handleCopy}
+                  className="flex items-center gap-1.5 text-xs text-[#8888aa] hover:text-[#00ffff] transition-colors cursor-pointer px-2 py-1 rounded-md hover:bg-white/5"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-[#00ff88]" />
+                      <span className="text-[#00ff88]">Tersalin!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Salin</span>
+                    </>
+                  )}
+                </button>
               </div>
-              <button
-                onClick={handleCopy}
-                className="flex items-center gap-1.5 text-xs text-[#8888aa] hover:text-[#00ffff] transition-colors cursor-pointer px-2 py-1 rounded-md hover:bg-white/5"
-              >
-                {copied ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-[#00ff88]" />
-                    <span className="text-[#00ff88]">Tersalin!</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-3.5 h-3.5" />
-                    <span>Salin</span>
-                  </>
-                )}
-              </button>
-            </div>
-            {/* Code content */}
-            <div className="p-4 sm:p-5 overflow-x-auto">
-              <code className="text-sm sm:text-base text-[#00ffff] font-mono whitespace-nowrap">
-                <span className="text-[#8888aa]">$</span>{' '}
-                <span className="text-white/80">bash</span>{' '}
-                <span className="text-[#00ff88]">&lt;(</span>
-                <span className="text-white/80">curl</span>{' '}
-                <span className="text-[#8800ff]">-s</span>{' '}
-                <span className="text-[#ff0088]">https://arkanprojects.vercel.app/installer/pterodactyl.sh</span>
-                <span className="text-[#00ff88]">)</span>
-              </code>
+              {/* Code content */}
+              <div className="p-4 sm:p-5 overflow-x-auto">
+                <code className="text-sm sm:text-base text-[#00ffff] font-mono whitespace-nowrap">
+                  <span className="text-[#8888aa]">$</span>{' '}
+                  <span className="text-white/80">bash</span>{' '}
+                  <span className="text-[#00ff88]">&lt;(</span>
+                  <span className="text-white/80">curl</span>{' '}
+                  <span className="text-[#8800ff]">-s</span>{' '}
+                  <span className="text-[#ff0088]">https://arkanprojects.vercel.app/installer/pterodactyl.sh</span>
+                  <span className="text-[#00ff88]">)</span>
+                </code>
+              </div>
             </div>
           </div>
         </motion.div>
@@ -118,13 +139,14 @@ export default function InstallGuide() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {requirements.map((req, index) => (
-              <div
+              <motion.div
                 key={index}
-                className="flex items-center gap-3 text-sm text-[#8888aa] py-2 px-3 rounded-lg bg-white/[0.02] border border-white/[0.04]"
+                className="flex items-center gap-3 text-sm text-[#8888aa] py-2.5 px-3.5 rounded-lg bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.04] hover:border-white/[0.08] transition-all duration-300 group"
+                whileHover={{ x: 4 }}
               >
-                <req.icon className="w-4 h-4 text-[#00ffff]/60 flex-shrink-0" />
+                <req.icon className="w-4 h-4 text-[#00ffff]/60 flex-shrink-0 group-hover:text-[#00ffff] transition-colors" />
                 <span>{req.text}</span>
-              </div>
+              </motion.div>
             ))}
           </div>
         </motion.div>
