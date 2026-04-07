@@ -13,11 +13,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: "Content-Type",
-            value: "text/plain",
-          },
-          {
-            key: "Content-Disposition",
-            value: 'inline; filename="pterodactyl.sh"',
+            value: "text/plain; charset=utf-8",
           },
           {
             key: "Cache-Control",

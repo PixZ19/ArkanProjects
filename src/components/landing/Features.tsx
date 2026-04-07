@@ -5,7 +5,7 @@ import {
   Package,
   Monitor,
   Shield,
-  Firewall,
+  ShieldCheck,
   Container,
   Database,
   Code2,
@@ -48,7 +48,7 @@ const features: Feature[] = [
     bgColor: 'rgba(136, 0, 255, 0.1)',
   },
   {
-    icon: Firewall,
+    icon: ShieldCheck,
     title: 'Firewall Terkonfigurasi',
     description:
       'UFW untuk Ubuntu/Debian dan FirewallD untuk Rocky/AlmaLinux. Port yang diperlukan dibuka secara otomatis.',
