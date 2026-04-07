@@ -354,7 +354,7 @@ export default function Hero() {
 
       {/* Content */}
       <div className="relative z-10 max-w-6xl mx-auto w-full">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           {/* Left: Text */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -443,9 +443,9 @@ export default function Hero() {
 
           {/* Right: Interactive Wizard Terminal */}
           <motion.div
-            className="hidden lg:block"
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
+            className="w-full max-w-lg lg:max-w-none"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
           >
             <div className="terminal-mockup relative">
@@ -468,7 +468,7 @@ export default function Hero() {
               {/* Terminal body with scrollable content */}
               <div
                 ref={scrollRef}
-                className="p-4 sm:p-5 font-mono text-[11px] sm:text-xs min-h-[420px] max-h-[480px] overflow-y-auto relative"
+                className="p-3 sm:p-4 lg:p-5 font-mono text-[10px] sm:text-[11px] lg:text-xs min-h-[280px] sm:min-h-[360px] lg:min-h-[420px] max-h-[350px] sm:max-h-[420px] lg:max-h-[480px] overflow-y-auto relative"
                 style={{
                   scrollBehavior: 'smooth',
                   scrollbarWidth: 'thin',
@@ -495,14 +495,14 @@ export default function Hero() {
                       transition: 'opacity 0.2s ease-out, transform 0.2s ease-out',
                     }}
                   >
-                    {line.text || '\u00A0'}
+                    <span className="whitespace-pre-wrap break-all">{line.text || '\u00A0'}</span>
                   </div>
                 ))}
 
                 {/* Currently typing line */}
                 {isTyping && (
                   <div className="leading-[1.6]" style={{ color: currentColor }}>
-                    {currentLine}
+                    <span className="whitespace-pre-wrap break-all">{currentLine}</span>
                     <span className="typing-cursor" />
                   </div>
                 )}
@@ -521,6 +521,8 @@ export default function Hero() {
           </motion.div>
         </div>
       </div>
+      {/* Bottom padding on mobile for terminal breathing room */}
+      <div className="h-8 lg:hidden" />
 
       {/* Scroll indicator */}
       <motion.div

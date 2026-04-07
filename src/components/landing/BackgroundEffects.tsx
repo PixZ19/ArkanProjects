@@ -499,7 +499,7 @@ export default function BackgroundEffects() {
       {/* CSS floating particles */}
       {mounted && <FloatingParticles />}
 
-      {/* ========== SHAPE MORPH BLOBS ========== */}
+      {/* ========== SHAPE MORPH BLOBS (12 total) ========== */}
       {mounted && (
         <>
           <ShapeMorphBlob size={300} color="#00ffff" opacity={0.3} top="5%" left="-2%" duration={25} delay={0} blur={2} />
@@ -508,14 +508,45 @@ export default function BackgroundEffects() {
           <ShapeMorphBlob size={140} color="#00ff88" opacity={0.2} top="50%" left="50%" duration={22} delay={8} />
           <ShapeMorphBlob size={250} color="#8800ff" opacity={0.15} top="80%" left="65%" duration={28} delay={2} blur={3} />
           <ShapeMorphBlob size={160} color="#00ffff" opacity={0.18} top="15%" left="40%" duration={15} delay={6} />
+          <ShapeMorphBlob size={200} color="#ff0088" opacity={0.12} top="90%" left="-5%" duration={30} delay={1} blur={2} />
+          <ShapeMorphBlob size={170} color="#00ff88" opacity={0.15} top="-5%" left="55%" duration={24} delay={4} />
+          <ShapeMorphBlob size={130} color="#00ffff" opacity={0.2} top="35%" left="25%" duration={16} delay={9} />
+          <ShapeMorphBlob size={190} color="#8800ff" opacity={0.14} top="55%" left="-8%" duration={26} delay={7} blur={1} />
+          <ShapeMorphBlob size={110} color="#ff0088" opacity={0.18} top="10%" left="85%" duration={14} delay={11} />
+          <ShapeMorphBlob size={240} color="#00ff88" opacity={0.1} top="70%" left="45%" duration={32} delay={3} blur={2} />
 
-          {/* ========== POLYGON MORPH SHAPES ========== */}
+          {/* ========== POLYGON MORPH SHAPES (12 total) ========== */}
           <PolygonMorph size={200} color="#00ffff" opacity={0.4} top="8%" left="60%" duration={18} delay={0} />
           <PolygonMorph size={150} color="#8800ff" opacity={0.35} top="40%" left="2%" duration={22} delay={4} />
           <PolygonMorph size={180} color="#ff0088" opacity={0.3} top="75%" left="30%" duration={20} delay={2} />
           <PolygonMorph size={120} color="#00ff88" opacity={0.3} top="55%" left="85%" duration={16} delay={7} />
           <PolygonMorph size={100} color="#00ffff" opacity={0.25} top="20%" left="15%" duration={24} delay={10} />
           <PolygonMorph size={160} color="#8800ff" opacity={0.2} top="45%" left="35%" duration={19} delay={5} />
+          <PolygonMorph size={90} color="#ff0088" opacity={0.28} top="85%" left="70%" duration={15} delay={1} />
+          <PolygonMorph size={130} color="#00ff88" opacity={0.22} top="-3%" left="30%" duration={21} delay={8} />
+          <PolygonMorph size={170} color="#00ffff" opacity={0.18} top="60%" left="58%" duration={25} delay={6} />
+          <PolygonMorph size={110} color="#8800ff" opacity={0.25} top="25%" left="-3%" duration={17} delay={12} />
+          <PolygonMorph size={140} color="#ff0088" opacity={0.15} top="95%" left="50%" duration={23} delay={3} />
+          <PolygonMorph size={80} color="#00ff88" opacity={0.2} top="12%" left="48%" duration={13} delay={9} />
+
+          {/* ========== ORGANIC BLOBS (div-based morphing) ========== */}
+          <div className="fixed pointer-events-none organic-blob-1" style={{ width: 180, height: 180, background: 'rgba(0,255,255,0.03)', top: '20%', left: '5%', zIndex: 1 }} />
+          <div className="fixed pointer-events-none organic-blob-2" style={{ width: 140, height: 140, background: 'rgba(136,0,255,0.04)', top: '50%', right: '5%', zIndex: 1 }} />
+          <div className="fixed pointer-events-none organic-blob-3" style={{ width: 200, height: 200, background: 'rgba(255,0,136,0.025)', bottom: '10%', left: '40%', zIndex: 1 }} />
+          <div className="fixed pointer-events-none wave-distort" style={{ width: 120, height: 120, background: 'rgba(0,255,136,0.03)', top: '70%', left: '15%', zIndex: 1, animationDuration: '16s' }} />
+          <div className="fixed pointer-events-none wave-distort-slow" style={{ width: 160, height: 160, background: 'rgba(0,255,255,0.02)', top: '5%', right: '20%', zIndex: 1 }} />
+          <div className="fixed pointer-events-none wave-distort-fast" style={{ width: 100, height: 100, background: 'rgba(136,0,255,0.03)', bottom: '25%', right: '30%', zIndex: 1 }} />
+
+          {/* ========== SPINNING MORPH SHAPES ========== */}
+          <div className="fixed pointer-events-none spin-morph" style={{ width: 60, height: 60, background: 'rgba(0,255,255,0.04)', top: '18%', left: '80%', zIndex: 1 }} />
+          <div className="fixed pointer-events-none spin-morph-reverse" style={{ width: 45, height: 45, background: 'rgba(255,0,136,0.04)', top: '42%', right: '12%', zIndex: 1 }} />
+          <div className="fixed pointer-events-none spin-morph" style={{ width: 80, height: 80, background: 'rgba(0,255,136,0.03)', bottom: '15%', left: '60%', zIndex: 1, animationDuration: '30s' }} />
+          <div className="fixed pointer-events-none spin-morph-reverse" style={{ width: 35, height: 35, background: 'rgba(136,0,255,0.05)', top: '75%', left: '35%', zIndex: 1 }} />
+
+          {/* ========== MORPH BORDER RINGS ========== */}
+          <div className="fixed pointer-events-none morph-border" style={{ width: 100, height: 100, border: '1px solid rgba(0,255,255,0.06)', top: '33%', left: '90%', zIndex: 1 }} />
+          <div className="fixed pointer-events-none morph-border-slow" style={{ width: 70, height: 70, border: '1px solid rgba(136,0,255,0.06)', bottom: '30%', left: '8%', zIndex: 1 }} />
+          <div className="fixed pointer-events-none morph-border" style={{ width: 55, height: 55, border: '1px solid rgba(255,0,136,0.05)', top: '60%', right: '25%', zIndex: 1, animationDuration: '14s' }} />
         </>
       )}
 
