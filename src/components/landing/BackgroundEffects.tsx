@@ -46,7 +46,7 @@ function useHydrated() {
 
 // Floating particles
 const FloatingParticles = memo(function FloatingParticles() {
-  const [particles] = useState<Particle[]>(() => generateParticles(20));
+  const [particles] = useState<Particle[]>(() => generateParticles(30));
 
   return (
     <>
@@ -257,12 +257,12 @@ const ConstellationCanvas = memo(function ConstellationCanvas() {
       r: number; g: number; b: number;
     }
 
-    // FEWER nodes for performance
-    const nodeCount = 50;
-    const connectionDist = 130;
-    // MUCH higher threshold = fewer triangles
-    const triangleDist = 70;
-    const mouseDist = 180;
+    // 80 nodes for rich constellation
+    const nodeCount = 80;
+    const connectionDist = 150;
+    // Triangle distance — close enough to form visible triangles
+    const triangleDist = 120;
+    const mouseDist = 200;
 
     const w = () => window.innerWidth;
     const h = () => window.innerHeight;
@@ -276,12 +276,11 @@ const ConstellationCanvas = memo(function ConstellationCanvas() {
       nodes.push({
         x: Math.random() * w(),
         y: Math.random() * h(),
-        // FASTER movement: 0.8 -> 1.6 base speed
-        vx: (Math.random() - 0.5) * 1.6,
-        vy: (Math.random() - 0.5) * 1.6,
-        size: Math.random() * 1.5 + 0.8,
+        vx: (Math.random() - 0.5) * 1.4,
+        vy: (Math.random() - 0.5) * 1.4,
+        size: Math.random() * 2.0 + 1.0,
         color,
-        baseAlpha: Math.random() * 0.25 + 0.12,
+        baseAlpha: Math.random() * 0.3 + 0.18,
         r, g, b,
       });
     }
@@ -350,17 +349,17 @@ const ConstellationCanvas = memo(function ConstellationCanvas() {
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
             ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.strokeStyle = nodeRgba(nodes[i], alpha * 0.2 * avgAlpha);
-            ctx.lineWidth = alpha * 0.6;
+            ctx.strokeStyle = nodeRgba(nodes[i], alpha * 0.25 * avgAlpha);
+            ctx.lineWidth = alpha * 0.8;
             ctx.stroke();
           }
         }
       }
 
-      // Draw triangles (HIGH threshold = very few, only very close nodes)
+      // Draw triangles — visible mesh when nodes cluster
       const triDistSq = triangleDist * triangleDist;
       let triCount = 0;
-      const maxTriangles = 8; // hard cap triangles per frame
+      const maxTriangles = 25; // allow more triangles for richer mesh
 
       for (let i = 0; i < nodes.length && triCount < maxTriangles; i++) {
         for (let j = i + 1; j < nodes.length && triCount < maxTriangles; j++) {
@@ -380,7 +379,7 @@ const ConstellationCanvas = memo(function ConstellationCanvas() {
             const djkSq = dxjk * dxjk + dyjk * dyjk;
             if (djkSq > triDistSq) continue;
 
-            // All three very close — draw subtle filled triangle
+            // Draw filled triangle with visible colors
             const avgDist = (Math.sqrt(dijSq) + Math.sqrt(dikSq) + Math.sqrt(djkSq)) / 3;
             const closeness = 1 - (avgDist / triangleDist);
 
@@ -389,10 +388,10 @@ const ConstellationCanvas = memo(function ConstellationCanvas() {
             ctx.lineTo(nodes[j].x, nodes[j].y);
             ctx.lineTo(nodes[k].x, nodes[k].y);
             ctx.closePath();
-            ctx.fillStyle = nodeRgba(nodes[i], closeness * 0.025);
+            ctx.fillStyle = nodeRgba(nodes[i], closeness * 0.06);
             ctx.fill();
-            ctx.strokeStyle = nodeRgba(nodes[i], closeness * 0.06);
-            ctx.lineWidth = 0.4;
+            ctx.strokeStyle = nodeRgba(nodes[i], closeness * 0.15);
+            ctx.lineWidth = 0.5;
             ctx.stroke();
             triCount++;
           }
@@ -467,7 +466,7 @@ export default function BackgroundEffects() {
       {/* Constellation Canvas */}
       <ConstellationCanvas />
 
-      {/* CSS floating particles — reduced count */}
+      {/* CSS floating particles */}
       {mounted && <FloatingParticles />}
 
       {/* ========== SHAPE MORPH BLOBS ========== */}

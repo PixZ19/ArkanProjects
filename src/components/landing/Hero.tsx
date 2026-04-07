@@ -338,17 +338,20 @@ export default function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
             >
-              <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight mb-6 text-center lg:text-left flex items-center justify-center lg:justify-start gap-3 sm:gap-4">
+              {/* Mobile: logo above title — Desktop: logo beside title */}
+              <div className="flex flex-col items-center lg:flex-row lg:items-center gap-3 lg:gap-4 mb-6">
                 <img
                   src="/logo.png"
                   alt="ArkanProjects"
-                  className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-xl flex-shrink-0"
+                  className="w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 rounded-xl flex-shrink-0"
                 />
-                <span className="inline-flex flex-col sm:flex-row sm:items-center sm:gap-0">
-                  <span className="neon-gradient-text">Arkan</span>
-                  <span className="text-white/90">Projects</span>
-                </span>
-              </h1>
+                <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-center lg:text-left">
+                  <span className="inline-flex flex-col sm:flex-row sm:items-center sm:gap-0">
+                    <span className="neon-gradient-text">Arkan</span>
+                    <span className="text-white/90">Projects</span>
+                  </span>
+                </h1>
+              </div>
             </motion.div>
 
             {/* Subtitle */}
