@@ -68,8 +68,8 @@ export default function Navbar() {
               alt="ArkanProjects"
               className="w-7 h-7 rounded-md"
             />
-            <span className="font-bold text-base text-white/90">
-              Arkan<span className="text-[#00ffff]">Projects</span>
+            <span className="font-bold text-base">
+              <span className="neon-gradient-text">Arkan</span><span className="text-white/90">Projects</span>
             </span>
           </a>
 
