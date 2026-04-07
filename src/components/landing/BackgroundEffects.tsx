@@ -257,12 +257,12 @@ const ConstellationCanvas = memo(function ConstellationCanvas() {
       r: number; g: number; b: number;
     }
 
-    // 100 nodes for rich constellation
-    const nodeCount = 100;
-    const connectionDist = 250;
-    // Triangle distance — 25% more excessive mesh formation
-    const triangleDist = 200;
-    const mouseDist = 250;
+    // 200 nodes for dense, rich constellation
+    const nodeCount = 200;
+    const connectionDist = 300;
+    // Triangle distance
+    const triangleDist = 240;
+    const mouseDist = 280;
 
     const w = () => window.innerWidth;
     const h = () => window.innerHeight;
@@ -273,8 +273,19 @@ const ConstellationCanvas = memo(function ConstellationCanvas() {
     const hMin = () => -spread;
     const hMax = () => h() + spread;
 
+    // Grid-based placement for even spread
+    const totalW = wMax() - wMin();
+    const totalH = hMax() - hMin();
+    const aspect = totalW / totalH;
+    const gridCols = Math.ceil(Math.sqrt(nodeCount * aspect));
+    const gridRows = Math.ceil(nodeCount / gridCols);
+    const cellW = totalW / gridCols;
+    const cellH = totalH / gridRows;
+
     const nodes: Node[] = [];
     for (let i = 0; i < nodeCount; i++) {
+      const col = i % gridCols;
+      const row = Math.floor(i / gridCols);
       const color = colors[Math.floor(Math.random() * colors.length)];
       const r = parseInt(color.slice(1, 3), 16);
       const g = parseInt(color.slice(3, 5), 16);
@@ -282,14 +293,17 @@ const ConstellationCanvas = memo(function ConstellationCanvas() {
       // Each node has its own phase for sinusoidal ease-in-out
       const phase = Math.random() * Math.PI * 2;
       const freq = 0.3 + Math.random() * 0.4; // oscillation frequency
+      // Random position within grid cell (15%-85% padding for breathing room)
+      const cellX = wMin() + (col + 0.15 + Math.random() * 0.7) * cellW;
+      const cellY = hMin() + (row + 0.15 + Math.random() * 0.7) * cellH;
       nodes.push({
-        x: wMin() + Math.random() * (wMax() - wMin()),
-        y: hMin() + Math.random() * (hMax() - hMin()),
-        vx: (Math.random() - 0.5) * 1.0,
-        vy: (Math.random() - 0.5) * 1.0,
-        size: Math.random() * 2.0 + 1.0,
+        x: cellX,
+        y: cellY,
+        vx: (Math.random() - 0.5) * 0.8,
+        vy: (Math.random() - 0.5) * 0.8,
+        size: Math.random() * 1.8 + 0.8,
         color,
-        baseAlpha: Math.random() * 0.3 + 0.18,
+        baseAlpha: Math.random() * 0.28 + 0.15,
         r, g, b,
         // Ease-in/out animation properties
         phase,
@@ -380,7 +394,7 @@ const ConstellationCanvas = memo(function ConstellationCanvas() {
       // Draw triangles — evenly distributed using spatial grid
       const triDistSq = triangleDist * triangleDist;
       let triCount = 0;
-      const maxTriangles = 55;
+      const maxTriangles = 80;
 
       // Spatial grid to ensure even distribution
       const gridSize = 200;
