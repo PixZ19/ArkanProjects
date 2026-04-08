@@ -10,9 +10,7 @@ const navLinks = [
   { label: 'Instalasi', href: '#install' },
   { label: 'Cara Kerja', href: '#cara-kerja' },
   { label: 'Kompatibilitas', href: '#kompatibilitas' },
-  { label: 'Blueprint', href: '#blueprint' },
   { label: 'FAQ', href: '#faq' },
-  { label: 'Sumber', href: '#sumber' },
   { label: 'Tentang', href: '#tentang' },
 ];
 
@@ -68,9 +66,7 @@ export default function Navbar() {
               alt="ArkanProjects"
               className="w-7 h-7 rounded-md"
             />
-            <span className="font-bold text-base">
-              <span className="neon-gradient-text">Arkan</span><span className="text-white/90">Projects</span>
-            </span>
+            <span className="font-bold text-base neon-gradient-text">ArkanProjects</span>
           </a>
 
           {/* Desktop nav */}

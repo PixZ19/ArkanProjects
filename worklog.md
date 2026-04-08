@@ -177,3 +177,45 @@ Stage Summary:
 - Navbar now scrolls smoothly to sections
 - Triangles distribute evenly across screen via spatial grid
 - Terminal output lines fade in correctly, all lines now visible
+
+---
+## Task ID: 8 - Penyederhanaan Installer + Pembaruan Homepage
+
+### Work Task
+Sederhanakan installer (hapus fitur Blueprint/Theme/Addon, pertahankan Panel + Wings saja) dan perbarui homepage agar sesuai.
+
+### Work Summary
+
+**Task 1 — pterodactyl.sh (1699 → 1327 baris):**
+- Hapus seluruh section `INSTALASI BLUEPRINT/THEME/ADDON` (baris 1158-1516) termasuk fungsi `install_blueprint_menu()`, `install_blueprints()`, `install_themes()`, `install_addons()`
+- Update `main_menu()`: hapus opsi 4, ubah `Pilih [1-4]` → `Pilih [1-3]`, ubah pesan error
+- Update header komentar: hapus referensi HemanRathore dan MuLTiAcidi
+- Update `main()`: hapus blok "Tanya apakah ingin menginstal Blueprint, Theme, atau Addon" di akhir
+
+**Task 2 — page.tsx:**
+- Hapus import `BlueprintAddons` dan `Sources`
+- Hapus section `<BlueprintAddons />` dan `<Sources />` beserta divider-nya
+
+**Task 3 — Navbar.tsx:**
+- Hapus link `{ label: 'Blueprint', href: '#blueprint' }` dari navLinks
+- Hapus link `{ label: 'Sumber', href: '#sumber' }` dari navLinks
+
+**Task 4 — Fix gradient "ArkanProjects":**
+- Navbar.tsx: Ubah split `<span>Arkan</span><span>Projects</span>` menjadi `<span className="neon-gradient-text">ArkanProjects</span>`
+- Hero.tsx: Ubah split h1 menjadi `<span className="neon-gradient-text">ArkanProjects</span>`
+- About.tsx: Sudah benar — "Tentang ArkanProjects" sudah pakai neon-gradient-text
+
+**Task 5 — Hero.tsx terminal demo:**
+- Hapus opsi 4 dari menu wizard (`Instal Blueprint, Theme & Addon`)
+- Ubah `Pilih [1-4]` → `Pilih [1-3]`
+- Hapus seluruh demo blueprint/theme/addon (85+ baris script wizard)
+- Ganti dengan satu baris: `ArkanProjects — https://github.com/PixZ19/ArkanProjects`
+
+**Task 6 — Build & Verify:**
+- Build berhasil tanpa error
+
+### Files Modified:
+- `public/installer/pterodactyl.sh` — -372 baris, hapus blueprint/theme/addon
+- `src/app/page.tsx` — hapus BlueprintAddons & Sources
+- `src/components/landing/Navbar.tsx` — hapus link Blueprint & Sumber, fix gradient
+- `src/components/landing/Hero.tsx` — fix gradient, sederhanakan wizard script

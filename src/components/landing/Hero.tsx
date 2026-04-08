@@ -42,10 +42,9 @@ const wizardScript: WizardStep[] = [
   { type: 'output', text: '  1  Instal Panel saja', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
   { type: 'output', text: '  2  Instal Wings saja', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
   { type: 'output', text: '  3  Instal Panel + Wings (satu mesin)', color: '#00ff88', typingDelay: 0, lineDelay: 30 },
-  { type: 'output', text: '  4  Instal Blueprint, Theme & Addon', color: '#8800ff', typingDelay: 0, lineDelay: 30 },
   { type: 'output', text: '', color: '', typingDelay: 0, lineDelay: 60 },
   // User picks option 3
-  { type: 'input', text: '  > Pilih [1-4]: 3', color: '#8888aa', typingDelay: 8, lineDelay: 200 },
+  { type: 'input', text: '  > Pilih [1-3]: 3', color: '#8888aa', typingDelay: 8, lineDelay: 200 },
   { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 150 },
   // Wizard configuration
   { type: 'output', text: '  ┌───────────────────────────────────┐', color: '#00ffff', typingDelay: 0, lineDelay: 50 },
@@ -128,90 +127,6 @@ const wizardScript: WizardStep[] = [
   { type: 'output', text: '  Panel: https://panel.contoh.com', color: '#00ffff', typingDelay: 0, lineDelay: 60 },
   { type: 'output', text: '  Admin: admin@contoh.com / arkan', color: '#cccccc', typingDelay: 0, lineDelay: 40 },
   { type: 'output', text: '  Waktu: 2m 34s', color: '#8888aa', typingDelay: 0, lineDelay: 40 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 80 },
-  // === BLUEPRINT INSTALLATION ===
-  { type: 'input', text: '  > Instal Blueprint, Theme, atau Addon? (y/N): y', color: '#8888aa', typingDelay: 8, lineDelay: 200 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 100 },
-  { type: 'output', text: '  ┌───────────────────────────────────┐', color: '#8800ff', typingDelay: 0, lineDelay: 50 },
-  { type: 'output', text: '  │  BLUEPRINT, THEME & ADDON          │', color: '#8800ff', typingDelay: 0, lineDelay: 30 },
-  { type: 'output', text: '  └───────────────────────────────────┘', color: '#8800ff', typingDelay: 0, lineDelay: 30 },
-  { type: 'output', text: '  1  Blueprint — konfigurasi egg/server', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
-  { type: 'output', text: '  2  Theme — tema panel kustom', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
-  { type: 'output', text: '  3  Addon — ekstensi untuk panel', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
-  { type: 'output', text: '  0  Kembali', color: '#666688', typingDelay: 0, lineDelay: 30 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 60 },
-  // Pick Blueprint (option 1)
-  { type: 'input', text: '  > Pilih [0-3]: 1', color: '#8888aa', typingDelay: 8, lineDelay: 200 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 80 },
-  { type: 'output', text: '  ┌───────────────────────────────────┐', color: '#ff0088', typingDelay: 0, lineDelay: 50 },
-  { type: 'output', text: '  │  INSTALASI BLUEPRINT              │', color: '#ff0088', typingDelay: 0, lineDelay: 30 },
-  { type: 'output', text: '  └───────────────────────────────────┘', color: '#ff0088', typingDelay: 0, lineDelay: 30 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 60 },
-  { type: 'output', text: '  1  Blueprint Minecraft (Vanilla, Fabric, Forge)', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
-  { type: 'output', text: '  2  Blueprint Server (CS2, Rust, FiveM)', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
-  { type: 'output', text: '  3  Blueprint Database (PostgreSQL, MongoDB)', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
-  { type: 'output', text: '  4  Blueprint Lainnya (TF2, dll)', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 60 },
-  { type: 'input', text: '  > Pilih blueprint [0-4]: 1', color: '#8888aa', typingDelay: 8, lineDelay: 200 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 100 },
-  { type: 'output', text: '  [1/3] Mengunduh Blueprint Minecraft...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
-  { type: 'output', text: '  [ok] Blueprint Minecraft terunduh ✓', color: '#00ff88', typingDelay: 0, lineDelay: 300 },
-  { type: 'output', text: '  [2/3] Mengimpor blueprint ke Panel...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
-  { type: 'output', text: '  [ok] minecraft.json berhasil diimpor ✓', color: '#00ff88', typingDelay: 0, lineDelay: 250 },
-  { type: 'output', text: '  [3/3] Membersihkan cache...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
-  { type: 'output', text: '  [ok] Cache dibersihkan ✓', color: '#00ff88', typingDelay: 0, lineDelay: 200 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 60 },
-  // === THEME INSTALLATION ===
-  { type: 'output', text: '  ┌───────────────────────────────────┐', color: '#8800ff', typingDelay: 0, lineDelay: 50 },
-  { type: 'output', text: '  │  BLUEPRINT, THEME & ADDON          │', color: '#8800ff', typingDelay: 0, lineDelay: 30 },
-  { type: 'output', text: '  └───────────────────────────────────┘', color: '#8800ff', typingDelay: 0, lineDelay: 30 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 60 },
-  { type: 'input', text: '  > Pilih [0-3]: 2', color: '#8888aa', typingDelay: 8, lineDelay: 200 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 80 },
-  { type: 'output', text: '  1  Pterodactyl Blue Admin Theme', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
-  { type: 'output', text: '  2  Pterodactyl Twilight Theme', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
-  { type: 'output', text: '  3  Pterodactyl Styx Theme', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 60 },
-  { type: 'input', text: '  > Pilih theme [0-3]: 1', color: '#8888aa', typingDelay: 8, lineDelay: 200 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 100 },
-  { type: 'output', text: '  [1/4] Mengunduh pterodactyl-blue-admin...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
-  { type: 'output', text: '  [ok] Theme terunduh ✓', color: '#00ff88', typingDelay: 0, lineDelay: 300 },
-  { type: 'output', text: '  [2/4] Memasang theme ke Panel...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
-  { type: 'output', text: '  [ok] File theme dipasang ✓', color: '#00ff88', typingDelay: 0, lineDelay: 250 },
-  { type: 'output', text: '  [3/4] Mengatur permission...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
-  { type: 'output', text: '  [ok] Permission diatur ✓', color: '#00ff88', typingDelay: 0, lineDelay: 200 },
-  { type: 'output', text: '  [4/4] Membersihkan cache...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
-  { type: 'output', text: '  [ok] Cache dibersihkan ✓', color: '#00ff88', typingDelay: 0, lineDelay: 250 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 60 },
-  // === ADDON INSTALLATION ===
-  { type: 'output', text: '  ┌───────────────────────────────────┐', color: '#8800ff', typingDelay: 0, lineDelay: 50 },
-  { type: 'output', text: '  │  BLUEPRINT, THEME & ADDON          │', color: '#8800ff', typingDelay: 0, lineDelay: 30 },
-  { type: 'output', text: '  └───────────────────────────────────┘', color: '#8800ff', typingDelay: 0, lineDelay: 30 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 60 },
-  { type: 'input', text: '  > Pilih [0-3]: 3', color: '#8888aa', typingDelay: 8, lineDelay: 200 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 80 },
-  { type: 'output', text: '  1  Billing Extension', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
-  { type: 'output', text: '  2  Give Eggs via Discord', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
-  { type: 'output', text: '  3  Advanced Ban System', color: '#cccccc', typingDelay: 0, lineDelay: 30 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 60 },
-  { type: 'input', text: '  > Pilih addon [0-3]: 1', color: '#8888aa', typingDelay: 8, lineDelay: 200 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 100 },
-  { type: 'output', text: '  [1/5] Mengunduh pterodactyl-billing...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
-  { type: 'output', text: '  [ok] Addon terunduh ✓', color: '#00ff88', typingDelay: 0, lineDelay: 300 },
-  { type: 'output', text: '  [2/5] Memasang addon ke Panel...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
-  { type: 'output', text: '  [ok] File addon dipasang ✓', color: '#00ff88', typingDelay: 0, lineDelay: 250 },
-  { type: 'output', text: '  [3/5] Menginstal dependensi...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
-  { type: 'output', text: '  [ok] Dependensi diperbarui ✓', color: '#00ff88', typingDelay: 0, lineDelay: 200 },
-  { type: 'output', text: '  [4/5] Menjalankan migrasi database...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
-  { type: 'output', text: '  [ok] Migrasi database berhasil ✓', color: '#00ff88', typingDelay: 0, lineDelay: 250 },
-  { type: 'output', text: '  [5/5] Membersihkan cache...', color: '#00ffff', typingDelay: 0, lineDelay: 150 },
-  { type: 'output', text: '  [ok] Cache dibersihkan ✓', color: '#00ff88', typingDelay: 0, lineDelay: 250 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 80 },
-  // === FINAL ===
-  { type: 'output', text: '  ┌───────────────────────────────────┐', color: '#00ff88', typingDelay: 0, lineDelay: 40 },
-  { type: 'output', text: '  │  SEMUA FITUR TERINSTAL ✓          │', color: '#00ff88', typingDelay: 0, lineDelay: 30 },
-  { type: 'output', text: '  └───────────────────────────────────┘', color: '#00ff88', typingDelay: 0, lineDelay: 40 },
-  { type: 'blank', text: '', color: '', typingDelay: 0, lineDelay: 60 },
   { type: 'output', text: '  ArkanProjects — https://github.com/PixZ19/ArkanProjects', color: '#666688', typingDelay: 0, lineDelay: 50 },
 ];
 
@@ -485,10 +400,7 @@ export default function Hero() {
                   className="w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 rounded-xl flex-shrink-0"
                 />
                 <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-center lg:text-left">
-                  <span className="inline-flex flex-col sm:flex-row sm:items-center sm:gap-0">
-                    <span className="neon-gradient-text">Arkan</span>
-                    <span className="text-white/90">Projects</span>
-                  </span>
+                  <span className="neon-gradient-text">ArkanProjects</span>
                 </h1>
               </div>
             </motion.div>
